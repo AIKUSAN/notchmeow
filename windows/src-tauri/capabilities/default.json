@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "What NotchMeow's windows are allowed to do. Everything that touches the OS goes through NotchMeow's own commands.",
+  "windows": ["island", "settings", "chat"],
+  "permissions": ["core:default", "autostart:default"]
+}

@@ -1,0 +1,14 @@
+data: {"choices":[{"index":0,"delta":{"role":"assistant","content":"<think>\nplan "}}]}
+
+data: {"choices":[{"index":0,"delta":{"content":"it\n</think>"}}]}
+
+data: {"choices":[{"index":0,"delta":{"content":null,"reasoning_content":"internal"}}]}
+
+data: {"choices":[{"index":0,"delta":{"content":"Hello from "}}]}
+
+data: {"choices":[{"index":0,"delta":{"content":"NotchMeow."}}]}
+
+data: {"choices":[{"index":0,"delta":{},"finish_reason":"stop"}]}
+
+data: [DONE]
+

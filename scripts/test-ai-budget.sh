@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# AI core: context budget (budget-cases.json) and chat-history trimming.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+TEST_DIR="$(mktemp -d "${TMPDIR:-/tmp}/notchmeow-ai-budget.XXXXXX")"
+trap 'rm -rf "$TEST_DIR"' EXIT
+export NM_LOG_DIR="$TEST_DIR/logs"   # tests never write to ~/Library/Logs
+swiftc -swift-version 6 \
+    NotchBuddy/Sources/App/AI/Core/*.swift \
+    NotchBuddy/Sources/App/AppLog.swift \
+    tests/AITestSupport.swift tests/AIBudgetTests.swift \
+    -o "$TEST_DIR/ai-budget-tests"
+"$TEST_DIR/ai-budget-tests"

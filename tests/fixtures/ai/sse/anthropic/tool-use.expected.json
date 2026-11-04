@@ -1,0 +1,1 @@
+{"text": "", "toolCalls": [{"id": "toolu_1", "name": "get_status", "arguments": "{\"agent\":\"gemini\"}"}], "citations": [], "refusal": null, "finish": "tool_calls", "error": null}

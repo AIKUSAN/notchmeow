@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "verified": false,
+  "note": "What a Codex turn may contain at each level. The item type names are the ones recorded in recorded/ (agent_message, command_execution, web_search, error); reasoning and todo_list are not in any recording, so they are listed as unverified. A level's items are the only item types a turn may carry: an item.started or item.completed of any other type (except a note, below) stops the turn with nm_level_exceeded. `offered` says which levels NotchMeow offers (owner rulings, 2026-10-28: Chat only, and quick actions as level none; read is not offered (R1), agent is not offered (R4) and is absent here). `shellOff` says the level's argv carries the shell-off set (SHELL_OFF in reference.py; FINDINGS step 13). A read level is kept as not offered so its parse cases still fail closed.",
+  "levels": {
+    "chat": {
+      "offered": true,
+      "shellOff": true,
+      "items": [
+        "agent_message",
+        "reasoning",
+        "todo_list"
+      ]
+    },
+    "none": {
+      "offered": true,
+      "shellOff": true,
+      "items": [
+        "agent_message",
+        "reasoning",
+        "todo_list"
+      ]
+    },
+    "read": {
+      "offered": false,
+      "shellOff": false,
+      "items": [
+        "agent_message",
+        "reasoning",
+        "todo_list",
+        "command_execution"
+      ]
+    }
+  },
+  "notes": [
+    "error"
+  ],
+  "retryNotes": [
+    "Reconnecting..."
+  ],
+  "stepFields": {
+    "command_execution": [
+      "command"
+    ],
+    "web_search": [
+      "query"
+    ]
+  },
+  "stepKinds": {
+    "command_execution": "command",
+    "web_search": "search"
+  },
+  "stepFieldCap": 200,
+  "unrecordedEvents": {
+    "thread.started": {
+      "files": [
+        "thread-two-ids.jsonl"
+      ],
+      "source": "owner-named edge case of the order-free thread id rule (2026-10-29): a thread.started with two keys besides type, never recorded",
+      "url": "not found"
+    }
+  },
+  "unrecordedTypes": {
+    "file_change": {
+      "files": [
+        "read-file-change.jsonl"
+      ],
+      "source": "docs/superpowers/plans/ (F3a2-0 plan, Review Focus 1: named there, never recorded)",
+      "url": "not found"
+    },
+    "mcp_tool_call": {
+      "files": [
+        "mcp.jsonl"
+      ],
+      "source": "the Task 2 brief, step 5, names the type; the plan names only mcp.jsonl (never recorded)",
+      "url": "not found"
+    },
+    "future_tool": {
+      "files": [
+        "unknown-item.jsonl"
+      ],
+      "source": "hand-written on purpose: a type no recording or doc names, for the fail-closed rule",
+      "url": "not found"
+    }
+  }
+}

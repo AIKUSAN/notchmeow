@@ -1,0 +1,36 @@
+event: response.created
+data: {"type":"response.created","sequence_number":0,"response":{"id":"resp_1","object":"response","status":"in_progress"}}
+
+event: response.output_item.added
+data: {"type":"response.output_item.added","sequence_number":1,"output_index":0,"item":{"type":"web_search_call","id":"ws_1","status":"in_progress"}}
+
+event: response.web_search_call.in_progress
+data: {"type":"response.web_search_call.in_progress","sequence_number":2,"output_index":0,"item_id":"ws_1"}
+
+event: response.web_search_call.searching
+data: {"type":"response.web_search_call.searching","sequence_number":3,"output_index":0,"item_id":"ws_1"}
+
+event: response.web_search_call.completed
+data: {"type":"response.web_search_call.completed","sequence_number":4,"output_index":0,"item_id":"ws_1"}
+
+event: response.output_item.added
+data: {"type":"response.output_item.added","sequence_number":5,"output_index":1,"item":{"type":"message","id":"msg_1","status":"in_progress","role":"assistant","content":[]}}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":6,"item_id":"msg_1","output_index":1,"content_index":0,"delta":"Cats sleep "}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":7,"item_id":"msg_1","output_index":1,"content_index":0,"delta":"a lot."}
+
+event: response.output_text.annotation.added
+data: {"type":"response.output_text.annotation.added","sequence_number":8,"item_id":"msg_1","output_index":1,"content_index":0,"annotation_index":0,"annotation":{"type":"url_citation","url":"https://example.com/cats","title":"Cat sleep facts","start_index":0,"end_index":17}}
+
+event: response.output_text.annotation.added
+data: {"type":"response.output_text.annotation.added","sequence_number":9,"item_id":"msg_1","output_index":1,"content_index":0,"annotation_index":1,"annotation":{"type":"url_citation","url":"https://example.com/cats","title":"Cat sleep facts","start_index":5,"end_index":17}}
+
+event: response.output_text.done
+data: {"type":"response.output_text.done","sequence_number":10,"item_id":"msg_1","output_index":1,"content_index":0,"text":"Cats sleep a lot."}
+
+event: response.completed
+data: {"type":"response.completed","sequence_number":11,"response":{"id":"resp_1","object":"response","status":"completed"}}
+

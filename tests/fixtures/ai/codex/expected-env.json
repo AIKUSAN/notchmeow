@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "verified": false,
+  "note": "What a Codex run keeps of the caller's environment. Names listed, or starting with a listed prefix, are dropped whatever their value. This keeps the user's own Codex login as the only credential. The recording (recorded/FINDINGS.md) ran with OPENAI_API_KEY, CODEX_API_KEY and OPENAI_BASE_URL unset, but it does not show that Codex reads them, nor the ORG and PROJECT names: those are the plan's choice, unverified. CODEX_HOME is kept, because the user's login lives there. On Windows names compare without regard to case.",
+  "stripped": ["OPENAI_API_KEY", "CODEX_API_KEY", "OPENAI_BASE_URL", "OPENAI_ORG_ID", "OPENAI_PROJECT_ID"],
+  "strippedPrefixes": ["OPENAI_"],
+  "kept": ["CODEX_HOME"],
+  "cases": [
+    {"name": "the OpenAI variables are dropped and the login folder is kept", "platform": "mac",
+     "base": {"PATH": "/usr/bin:/bin", "HOME": "/Users/zoe", "CODEX_HOME": "/Users/zoe/.codex-work", "OPENAI_API_KEY": "sk-FAKE", "CODEX_API_KEY": "ck-FAKE", "OPENAI_BASE_URL": "https://proxy.example", "OPENAI_ORG_ID": "org-FAKE", "OPENAI_PROJECT_ID": "proj-FAKE", "OPENAI_ANYTHING_NEW": "x"},
+     "expect": {"PATH": "/usr/bin:/bin", "HOME": "/Users/zoe", "CODEX_HOME": "/Users/zoe/.codex-work"}},
+    {"name": "on Windows a lower-case name is dropped too", "platform": "windows",
+     "base": {"Path": "C:\\Windows", "openai_api_key": "sk-FAKE", "codex_api_key": "ck-FAKE", "CODEX_HOME": "C:\\Users\\Zoe\\.codex"},
+     "expect": {"Path": "C:\\Windows", "CODEX_HOME": "C:\\Users\\Zoe\\.codex"}},
+    {"name": "on macOS and Linux names are case-sensitive", "platform": "linux",
+     "base": {"openai_api_key": "x", "PATH": "/usr/bin"},
+     "expect": {"openai_api_key": "x", "PATH": "/usr/bin"}},
+    {"name": "nothing to drop", "platform": "linux", "base": {}, "expect": {}}
+  ]
+}

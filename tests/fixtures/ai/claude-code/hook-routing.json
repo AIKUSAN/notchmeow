@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "note": "Which hook payloads belong to a chat. `live` is the set of session ids NotchMeow chose with --session-id for chats that are still open. Only an exact match of a string `session_id` counts, and a payload from another agent (`nm_agent`) never does. 'chat' payloads go to that chat and never create or touch a pill; everything else is handled exactly as before.",
+  "live": ["aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"],
+  "cases": [
+    {"name": "a chat's permission request", "payload": {"hook_event_name": "PermissionRequest", "session_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", "tool_name": "Bash", "tool_input": {"command": "ls"}, "cwd": "/work"}, "expect": "chat"},
+    {"name": "the other live chat's request", "payload": {"hook_event_name": "PermissionRequest", "session_id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb", "tool_name": "Edit"}, "expect": "chat"},
+    {"name": "a chat's other events are swallowed too", "payload": {"hook_event_name": "PreToolUse", "session_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", "tool_name": "Read"}, "expect": "chat"},
+    {"name": "a chat's question hook", "payload": {"nm_kind": "ask_user_question", "session_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"}, "expect": "chat"},
+    {"name": "the user's own session", "payload": {"hook_event_name": "PermissionRequest", "session_id": "cccccccc-cccc-4ccc-8ccc-cccccccccccc", "term_program": "vscode", "tool_name": "Bash"}, "expect": "other"},
+    {"name": "a session id that is not live any more", "payload": {"hook_event_name": "PermissionRequest", "session_id": "cccccccc-cccc-4ccc-8ccc-cccccccccccc"}, "live": ["bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"], "expect": "other"},
+    {"name": "nothing is live", "payload": {"hook_event_name": "PermissionRequest", "session_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"}, "live": [], "expect": "other"},
+    {"name": "no session id", "payload": {"hook_event_name": "PermissionRequest", "tool_name": "Bash"}, "expect": "other"},
+    {"name": "a session id that is not a string", "payload": {"hook_event_name": "PermissionRequest", "session_id": 42}, "expect": "other"},
+    {"name": "an empty session id", "payload": {"hook_event_name": "PermissionRequest", "session_id": ""}, "expect": "other"},
+    {"name": "Codex's conversation id is never a chat", "payload": {"hook_event_name": "PermissionRequest", "conversation_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", "nm_agent": "codex"}, "expect": "other"},
+    {"name": "another agent that carries a live id", "payload": {"hook_event_name": "PermissionRequest", "session_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", "nm_agent": "gemini"}, "expect": "other"},
+    {"name": "the id in another case is not a match", "payload": {"hook_event_name": "PermissionRequest", "session_id": "AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA"}, "expect": "other"}
+  ]
+}

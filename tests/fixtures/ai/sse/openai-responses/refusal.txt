@@ -1,0 +1,18 @@
+event: response.created
+data: {"type":"response.created","sequence_number":0,"response":{"id":"resp_3","object":"response","status":"in_progress"}}
+
+event: response.output_item.added
+data: {"type":"response.output_item.added","sequence_number":1,"output_index":0,"item":{"type":"message","id":"msg_3","status":"in_progress","role":"assistant","content":[]}}
+
+event: response.refusal.delta
+data: {"type":"response.refusal.delta","sequence_number":2,"item_id":"msg_3","output_index":0,"content_index":0,"delta":"I can't help "}
+
+event: response.refusal.delta
+data: {"type":"response.refusal.delta","sequence_number":3,"item_id":"msg_3","output_index":0,"content_index":0,"delta":"with that."}
+
+event: response.refusal.done
+data: {"type":"response.refusal.done","sequence_number":4,"item_id":"msg_3","output_index":0,"content_index":0,"refusal":"I can't help with that."}
+
+event: response.completed
+data: {"type":"response.completed","sequence_number":5,"response":{"id":"resp_3","object":"response","status":"completed"}}
+

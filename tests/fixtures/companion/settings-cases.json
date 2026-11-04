@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "note": "cleanCompanionSettings(raw): companion.* (UserDefaults on the Mac, the companion block of settings.json on Windows/Linux). Later sub-projects add keys.",
+  "cases": [
+    {"name":"nothing stored: the defaults","expect":{"humor":"little","useMemory":true,"seeSessions":true,"polishRecap":false,"recapDismissals":0,"lastRecapDay":"","cloudNoticeShown":[]}},
+    {"name":"a list is not settings","raw":[1,2],"expect":{"humor":"little","useMemory":true,"seeSessions":true,"polishRecap":false,"recapDismissals":0,"lastRecapDay":"","cloudNoticeShown":[]}},
+    {"name":"every key set","raw":{"humor":"more","useMemory":false,"seeSessions":false,"polishRecap":true,"recapDismissals":2,"lastRecapDay":"2026-10-17","cloudNoticeShown":["openai","anthropic"]},"expect":{"humor":"more","useMemory":false,"seeSessions":false,"polishRecap":true,"recapDismissals":2,"lastRecapDay":"2026-10-17","cloudNoticeShown":["anthropic","openai"]}},
+    {"name":"a dismissal of 1e300 is not a count: none","raw":{"recapDismissals":1e+300},"expect":{"humor":"little","useMemory":true,"seeSessions":true,"polishRecap":false,"recapDismissals":0,"lastRecapDay":"","cloudNoticeShown":[]}},
+    {"name":"a JSON 3.0 is the whole number 3: capped at 2","raw":{"recapDismissals":3},"expect":{"humor":"little","useMemory":true,"seeSessions":true,"polishRecap":false,"recapDismissals":2,"lastRecapDay":"","cloudNoticeShown":[]}},
+    {"name":"only false turns a default-on switch off","raw":{"useMemory":0,"seeSessions":"no"},"expect":{"humor":"little","useMemory":true,"seeSessions":true,"polishRecap":false,"recapDismissals":0,"lastRecapDay":"","cloudNoticeShown":[]}},
+    {"name":"only true turns polish on","raw":{"polishRecap":"true"},"expect":{"humor":"little","useMemory":true,"seeSessions":true,"polishRecap":false,"recapDismissals":0,"lastRecapDay":"","cloudNoticeShown":[]}},
+    {"name":"bad values fall back","raw":{"humor":"LOUD","recapDismissals":7,"lastRecapDay":"2026-02-30","cloudNoticeShown":["ok","Bad Id!","ok",5]},"expect":{"humor":"little","useMemory":true,"seeSessions":true,"polishRecap":false,"recapDismissals":2,"lastRecapDay":"","cloudNoticeShown":["ok"]}},
+    {"name":"a fraction of a dismissal is none","raw":{"recapDismissals":1.5},"expect":{"humor":"little","useMemory":true,"seeSessions":true,"polishRecap":false,"recapDismissals":0,"lastRecapDay":"","cloudNoticeShown":[]}},
+    {"name":"unknown keys go","raw":{"humor":"off","tools":{"x":1}},"expect":{"humor":"off","useMemory":true,"seeSessions":true,"polishRecap":false,"recapDismissals":0,"lastRecapDay":"","cloudNoticeShown":[]}},
+    {"name":"sorted, and at most sixteen kept","raw":{"cloudNoticeShown":["p16","p15","p14","p13","p12","p11","p10","p09","p08","p07","p06","p05","p04","p03","p02","p01","p00"]},"expect":{"humor":"little","useMemory":true,"seeSessions":true,"polishRecap":false,"recapDismissals":0,"lastRecapDay":"","cloudNoticeShown":["p00","p01","p02","p03","p04","p05","p06","p07","p08","p09","p10","p11","p12","p13","p14","p15"]}}
+  ]
+}

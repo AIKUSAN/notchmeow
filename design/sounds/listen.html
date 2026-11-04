@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<title>NotchMeow sound picks</title>
+<!--
+  Listening page for the CC0 cat sound candidates in cc0-candidates.md (sub-project C).
+  Freesound clips play through Freesound's own embed player, which streams only when you press
+  play. Nothing is downloaded or saved; picks live in this browser's localStorage only.
+  Colours, type and card style follow design/prototype/notchmeow.html.
+-->
+<style>
+:root{--bg:#0f1012;--card:#17181b;--sub:#131417;--line:#2a2c31;--line2:#43464e;--ink:#ececee;--dim:#9a9ca3;--acc:#5EEAD4;--btn:#202227;--warn:#f2c46d;--bar:rgba(23,24,27,.94);color-scheme:dark}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f3f3f5;--card:#ffffff;--sub:#f8f8fa;--line:#dcdde2;--line2:#b4b7bf;--ink:#17181b;--dim:#5b5e66;--acc:#0b7f71;--btn:#f0f1f3;--warn:#8a5a00;--bar:rgba(255,255,255,.94);color-scheme:light}}
+:root[data-theme="light"]{--bg:#f3f3f5;--card:#ffffff;--sub:#f8f8fa;--line:#dcdde2;--line2:#b4b7bf;--ink:#17181b;--dim:#5b5e66;--acc:#0b7f71;--btn:#f0f1f3;--warn:#8a5a00;--bar:rgba(255,255,255,.94);color-scheme:light}
+*{box-sizing:border-box}
+html{scroll-padding-top:12px}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;overflow-x:hidden}
+a{color:var(--acc)}
+.wrap{max-width:1200px;margin:0 auto;padding:24px 16px 40px}
+.top{display:flex;gap:12px;align-items:flex-start;justify-content:space-between}
+h1{font-size:22px;font-weight:600;margin:0 0 4px}
+h2{font-size:17px;font-weight:600;margin:0 0 2px}
+h3{font-size:15px;font-weight:600;margin:0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.sub{color:var(--dim);margin:0 0 14px}
+.tag{color:var(--dim);margin:0 0 12px;font-size:13px}
+button,.btn{font:inherit;font-size:12px;color:var(--ink);background:var(--btn);border:1px solid var(--line);border-radius:8px;padding:4px 10px;cursor:pointer;text-decoration:none;display:inline-block;line-height:1.5}
+button:hover,.btn:hover{border-color:var(--line2)}
+button.on,.btn.on{border-color:var(--acc);color:var(--acc)}
+button:focus-visible,.btn:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}
+.notice{margin:0 0 16px;border-color:var(--line2)}
+.notice p{margin:0}
+.notice p+p{margin-top:6px;color:var(--dim);font-size:13px}
+.jump{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 24px}
+section.group{margin-bottom:28px}
+.group>.head{margin-bottom:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,400px),1fr));gap:12px;align-items:start}
+.slot{min-width:0}
+.slot-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.when{margin:2px 0 4px;color:var(--dim);font-size:13px}
+.pill{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:0 8px;color:var(--dim)}
+.pill.gap{border-color:var(--warn);color:var(--warn)}
+.pill.done{display:none;border-color:var(--acc);color:var(--acc);margin-left:auto}
+.slot.picked .pill.done{display:inline-block}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.cand,.synth{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:8px;background:var(--sub);min-width:0}
+.cand.sel,.synth.sel{border-color:var(--acc)}
+.synth{border-style:dashed}
+.pick{display:flex;gap:8px;align-items:baseline;cursor:pointer;min-width:0}
+.pick input{accent-color:var(--acc);margin:0;flex:none;transform:translateY(1px)}
+.meta{min-width:0;overflow-wrap:anywhere}
+.meta b{font-weight:600}
+.meta .by{color:var(--dim)}
+.facts{display:flex;flex-wrap:wrap;gap:4px 6px;margin:6px 0 0 21px}
+.chip{font-size:11px;color:var(--dim);border:1px solid var(--line);border-radius:6px;padding:0 6px}
+.chip.warn{color:var(--warn);border-color:var(--warn)}
+.note{margin:6px 0 0 21px;font-size:13px;color:var(--dim);overflow-wrap:anywhere}
+.note b{color:var(--ink);font-weight:600}
+.play{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0 0 21px;min-width:0}
+.play iframe{display:block;border:0;width:100%;max-width:375px;height:30px;border-radius:6px;background:var(--btn)}
+.play .page{font-size:12px}
+.recipe{margin:6px 0 0 21px;font-size:13px;color:var(--dim)}
+.list{margin:0;padding-left:20px}
+.list li{margin:4px 0}
+.list li::marker{color:var(--dim)}
+.list .k{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:600}
+.packs{display:grid;gap:12px}
+.packs .panel p{margin:4px 0 0}
+.packs h3{font-family:inherit}
+.bar{position:sticky;bottom:0;z-index:5;background:var(--bar);border-top:1px solid var(--line);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.bar-in{max-width:1200px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap}
+#count{font-size:13px}
+#count b{color:var(--acc)}
+#status{font-size:12px;color:var(--dim);flex:1;min-width:0}
+#copy{font-size:13px;padding:6px 12px}
+#fallback{display:block;width:calc(100% - 32px);max-width:1168px;margin:0 auto 10px;height:120px;font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--sub);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px}
+#fallback[hidden]{display:none}
+@media (max-width:480px){.facts,.note,.play,.recipe{margin-left:0}}
+</style></head><body>
+<div class="wrap">
+<div class="top">
+<div>
+<h1>NotchMeow sound candidates</h1>
+<p class="sub">Listen to each CC0 candidate and pick one per slot, or mark the slot to synthesize. Then copy your picks from the bar at the bottom.</p>
+</div>
+<button id="theme" type="button" aria-label="Switch colour theme">Light</button>
+</div>
+
+<div class="panel notice" role="note">
+<p><b>These are CC0 candidates, not final sounds.</b> Nothing is downloaded: each Freesound player streams the clip from freesound.org only when you press play, and BigSoundBank clips open on their own site in a new tab.</p>
+<p>Licences were read on each sound's page, except rows tagged "licence not yet checked". Re-check every licence before downloading. Your picks are saved only in this browser.</p>
+</div>
+
+<nav class="jump" aria-label="Sections">
+<a class="btn" href="#vocal">Character moments</a>
+<a class="btn" href="#foley">Interface ticks</a>
+<a class="btn" href="#gaps">Gaps to synthesize</a>
+<a class="btn" href="#packs">Recommended packs</a>
+</nav>
+
+<section class="group" id="vocal" aria-labelledby="vocal-h">
+<div class="head"><h2 id="vocal-h">Character moments</h2><p class="tag">Real cat vocals, <span data-n="vocal"></span> slots.</p></div>
+<div class="grid" id="vocal-grid"></div>
+</section>
+
+<section class="group" id="foley" aria-labelledby="foley-h">
+<div class="head"><h2 id="foley-h">Interface ticks</h2><p class="tag">Cat-themed foley, never a meow. <span data-n="foley"></span> slots, meant to sit 6 to 10 dB below the vocals.</p></div>
+<div class="grid" id="foley-grid"></div>
+</section>
+
+<section class="group" id="gaps" aria-labelledby="gaps-h">
+<div class="head"><h2 id="gaps-h">Gaps to synthesize</h2><p class="tag">No good recording was found for these, or the recording needs help. Each recipe also appears under "Synthesize instead" on its slot.</p></div>
+<div class="panel"><ul class="list" id="gap-list"></ul></div>
+</section>
+
+<section class="group" id="packs" aria-labelledby="packs-h">
+<div class="head"><h2 id="packs-h">Recommended packs</h2><p class="tag">One cat and one microphone per pack, for a set that sounds consistent.</p></div>
+<div class="packs">
+<div class="panel"><h3>1. BigSoundBank (Joseph Sardin)</h3>
+<p>Every page says "CC0 (public domain)", and the recordings are professional. "Little meow of a cat #2–#11" is the cat Emi; the s1881–s1902 session has meows, growls and roars; plus toy squeaks #1–#8. All adult cats, no trills.</p></div>
+<div class="panel"><h3>2. steffcaffrey, pack "Cats"</h3>
+<p>Twelve clips of one male cat. Best for greet, love, question, proud, slap, wink and finish. <a href="https://freesound.org/people/steffcaffrey/packs/16113/" target="_blank" rel="noopener noreferrer">Open the pack ↗</a></p></div>
+<div class="panel"><h3>3. Department64, the cat Oscar</h3>
+<p>Each clip is labelled with an emotion. <b>Take only the kitten## files and Buddha Purr: the same pack holds 2020 CC BY uploads.</b> <a href="https://freesound.org/people/Department64/packs/4120/" target="_blank" rel="noopener noreferrer">Open the pack ↗</a></p></div>
+<div class="panel"><h3>4. MBPL, pack "Animals"</h3>
+<p>Six soft trills from one cat. <a href="https://freesound.org/people/MBPL/packs/37289/" target="_blank" rel="noopener noreferrer">Open the pack ↗</a></p></div>
+<div class="panel"><h3>5. Sadiquecat</h3>
+<p>Two cats, Pearl and Perran: meows, mrrms, snores and licking, plus dozens of collar-bell (grelot) recordings.</p></div>
+<div class="panel"><h3>6. Ticks fallback</h3>
+<p>Mafon2's CC0 Freesound clips, and Kenney's Interface Sounds, UI Audio and Impact Sounds (CC0, not cat-themed). Mafon2's "Scaredy Cat" library is sold on Sonniss and is <b>not</b> CC0.</p></div>
+<div class="panel"><h3>Suggested core</h3>
+<ul class="list">
+<li>steffcaffrey for chirps</li>
+<li>Oscar for emotional meows</li>
+<li>Emi as a cleaner meow voice</li>
+<li>MBPL for trills</li>
+<li>Sadiquecat for snores, licks and bells</li>
+</ul>
+<p>Apply one pitch shift to the whole set so it sounds like one cat.</p></div>
+<div class="panel"><h3>Other CC0 sources</h3>
+<ul class="list">
+<li><b>Wikimedia Commons:</b> "Maullido de gata hembra joven.ogg" and "Meow of a Siamese cat - freemaster2.wav". Its purrs are marked "Public domain", which isn't the same as CC0.</li>
+<li><b>OpenGameArt:</b> kerzoven "Cat Purr &amp; Meow", including sleepy and active purr loops. <a href="https://opengameart.org/content/cat-purr-meow" target="_blank" rel="noopener noreferrer">Open ↗</a></li>
+</ul></div>
+</div>
+</section>
+</div>
+
+<footer class="bar" aria-label="Your picks">
+<div class="bar-in">
+<span id="count"><b>0</b> / <span id="total">0</span> slots picked</span>
+<span id="status" role="status" aria-live="polite"></span>
+<button id="copy" class="on" type="button">Copy my picks</button>
+</div>
+<textarea id="fallback" hidden readonly aria-label="Your picks as text"></textarea>
+</footer>
+
+<script>
+"use strict";
+// Parsed from cc0-candidates.md. Groups: vocal (character moments), foley (interface ticks).
+const DATA = {"vocal":[{"slot":"greet","candidates":[{"title":"Cat_Twit1","author":"steffcaffrey","url":"https://freesound.org/people/steffcaffrey/sounds/262306/","dur":"0.55 s","fmt":"44.1/16","note":"Happy purr/twit greeting, rated 5.0","dagger":false},{"title":"Cat trill 3","author":"MBPL","url":"https://freesound.org/people/MBPL/sounds/668820/","dur":"0.32 s","fmt":"48/16","note":"Soft, short trill","dagger":false},{"title":"Pearl mmrrovvv","author":"Sadiquecat","url":"https://freesound.org/people/Sadiquecat/sounds/844502/","dur":"0.94 s","fmt":"48/24","note":"\"I'm here\"; windy outdoor recording","dagger":false}]},{"slot":"love","candidates":[{"title":"Cat Happy Purr/Twitter2","author":"steffcaffrey","url":"https://freesound.org/people/steffcaffrey/sounds/262307/","dur":"0.54 s","fmt":"44.1/16","note":"Same cat as greet","dagger":false},{"title":"kitten22","author":"Department64","url":"https://freesound.org/people/Department64/sounds/64017/","dur":"0.64 s","fmt":"44.1/16","note":"Friendly purr-meow","dagger":false},{"title":"Cat short purr","author":"Mafon2","url":"https://freesound.org/people/Mafon2/sounds/436542/","dur":"1.32 s","fmt":"44.1/24","note":"Rated 4.9","dagger":false}]},{"slot":"annoyed","candidates":[{"title":"kitten13","author":"Department64","url":"https://freesound.org/people/Department64/sounds/64008/","dur":"0.85 s","fmt":"44.1/16","note":"Offended half-growl meow; grumbly, not scary","dagger":false},{"title":"Cat Hissing","author":"aunrea","url":"https://freesound.org/people/aunrea/sounds/485952/","dur":"0.67 s","fmt":"48/24","note":"Real hiss; probably harsh, soften with EQ","dagger":false},{"title":"Growling cat #1","author":"BigSoundBank","url":"https://bigsoundbank.com/growling-cat-1-s1885.html","dur":"~1.8 s","fmt":"48/24","note":"Pro recording; trim under 1 s","dagger":false}]},{"slot":"dizzy","candidates":[{"title":"Cat MmRrm noise","author":"Sadiquecat","url":"https://freesound.org/people/Sadiquecat/sounds/730102/","dur":"1.82 s","fmt":"48/24","note":"Add a pitch wobble afterwards","dagger":false},{"title":"kitten12","author":"Department64","url":"https://freesound.org/people/Department64/sounds/64007/","dur":"0.67 s","fmt":"44.1/16","note":"Short howl; wobble base","dagger":false},{"title":"Cat trill 1","author":"MBPL","url":"https://freesound.org/people/MBPL/sounds/668822/","dur":"1.22 s","fmt":"48/16","note":"Longest soft trill","dagger":false}]},{"slot":"slap","candidates":[{"title":"Short Sharp Meow","author":"Mafon2","url":"https://freesound.org/people/Mafon2/sounds/436540/","dur":"0.26 s","fmt":"44.1/24","note":"Very short \"mrp\"","dagger":false},{"title":"Meow cat #11","author":"BigSoundBank","url":"https://bigsoundbank.com/meow-cat-11-s1899.html","dur":"~0.47 s","fmt":"48/24","note":"Shortest of the series","dagger":false},{"title":"Cat Purr/Twit4","author":"steffcaffrey","url":"https://freesound.org/people/steffcaffrey/sounds/262309/","dur":"0.37 s","fmt":"44.1/16","note":"Rated 4.9","dagger":false}]},{"slot":"finish","candidates":[{"title":"Cat trill 4","author":"MBPL","url":"https://freesound.org/people/MBPL/sounds/668825/","dur":"0.86 s","fmt":"48/16","note":"Soft trill; Cat trill 2 (668821) is an alternative","dagger":false},{"title":"catwhirr","author":"steffcaffrey","url":"https://freesound.org/people/steffcaffrey/sounds/415107/","dur":"0.84 s","fmt":"44.1/16","note":"Happy \"whirr\" at food","dagger":false},{"title":"Cat Chirping","author":"yahsay","url":"https://freesound.org/people/yahsay/sounds/842520/","dur":"1.54 s","fmt":"m4a","note":"Quiet chirp; lossy source","dagger":false}]},{"slot":"error","candidates":[{"title":"kitten20","author":"Department64","url":"https://freesound.org/people/Department64/sounds/64015/","dur":"0.88 s","fmt":"44.1/16","note":"Sad howl-meow","dagger":false},{"title":"Little meow of a cat #6","author":"BigSoundBank","url":"https://bigsoundbank.com/little-meow-of-a-cat-6-s1476.html","dur":"~0.73 s","fmt":"48/24","note":"Cat Emi; pro recording","dagger":false},{"title":"Cute Kitten Meow","author":"Breviceps","url":"https://freesound.org/people/Breviceps/sounds/448084/","dur":"0.60 s","fmt":"44.1/16","note":"Rated 4.8; uploader welcomes credit","dagger":false}]},{"slot":"approval","candidates":[{"title":"kitten10","author":"Department64","url":"https://freesound.org/people/Department64/sounds/64005/","dur":"0.65 s","fmt":"44.1/16","note":"Friendly alert meow; fits \"agent needs you\"","dagger":false},{"title":"Little meow of a cat #2","author":"BigSoundBank","url":"https://bigsoundbank.com/little-meow-of-a-cat-2-s1472.html","dur":"~0.99 s","fmt":"48/24","note":"Emi asking for attention","dagger":false},{"title":"Begging Meow","author":"Lukey1028","url":"https://freesound.org/people/Lukey1028/sounds/732521/","dur":"1.39 s","fmt":"44.1","note":"Rated 4.9; uploader mixes CC0 and CC BY, so check","dagger":false}]},{"slot":"question","candidates":[{"title":"Cat Purr/Twit5","author":"steffcaffrey","url":"https://freesound.org/people/steffcaffrey/sounds/262310/","dur":"0.49 s","fmt":"44.1/16","note":"Rising twit (check intonation)","dagger":false},{"title":"Cat trill 5","author":"MBPL","url":"https://freesound.org/people/MBPL/sounds/668824/","dur":"0.46 s","fmt":"48/16","note":"Short trill","dagger":false},{"title":"meow-1","author":"nathan-osman","url":"https://freesound.org/people/nathan-osman/sounds/686775/","dur":"1.03 s","fmt":"44.1/16","note":"Small kitten; rated 4.9","dagger":false}]},{"slot":"proud","candidates":[{"title":"Cat Purr/Twit6","author":"steffcaffrey","url":"https://freesound.org/people/steffcaffrey/sounds/262311/","dur":"0.42 s","fmt":"44.1/16","note":"Rated 5.0","dagger":false},{"title":"cat chirp","author":"dreamstobecome","url":"https://freesound.org/people/dreamstobecome/sounds/451250/","dur":"7.8 s","fmt":"48/16","note":"Contented chirps; cut one out","dagger":false},{"title":"Cat Chirps","author":"Tyler31898","url":"https://freesound.org/people/Tyler31898/sounds/634174/","dur":"36 s","fmt":"48/24","note":"Needs editing","dagger":false}]},{"slot":"wink","candidates":[{"title":"Little Meow of a Cat #1","author":"BigSoundBank","url":"https://bigsoundbank.com/little-meow-of-a-cat-s0494.html","dur":"~0.49 s","fmt":"48/16","note":"Single small meow, studio","dagger":false},{"title":"Cat Meow2","author":"steffcaffrey","url":"https://freesound.org/people/steffcaffrey/sounds/262313/","dur":"0.50 s","fmt":"44.1/16","note":"Same cat as greet","dagger":false},{"title":"Cat Meow","author":"Mafon2","url":"https://freesound.org/people/Mafon2/sounds/436541/","dur":"0.57 s","fmt":"44.1/24","note":"Popular, rated 4.7","dagger":false}]},{"slot":"yawn","candidates":[{"title":"Cat purring and yawning","author":"Daphne_in_Wonderland","url":"https://freesound.org/people/Daphne_in_Wonderland/sounds/383473/","dur":"106 s","fmt":"48/24","note":"Only real yawn found; usability unknown. **Gap: probably synthesize.**","dagger":false}]},{"slot":"sleep","candidates":[{"title":"SND_CatPurring_Loop_01","author":"megrez7274","url":"https://freesound.org/people/megrez7274/sounds/508688/","dur":"18.4 s","fmt":"48/16","note":"Already looped; phone recording","dagger":false},{"title":"Pearl Sleepy snooring 3","author":"Sadiquecat","url":"https://freesound.org/people/Sadiquecat/sounds/752418/","dur":"6.0 s","fmt":"96/24","note":"Soft snore","dagger":false},{"title":"Cat purr","author":"Trautwein","url":"https://freesound.org/people/Trautwein/sounds/260881/","dur":"60 s","fmt":"48/24","note":"Pro recording; cut a 3–6 s loop","dagger":false},{"title":"Buddha Purr","author":"Department64","url":"https://freesound.org/people/Department64/sounds/64004/","dur":"2.65 s","fmt":"44.1/16","note":"Close-mic loop","dagger":false}]},{"slot":"gulp","candidates":[{"title":"kitten licks milk","author":"kyles","url":"https://freesound.org/people/kyles/sounds/451406/","dur":"9.2 s","fmt":"48/24","note":"Trim a single lap; rated 5.0","dagger":false},{"title":"cat_licking_hand","author":"16FPanskaRollerova_Adriena","url":"https://freesound.org/people/16FPanskaRollerova_Adriena/sounds/498836/","dur":"5.1 s","fmt":"48/24","note":"Close perspective","dagger":false},{"title":"Cat licking her paw","author":"Sadiquecat","url":"https://freesound.org/people/Sadiquecat/sounds/730097/","dur":"13.4 s","fmt":"48/24","note":"Same cat as the dizzy pick","dagger":false}]},{"slot":"think","candidates":[{"title":"Cat MmRrm noise","author":"Sadiquecat","url":"https://freesound.org/people/Sadiquecat/sounds/730102/","dur":"1.82 s","fmt":"48/24","note":"Reads as \"hmm\"; use here or for dizzy, not both","dagger":false},{"title":"Cat trills shortly","author":"CatPhony","url":"https://freesound.org/people/CatPhony/sounds/850104/","dur":"1.0 s","fmt":"MP3, 8 kHz","note":"Low fidelity","dagger":false}]},{"slot":"search","candidates":[{"title":"cat cackle at birds","author":"itinerantmonk108","url":"https://freesound.org/people/itinerantmonk108/sounds/568242/","dur":"15.6 s","fmt":"44.1/24","note":"Real \"ekekek\" chatter; phone recording; edit or synthesize","dagger":false},{"title":"Cat_Hunting","author":"16H_Panska_Rudenko_Angelika","url":"https://freesound.org/people/16H_Panska_Rudenko_Angelika/sounds/499362/","dur":"66.8 s","fmt":"48/24","note":"Chirps and chatter; needs editing","dagger":false},{"title":"Loud chatter","author":"CatPhony","url":"https://freesound.org/people/CatPhony/sounds/850110/","dur":"4.4 s","fmt":"MP3, 8 kHz","note":"Low fidelity; fallback only","dagger":false}]},{"slot":"work","candidates":[{"title":"Cat purring under blanket","author":"ArcticWanderer","url":"https://freesound.org/people/ArcticWanderer/sounds/807183/","dur":"46 s","fmt":"MP3","note":"Kneading and purring. **Gap: probably synthesize the kneading pats.**","dagger":false}]},{"slot":"rate","candidates":[{"title":"kitten16","author":"Department64","url":"https://freesound.org/people/Department64/sounds/64011/","dur":"1.46 s","fmt":"44.1/16","note":"\"Not satisfied\" retort","dagger":false},{"title":"kitten17","author":"Department64","url":"https://freesound.org/people/Department64/sounds/64012/","dur":"0.95 s","fmt":"44.1/16","note":"Getting frustrated","dagger":false},{"title":"Cat meowing for food 1","author":"Sadiquecat","url":"https://freesound.org/people/Sadiquecat/sounds/730098/","dur":"1.18 s","fmt":"48/24","note":"Impatient","dagger":false}]}],"foley":[{"slot":"approve","candidates":[{"title":"Cat Purr/Twit4","author":"steffcaffrey","url":"https://freesound.org/people/steffcaffrey/sounds/262309/","dur":"0.37 s","fmt":"","note":"You clicked Allow: a tiny pleased chirp. Also a slap candidate, so use it for only one of the two","dagger":false},{"title":"Cardboard_Small Impact_06","author":"BenDrain","url":"https://freesound.org/people/BenDrain/sounds/487999/","dur":"0.42 s","fmt":"","note":"A soft \"paw stamp\" for approving. Also a close candidate","dagger":false},{"title":"Single bell 1","author":"connersaw8","url":"https://freesound.org/people/connersaw8/sounds/125147/","dur":"0.21 s","fmt":"","note":"A clear single bell for confirming. Also a tick candidate","dagger":false}]},{"slot":"peek","candidates":[{"title":"Bell 13.6 OS (Grelots)","author":"Sadiquecat","url":"https://freesound.org/s/791512/","dur":"0.26 s","fmt":"","note":"Collar jingle bell. Sibling 791511 (0.85 s) has a verified CC0 page","dagger":true},{"title":"Sleigh Bell Short 01","author":"JoshuaPomeroy","url":"https://freesound.org/people/JoshuaPomeroy/sounds/541360/","dur":"0.21 s","fmt":"","note":"Tiny jingle","dagger":false}]},{"slot":"open","candidates":[{"title":"open-cardboard-box-compartment","author":"newagesoup","url":"https://freesound.org/people/newagesoup/sounds/364740/","dur":"1.0 s","fmt":"","note":"Box flap; rated 4.7","dagger":false},{"title":"Box open","author":"LeonsFlashlight","url":"https://freesound.org/people/LeonsFlashlight/sounds/135014/","dur":"0.42 s","fmt":"","note":"Box lid","dagger":false}]},{"slot":"close","candidates":[{"title":"Cardboard_Small Impact_06","author":"BenDrain","url":"https://freesound.org/people/BenDrain/sounds/487999/","dur":"0.42 s","fmt":"","note":"Soft cardboard tap","dagger":false},{"title":"Item placed","author":"Mafon2","url":"https://freesound.org/people/Mafon2/sounds/320847/","dur":"0.56 s","fmt":"","note":"Soft thunk","dagger":false}]},{"slot":"hover","candidates":[{"title":"Water Click","author":"Mafon2","url":"https://freesound.org/people/Mafon2/sounds/371274/","dur":"0.11 s","fmt":"","note":"Bead into a water bowl, like a cat's water dish","dagger":false},{"title":"Mouse hover","author":"Andreas.Mustola","url":"https://freesound.org/s/255764/","dur":"0.08 s","fmt":"","note":"Generic UI hover","dagger":true}]},{"slot":"blip","candidates":[{"title":"Cute Computer Squeak","author":"qubodup","url":"https://freesound.org/people/qubodup/sounds/857748/","dur":"0.18 s","fmt":"","note":"Page says CC0 but the description points to CC BY: credit or ask","dagger":false}]},{"slot":"tick","candidates":[{"title":"Ceramic Click","author":"Mafon2","url":"https://freesound.org/people/Mafon2/sounds/371278/","dur":"0.15 s","fmt":"","note":"Ball into a bowl","dagger":false},{"title":"Single bell 1","author":"connersaw8","url":"https://freesound.org/people/connersaw8/sounds/125147/","dur":"0.21 s","fmt":"","note":"Single bell hit","dagger":false}]},{"slot":"send","candidates":[{"title":"pouring cat food","author":"jimmyfisher","url":"https://freesound.org/people/jimmyfisher/sounds/402453/","dur":"0.21 s","fmt":"","note":"Kibble-rattle whoosh","dagger":false},{"title":"kibble poured in ceramic bowl","author":"racheltwu","url":"https://freesound.org/people/racheltwu/sounds/813673/","dur":"1.7 s","fmt":"","note":"Trim","dagger":false}]},{"slot":"attach","candidates":[{"title":"keys-stash","author":"anational","url":"https://freesound.org/people/anational/sounds/443956/","dur":"0.38 s","fmt":"","note":"Collar-tag clink stand-in. **Gap: maybe synthesize**","dagger":false},{"title":"Bell 13.4 OS (Grelots)","author":"Sadiquecat","url":"https://freesound.org/s/791510/","dur":"0.48 s","fmt":"","note":"Collar-bell jiggle; 791507 is an alternative","dagger":true}]},{"slot":"pop","candidates":[{"title":"Squeaky Toy #1","author":"Breviceps","url":"https://freesound.org/people/Breviceps/sounds/468443/","dur":"0.45 s","fmt":"","note":"Squeaky toy; rated 4.8","dagger":false},{"title":"Couinement jouet #2","author":"BigSoundBank","url":"https://bigsoundbank.com/couinement-jouet-2-s3332.html","dur":"~0.36 s","fmt":"","note":"Pro toy-squeak series #1–#8","dagger":false},{"title":"Mouth pop","author":"jcallison","url":"https://freesound.org/people/jcallison/sounds/258269/","dur":"0.32 s","fmt":"","note":"Soft \"boop\"; Bubble Pop (Mafon2, 253956) is an alternative","dagger":false}]}],"gaps":[{"slot":"yawn","recipe":"Falling squeak (about 1.2 kHz down to 500 Hz) plus breathy filtered noise, about 0.8 s"},{"slot":"work","recipe":"Soft fabric pats: low-passed noise bursts of 40–80 ms at about 2 Hz, alternating left and right"},{"slot":"search","recipe":"Edit the itinerantmonk108 chatter, or a 12 Hz click train through a formant filter"},{"slot":"rate","recipe":"Add a tail thump after kitten17: 80–120 Hz sine, fast decay"},{"slot":"dizzy","recipe":"About 5 Hz pitch wobble of ±1 semitone on a trill"},{"slot":"attach","recipe":"Collar-tag clink: two short inharmonic partials at 3–6 kHz, about 150 ms decay"}]};
+
+const WHEN = {
+  greet:"the greeting", love:"love emote", annoyed:"poked too often", dizzy:"dizzy after slaps",
+  slap:"poked", finish:"agent finished", error:"agent error", approval:"an agent needs your approval",
+  question:"an agent asks a question", proud:"proud emote", wink:"wink emote", yawn:"yawn emote",
+  sleep:"sleeping", gulp:"catching a file", think:"thinking", search:"searching", work:"working",
+  rate:"rate-limited", approve:"you approved an agent's request", peek:"the island peeks", open:"the island opens", close:"the island closes",
+  hover:"hover", blip:"small UI blip", tick:"ticker tick", send:"sending a chat message",
+  attach:"attaching a file", pop:"popover pop"
+};
+
+const PICKS_KEY = "notchmeow.listen.picks.v1";
+const THEME_KEY = "notchmeow.listen.theme";
+
+function readStore(key){ try { return window.localStorage.getItem(key); } catch (e) { return null; } }
+function writeStore(key, value){ try { window.localStorage.setItem(key, value); } catch (e) { /* storage unavailable */ } }
+
+function esc(s){
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function rich(s){ return esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>"); }
+function freesoundId(url){
+  const m = /freesound\.org\/(?:people\/[^/]+\/sounds|s)\/(\d+)\/?/.exec(url);
+  return m ? m[1] : null;
+}
+
+const GAPS = {};
+DATA.gaps.forEach(g => { GAPS[g.slot] = g.recipe; });
+const ALL = DATA.vocal.concat(DATA.foley);
+const TOTAL = ALL.length;
+
+let picks = {};
+try { picks = JSON.parse(readStore(PICKS_KEY) || "{}") || {}; } catch (e) { picks = {}; }
+if (typeof picks !== "object" || Array.isArray(picks)) picks = {};
+
+function candHTML(slot, c){
+  const id = freesoundId(c.url);
+  const bsb = /bigsoundbank\.com/.test(c.url);
+  let player;
+  if (id) {
+    player = '<iframe src="https://freesound.org/embed/sound/iframe/' + id + '/simple/small/" width="375" height="30" loading="lazy" title="Freesound player: ' + esc(c.title) + ' by ' + esc(c.author) + '"></iframe>' +
+      '<a class="page" href="' + esc(c.url) + '" target="_blank" rel="noopener noreferrer">Freesound page ↗</a>';
+  } else if (bsb) {
+    player = '<a class="btn on" href="' + esc(c.url) + '" target="_blank" rel="noopener noreferrer">Listen on BigSoundBank ↗</a>';
+  } else {
+    player = '<a class="btn" href="' + esc(c.url) + '" target="_blank" rel="noopener noreferrer">Open page ↗</a>';
+  }
+  const facts = ['<span class="chip">' + esc(c.dur) + '</span>'];
+  if (c.fmt) facts.push('<span class="chip">' + esc(c.fmt) + '</span>');
+  if (c.dagger) facts.push('<span class="chip warn">† licence not yet checked on its own page</span>');
+  return '<div class="cand">' +
+    '<label class="pick"><input type="radio" name="pick-' + slot + '" value="' + esc(c.url) + '">' +
+    '<span class="meta"><b>' + esc(c.title) + '</b> <span class="by">by ' + esc(c.author) + '</span></span></label>' +
+    '<div class="facts">' + facts.join("") + '</div>' +
+    '<p class="note">' + rich(c.note) + '</p>' +
+    '<div class="play">' + player + '</div></div>';
+}
+
+function slotHTML(s){
+  const recipe = GAPS[s.slot];
+  return '<article class="panel slot" id="slot-' + s.slot + '" data-slot="' + s.slot + '">' +
+    '<div class="slot-h"><h3>' + s.slot + '</h3>' + (recipe ? '<span class="pill gap">gap</span>' : '') +
+    '<span class="pill done">picked</span></div>' +
+    '<p class="when">When: ' + esc(WHEN[s.slot] || "") + '</p>' +
+    '<fieldset><legend class="vh">Pick a sound for ' + s.slot + '</legend>' +
+    s.candidates.map(c => candHTML(s.slot, c)).join("") +
+    '<div class="synth"><label class="pick"><input type="radio" name="pick-' + s.slot + '" value="synth">' +
+    '<span class="meta"><b>Synthesize instead</b></span></label>' +
+    (recipe ? '<p class="recipe">Recipe: ' + esc(recipe) + '</p>' : '') +
+    '</div></fieldset></article>';
+}
+
+function render(){
+  document.getElementById("vocal-grid").innerHTML = DATA.vocal.map(slotHTML).join("");
+  document.getElementById("foley-grid").innerHTML = DATA.foley.map(slotHTML).join("");
+  document.querySelector('[data-n="vocal"]').textContent = DATA.vocal.length;
+  document.querySelector('[data-n="foley"]').textContent = DATA.foley.length;
+  document.getElementById("total").textContent = TOTAL;
+  document.getElementById("gap-list").innerHTML = DATA.gaps.map(g =>
+    '<li><a class="k" href="#slot-' + g.slot + '">' + esc(g.slot) + '</a>: ' + esc(g.recipe) + '</li>').join("");
+  // Restore saved picks that still match a candidate.
+  ALL.forEach(s => {
+    const v = picks[s.slot];
+    if (!v) return;
+    const input = Array.from(document.getElementsByName("pick-" + s.slot)).find(i => i.value === v);
+    if (input) input.checked = true; else delete picks[s.slot];
+  });
+  ALL.forEach(s => mark(s.slot));
+  updateCount();
+}
+
+function mark(slot){
+  const card = document.getElementById("slot-" + slot);
+  card.classList.toggle("picked", !!picks[slot]);
+  card.querySelectorAll("input[type=radio]").forEach(i => {
+    i.closest(".cand, .synth").classList.toggle("sel", i.checked);
+  });
+}
+
+function updateCount(){
+  const n = ALL.filter(s => picks[s.slot]).length;
+  document.querySelector("#count b").textContent = n;
+}
+
+document.addEventListener("change", e => {
+  const t = e.target;
+  if (!(t instanceof HTMLInputElement) || t.type !== "radio" || !t.name.startsWith("pick-")) return;
+  const slot = t.name.slice(5);
+  picks[slot] = t.value;
+  writeStore(PICKS_KEY, JSON.stringify(picks));
+  mark(slot);
+  updateCount();
+  setStatus("");
+});
+
+function picksText(){
+  return ALL.map(s => {
+    const v = picks[s.slot];
+    if (!v) return s.slot + ": (not picked)";
+    if (v === "synth") return s.slot + ": synthesize";
+    const c = s.candidates.find(x => x.url === v);
+    return c ? s.slot + ": " + c.author + ", " + c.title + ", " + c.url : s.slot + ": (not picked)";
+  }).join("\n");
+}
+
+let statusTimer = 0;
+function setStatus(msg){
+  const el = document.getElementById("status");
+  el.textContent = msg;
+  clearTimeout(statusTimer);
+  if (msg) statusTimer = setTimeout(() => { el.textContent = ""; }, 4000);
+}
+
+async function copyText(text){
+  try {
+    if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(text); return true; }
+  } catch (e) { /* fall through to execCommand */ }
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = text; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.top = "0"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    const ok = document.execCommand("copy");
+    ta.remove();
+    return ok;
+  } catch (e) { return false; }
+}
+
+document.getElementById("copy").addEventListener("click", async () => {
+  const text = picksText();
+  const fb = document.getElementById("fallback");
+  const n = ALL.filter(s => picks[s.slot]).length;
+  if (await copyText(text)) {
+    fb.hidden = true;
+    setStatus("Copied " + TOTAL + " lines (" + n + " picked).");
+  } else {
+    fb.value = text; fb.hidden = false; fb.focus(); fb.select();
+    setStatus("Couldn't reach the clipboard. The text is selected below; copy it by hand.");
+  }
+});
+
+// Theme: follows the system unless the toggle has been used.
+const root = document.documentElement;
+const themeBtn = document.getElementById("theme");
+function effectiveTheme(){
+  const t = root.getAttribute("data-theme");
+  if (t === "light" || t === "dark") return t;
+  return window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+}
+function syncThemeBtn(){
+  const next = effectiveTheme() === "light" ? "dark" : "light";
+  themeBtn.textContent = next === "light" ? "Light" : "Dark";
+  themeBtn.setAttribute("aria-label", "Switch to " + next + " theme");
+}
+const savedTheme = readStore(THEME_KEY);
+if (savedTheme === "light" || savedTheme === "dark") root.setAttribute("data-theme", savedTheme);
+themeBtn.addEventListener("click", () => {
+  const next = effectiveTheme() === "light" ? "dark" : "light";
+  root.setAttribute("data-theme", next);
+  writeStore(THEME_KEY, next);
+  syncThemeBtn();
+});
+if (window.matchMedia) {
+  try { window.matchMedia("(prefers-color-scheme: light)").addEventListener("change", syncThemeBtn); } catch (e) { /* old browsers */ }
+}
+syncThemeBtn();
+
+render();
+</script>
+</body></html>

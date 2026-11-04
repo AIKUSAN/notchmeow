@@ -1,0 +1,459 @@
+/* The Projects screen (sub-project P): the island's "projects" view, its rows, its project pills, the peek over a left card and the Pin menu's words. Only new classes,
+   all prefixed pj-; no rule of a shipped view changes. The colours are the existing variables and the waiting amber (#F5A524, the pills' approval badge). */
+
+.pj-card {
+  padding: 0;
+}
+
+/* The list starts at island x 90 (the cat's head ends at 68) and ends 22 px under the last row. */
+.pj-screen {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  padding: 4px 12px 22px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pj-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pj-section {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-left: 10px;
+}
+
+.pj-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 20px;
+  min-width: 0;
+}
+
+.pj-body {
+  padding-left: 28px;
+}
+
+.pj-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pj-empty {
+  font: 500 12px var(--font);
+  color: var(--dim);
+  padding-top: 6px;
+}
+
+/* A session line is 14 px high, the same line the peek counts its capacity in (cells.ts peekLineCapacity). */
+.pj-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 14px;
+  min-width: 0;
+  font: 500 11px var(--font);
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.pj-screen .pj-row {
+  cursor: pointer;
+}
+
+.pj-screen .pj-row:hover {
+  color: var(--ink);
+}
+
+.pj-row .pj-label {
+  flex: 0 1 auto;
+  max-width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pj-row .pj-detail {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--dim-2);
+}
+
+.pj-row .pj-note {
+  color: #F5A524;
+}
+
+.pj-meta {
+  margin-left: auto;
+  flex: 0 0 auto;
+  font-size: 10px;
+  color: var(--dim-3);
+}
+
+.pj-more {
+  height: 14px;
+  font: 500 10px var(--font);
+  color: var(--dim-3);
+}
+
+.pj-sub {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 14px;
+  padding-left: 16px;
+  font: 500 10px var(--font);
+  color: var(--dim-2);
+  white-space: nowrap;
+}
+
+.pj-sub .pj-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pj-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 600 11px var(--font);
+  color: var(--ink-2);
+}
+
+.pj-waiting {
+  margin-left: auto;
+  flex: 0 0 auto;
+  font: 600 10px var(--font);
+  color: #F5A524;
+}
+
+.pj-dim {
+  opacity: 0.5;
+}
+
+/* The state dot: a pulse only while the island is open and a card waits (dotClass). */
+.pj-dot {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--dim-3);
+}
+
+.pj-working {
+  background: #60A5FA;
+}
+
+.pj-approval,
+.pj-question {
+  background: #F5A524;
+}
+
+.pj-finished {
+  background: #22C55E;
+}
+
+.pj-idle {
+  background: var(--dim-3);
+}
+
+.pj-pulse {
+  animation: pj-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pj-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 165, 36, 0.55);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(245, 165, 36, 0);
+  }
+}
+
+/* A project pill: the shipped pill's capsule, with the cat on the left, the folder and the state dot at the top right. */
+.pj-pill {
+  gap: 6px;
+  padding: 0 12px 0 4px;
+  max-width: 150px;
+  min-width: 0;
+}
+
+/* The folder over its detail, one line each (a same-name project's parent on a line of its own); the pill keeps its 28 px height (26 inside the border). */
+.pj-pill .pj-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font: 600 10px/12px var(--font);
+  color: var(--dim-3);
+}
+
+.pj-pill .pj-folder,
+.pj-pill .pj-detail {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pj-pill .pj-detail {
+  font: 500 9px/11px var(--font);
+  color: var(--dim-4);
+}
+
+.pj-pill > .pj-dot,
+.pj-pill > .pj-pulse {
+  position: absolute;
+  top: 3px;
+  right: 4px;
+}
+
+.pj-more-cell {
+  justify-content: center;
+  padding: 0 10px;
+}
+
+.pj-more-cell .pj-name {
+  flex: 0 0 auto;
+  text-align: center;
+}
+
+/* The peek: a card over the left card's own box, pointer events off, so the pill under it keeps the pointer. */
+.pj-peek {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 14px;
+  background: var(--card);
+  overflow: hidden;
+  /* Above the shipped .left-body (z-index 1, style.css), which holds the big card's text: the peek covers it. */
+  z-index: 2;
+}
+
+.pj-peek[hidden] {
+  display: none;
+}
+
+.pj-peek-name {
+  font: 600 12px var(--font);
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 16px;
+}
+
+.pj-peek-count {
+  font: 500 10px var(--font);
+  color: var(--dim-2);
+  white-space: nowrap;
+  line-height: 14px;
+}
+
+.pj-peek .pj-row {
+  cursor: default;
+}
+
+/* The Claude-only card's body in the left card: its text starts past the cat, as the shipped card's does (108 px). */
+.pj-big {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: 10px 36px 0 108px;
+  cursor: pointer;
+}
+
+.pj-big.pj-dim {
+  opacity: 0.5;
+}
+
+.pj-big-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.pj-big .pj-name {
+  font: 600 12px var(--font);
+  color: var(--ink);
+}
+
+.pj-count {
+  flex: 0 0 auto;
+  font: 400 11px var(--font);
+  color: var(--dim-2);
+  white-space: nowrap;
+}
+
+.pj-big-detail,
+.pj-big-step {
+  font: 500 11px var(--font);
+  color: var(--ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pj-big-step.pj-note {
+  color: #F5A524;
+}
+
+.pj-big-meta {
+  font: 400 10px var(--font);
+  color: var(--dim-3);
+  white-space: nowrap;
+}
+
+/* The count capsules and the chevron, in the Claude Code card's title row. */
+.pj-cap {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+  margin-left: 2px;
+}
+
+.pj-capsule {
+  display: inline-block;
+  min-width: 16px;
+  height: 14px;
+  padding: 0 5px;
+  border-radius: 999px;
+  text-align: center;
+  line-height: 14px;
+  font: 600 9px var(--font);
+  color: var(--dim-2);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.pj-capsule[hidden] {
+  display: none;
+}
+
+.pj-wait {
+  color: #F5A524;
+  background: rgba(245, 165, 36, 0.18);
+}
+
+.pj-chev svg {
+  transition: transform 0.2s ease;
+}
+
+.pj-chev.pj-up svg {
+  transform: rotate(180deg);
+}
+
+/* With the capsule in the title row, the name gives way first: cut short with an ellipsis, the label beside it is dropped (titlefit.ts). */
+.int-head.pj-fit b {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.int-head.pj-fit > span {
+  flex: 0 0 auto;
+}
+
+/* The section: the overview grows to two rows of cards and the panel opens under them. Shown only while the chevron is open (pj-open). */
+.view.overview.pj-open {
+  bottom: auto;
+  height: 108px;
+}
+
+.pj-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 116px;
+  height: 84px;
+  display: none;
+}
+
+.view.overview.pj-open .pj-panel {
+  display: block;
+}
+
+.pj-panel-count {
+  display: flex;
+  align-items: baseline;
+  height: 16px;
+  padding: 0 12px 0 108px;
+  font: 600 11px var(--font);
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.pj-panel-wait {
+  color: #F5A524;
+  /* The separator's leading space is kept: the count is a flex item, and a flex item drops its leading space otherwise. */
+  white-space: pre;
+}
+
+.pj-panel-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: 6px;
+  padding: 6px 12px 0 108px;
+}
+
+.pj-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.pj-tile-meta {
+  padding-left: 10px;
+  font: 500 10px var(--font);
+  color: var(--dim-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pj-tile.pj-sel .pj-pill {
+  outline: 1px solid rgba(245, 246, 248, 0.55);
+  outline-offset: 2px;
+}
+
+/* The waiting count at the compact island's right end: the shelf's badge in the waiting amber (style.css "#shelf-badge"), shown by the island while a session waits. */
+#projects-badge {
+  position: absolute;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border: 0;
+  border-radius: 8px;
+  background: #F5A524;
+  color: #0b0c0e;
+  font: 600 10px/16px var(--font);
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  cursor: default;
+  transition: opacity 0.25s ease-in-out;
+}

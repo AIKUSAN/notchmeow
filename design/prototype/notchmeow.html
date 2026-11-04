@@ -1,0 +1,980 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark"><link rel="icon" href="data:,">
+<title>NotchMeow prototype</title>
+<!--
+  NotchMeow, visual source of truth for Shrimpy and Momo.
+  Everything is drawn in Canvas 2D, no images. Everything that is not drawing lives in
+  cat-core.js, loaded below: presets, geometry and the face warp, the ear fit, collar geometry, the flat-fill rule, the state/mouth/emote tables,
+  both motion profiles, personality, the engine, the greeting and the file flight. The apps are
+  tested against fixtures generated from that file (docs/CAT-CONTRACT.md). This page keeps the
+  renderer (drawCat and helpers) and the controls. Timings, easings and smoothing match
+  upstream engine.ts: look 1-0.0025^dt, rest 1-0.0008^dt, colour 1-0.002^dt.
+-->
+<style>
+:root{--bg:#0f1012;--card:#17181b;--line:#2a2c31;--ink:#ececee;--dim:#9a9ca3;--acc:#5EEAD4}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:1200px;margin:0 auto;padding:24px 16px 56px}
+h1{font-size:22px;font-weight:600;margin:0 0 4px}
+h2{font-size:17px;font-weight:600;margin:0 0 2px}
+.sub{color:var(--dim);margin:0 0 18px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:20px}
+.tag{color:var(--dim);margin:0 0 12px;font-size:13px}
+.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px}
+.row .h{font-size:12px;color:var(--dim);width:72px;flex:none}
+button{font:inherit;font-size:12px;color:var(--ink);background:#202227;border:1px solid var(--line);border-radius:8px;padding:4px 10px;cursor:pointer}
+button:hover{border-color:#43464e}
+button.on{border-color:var(--acc);color:var(--acc)}
+.stage{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+.stage figure{margin:0;background:#000;border-radius:14px;position:relative;overflow:hidden}
+.stage canvas{display:block;width:100%;aspect-ratio:1.25;cursor:pointer;touch-action:manipulation}
+.stage figcaption{position:absolute;left:12px;top:10px;font-size:12px;color:#b9bbc1;pointer-events:none}
+.stage figcaption b{color:#fff;font-weight:600}
+.stage figure.drop{outline:2px dashed var(--acc);outline-offset:-6px}
+#cap{font-size:13px;color:#cfd0d4;margin-top:12px;min-height:66px}
+#cap b{color:#fff;font-weight:600}
+.desk{position:relative;height:236px;border-radius:12px;overflow:hidden;background:radial-gradient(120% 140% at 20% 0%,#34405a 0%,#1d2330 55%,#12151c 100%)}
+.desk canvas{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
+.scroll{overflow-x:auto;padding-bottom:4px}
+.traits{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px 20px;margin-top:14px}
+.trait{display:block;font-size:12px;color:var(--dim)}
+.trait b{color:var(--ink);font-weight:600;margin-right:6px}
+.trait input{display:block;width:100%;margin:6px 0 2px;accent-color:var(--acc)}
+.trait .ends{display:flex;justify-content:space-between;font-size:11px}
+#ladder{display:block}
+.note{font-size:12px;color:var(--dim);margin:10px 0 0}
+.stage.more{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:0}
+.stage.more canvas{aspect-ratio:1.1}
+@media (max-width:680px){.stage{grid-template-columns:1fr}.stage.more{grid-template-columns:repeat(2,minmax(0,1fr))}.stage.more canvas{aspect-ratio:.85}}
+.cmp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+.cmp figure{margin:0}
+.cmp canvas{display:block;width:100%;aspect-ratio:640/164;border-radius:12px;background:radial-gradient(120% 140% at 20% 0%,#34405a 0%,#1d2330 55%,#12151c 100%)}
+.cmp figcaption{font-size:12px;color:var(--dim);margin-top:6px}
+.cmp figcaption b{color:var(--ink);font-weight:600}
+.cmp .beats ol{margin:6px 0 0;padding-left:20px;color:var(--dim);font-size:13px;line-height:1.7}
+@media (max-width:680px){.cmp{grid-template-columns:1fr}}
+.dkdesk{position:relative;max-width:960px;aspect-ratio:960/540;border-radius:12px;overflow:hidden;background:#12151c;touch-action:none}
+.dkdesk canvas{position:absolute;left:0;top:0;width:100%;height:100%;display:block}
+.dkdesk canvas.top{pointer-events:none}
+.dkmenu{position:absolute;z-index:3;min-width:190px;background:#202227;border:1px solid var(--line);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.dkmenu button{display:block;width:100%;text-align:left;border:0;background:none;padding:6px 10px}
+.dkmenu button:hover{background:#2b2d33}
+.dkmenu .sc{color:var(--dim);float:right;margin-left:14px}
+.dkmenu .gap{height:1px;background:var(--line);margin:4px 2px}
+#dkReadout,#dkStored{white-space:pre-line;font-variant-numeric:tabular-nums}
+#wdPanel canvas{display:block;border-radius:10px}
+#wdPanel input[type=date]{font:inherit;font-size:12px;color:var(--ink);background:#202227;border:1px solid var(--line);border-radius:8px;padding:3px 8px;color-scheme:dark}
+#wdPanel h3{font-size:14px;font-weight:600;margin:18px 0 4px}
+</style></head><body><div class="wrap">
+<h1>NotchMeow prototype</h1>
+<p class="sub">Shrimpy and Momo, drawn in code from the approved reference board (plain finish). Both motion styles, every agent state and emote, the notch greeting, the file catch and the size ladder.</p>
+
+<section class="panel">
+<h2>Cats</h2>
+<p class="tag">Click a cat to poke it (three quick pokes makes it dizzy). Drop any file on a cat and it catches it in its mouth. They follow your cursor.</p>
+<div class="row" id="moRow"><span class="h">Motion</span></div>
+<div class="row" id="ovMomo"><span class="h">Momo</span></div>
+<div class="row" id="ovShrimpy"><span class="h">Shrimpy</span></div>
+<div class="row" id="opts"><span class="h">Finish</span></div>
+<div class="stage">
+<figure id="figMomo"><canvas id="cvMomo" aria-label="Momo, animated"></canvas><figcaption><b>Momo</b> · <span data-mo="momo"></span></figcaption></figure>
+<figure id="figShrimpy"><canvas id="cvShrimpy" aria-label="Shrimpy, animated"></canvas><figcaption><b>Shrimpy</b> · <span data-mo="shrimpy"></span></figcaption></figure>
+</div>
+<div class="row" id="stRow"><span class="h">State</span></div>
+<div class="row" id="emRow"><span class="h">Emote</span></div>
+<div id="cap"></div>
+</section>
+
+<section class="panel">
+<h2>Personality</h2>
+<p class="tag">Any coat with any personality. Pick a cat, then a preset, or drag the traits to mix your own. Balanced is the default for every cat and changes nothing.</p>
+<div class="row" id="pcRow"><span class="h">Cat</span></div>
+<div class="row" id="ppRow"><span class="h">Preset</span></div>
+<div class="traits" id="traits"></div>
+</section>
+
+<section class="panel">
+<h2>More cats</h2>
+<p class="tag">Shrimpy and Momo stay the defaults. These fourteen coats come from the same blueprint as optional picks in Settings; they follow the same states, emotes and motion style, catch files and get poked like the others.</p>
+<div class="stage more" id="more"></div>
+</section>
+
+<section class="panel">
+<h2>In the notch</h2>
+<p class="tag">Compact island with the cat at Ø20 and expanded, in the three Display modes: one cat for everything, a cat for each agent, or the two cats side by side. Who wears which coat is decided by CatCore.castOf; the subagent kittens by CatCore.kittenStep and kittenSlots. Click the island to expand or collapse it. Drop a file on it to feed the cat.</p>
+<div class="row" id="dpRow"><span class="h">Display</span></div>
+<div class="row" id="chRow"><span class="h">Main cat</span></div>
+<div class="row" id="pr1Row"><span class="h">Pair, cat 1</span></div>
+<div class="row" id="pr2Row"><span class="h">Pair, cat 2</span></div>
+<div class="row" id="acRow"><span class="h">Agents' cats</span></div>
+<div class="row" id="fcRow"><span class="h">Focus</span></div>
+<div class="row" id="nkRow"><span class="h">Island</span></div>
+<div class="desk" id="desk" style="margin-top:12px"><canvas id="cvDesk" aria-label="Notch island mock-up"></canvas></div>
+</section>
+
+<section class="panel" id="wdPanel">
+<h2>Wardrobe</h2>
+<p class="tag">Sixteen outfits for the big cats: the island's main cat (compact and open), both cats of Two cats mode, each agent's big cat and the desktop cat. Kittens and the small cats stay bare, whatever their size. One outfit at a time; Auto follows the date. Pick an outfit, a coat and, for Auto, a date. The cat below is the big cat; the coat picker only changes what you see here.</p>
+<div id="wdPick"></div>
+<div class="row" id="wdCoatRow"><span class="h">Coat</span></div>
+<div class="row"><span class="h">Date</span><input type="date" id="wdDate" aria-label="Date for Auto"><button id="wdNow">Today</button></div>
+<p class="note" id="wdReadout"></p>
+<div class="scroll" style="margin-top:12px"><canvas id="wdPreview" aria-label="The chosen outfit on the chosen coat at five sizes"></canvas></div>
+<h3>All 16 outfits on all 16 coats (Ø40)</h3>
+<div class="scroll"><canvas id="wdSheet" aria-label="Sixteen outfits on sixteen coats"></canvas></div>
+<h3>The compact notch: Ø20 in the 32 pt strip and Ø18 in the 24 pt strip, magnified 2.5 times</h3>
+<div class="scroll"><canvas id="wdCompact3" aria-label="Compact notch, magnified"></canvas></div>
+<h3>The compact notch at true size, all 16 coats (Ø20)</h3>
+<div class="scroll"><canvas id="wdCompact1" aria-label="Compact notch, true size"></canvas></div>
+<h3>The head turned (left, then right)</h3>
+<div class="scroll"><canvas id="wdTurn" aria-label="Outfits with the head turned"></canvas></div>
+<h3>The bell, the bandana and the scarf with each collar style</h3>
+<div class="scroll"><canvas id="wdCollars" aria-label="Neck outfits over the four collar styles"></canvas></div>
+</section>
+
+<section class="panel" id="dkPanel">
+<h2>Desktop</h2>
+<p class="tag">The big cat out of the notch, living on the desktop. Drag it out of the notch and drop it on the desktop, or use Cat on the desktop. It flies into the notch for an approval or a question and out again once that is answered; its spot in the notch stays empty while it is out. Click opens the island, double-click sends it home, drag moves it, right-click opens its menu. The mock screen is 960 by 540 points, with a menu bar of 32 and a Dock of 64. Every rule is CatCore's: desktopStep, desktopFlightAt, desktopFps, clampSpot, spotFor, rememberSpot and desktopKittenSlots, pinned by desktop-cases.json.</p>
+<div class="row" id="dkTripRow"><span class="h">Trip</span></div>
+<div class="row" id="dkSizeRow"><span class="h">Size</span></div>
+<div class="row" id="dkStateRow"><span class="h">State</span></div>
+<div class="row" id="dkViewRow"><span class="h">Show</span></div>
+<div class="dkdesk" id="dkDesk" style="margin-top:12px"><canvas id="cvDkBase" aria-label="Mock desktop with the notch"></canvas><canvas class="top" id="cvDkCat" aria-label="The desktop cat"></canvas></div>
+<p class="note" id="dkReadout"></p>
+<p class="note" id="dkStored"></p>
+<p class="tag" style="margin-top:14px"><b>The alert flight.</b> The top row: an approval arrives, the cat gives the surprised emote and flies into its notch spot while the island opens (0.6 s). The bottom row: it is answered and the cat flies back out to its spot. The dotted line is desktopFlightAt's arc. Frames at the cat's size picked above.</p>
+<div class="scroll"><canvas id="dkStrip" aria-label="The alert flight, frame by frame"></canvas></div>
+<p class="tag" style="margin-top:14px"><b>The three sizes.</b> Small, Medium and Large with the state badge (upper right) and the agent's kittens (up to three, then +N) from desktopKittenSlots, in units of the head width. Top: kittens on the right. Bottom: kittens on the left, which is where a cat in the right half of its screen keeps them, with the body outlined: the head circle, the badge and the kitten slots, the only places that take the mouse.</p>
+<div class="scroll"><canvas id="dkSizes" aria-label="The three sizes with badge and kittens"></canvas></div>
+</section>
+
+<section class="panel">
+<h2>Greeting</h2>
+<p class="tag">The launch greeting, 6.5 s: a cat version of upstream's Greeting v2. The cat falls in with a landing squash, bounces, slides aside, pops up for a quick paw wave, then slides back and settles with the badge and tint. Once the island has folded, the session cats pop in as a row of three, hold a moment and glide into the 2×2 grid the compact island shows, where a fourth cat pops in. The timeline is defined in cat-core.js and pinned by sequence-cases.json, which the apps are tested against.</p>
+<div class="row" id="gcRow"><span class="h">Cat</span></div>
+<div class="cmp">
+<figure><canvas id="cvG" aria-label="Launch greeting"></canvas><figcaption><b>Greeting</b> · 6.5 s</figcaption></figure>
+<figure class="beats"><ol>
+<li>Falls in and lands with a squash</li>
+<li>A small bounce</li>
+<li>Slides aside</li>
+<li>Pops up and waves a paw</li>
+<li>Slides back and settles</li>
+<li>The session cats pop in as a row of three</li>
+<li>The row glides into the 2×2 grid, and a fourth cat joins</li>
+</ol></figure>
+</div>
+</section>
+
+<section class="panel">
+<h2>Size ladder</h2>
+<p class="tag">Below Ø28 the cats switch to the compact drawing: small coloured eyes (an iris in the coat's colours, a slit pupil, a catchlight and a thin rim; the expression shapes stay ink), no stripes or whiskers, flat fills instead of gradients and smaller ears (0.8 times at Ø20 and below, easing back to full size at Ø28). Kittens keep their parent's coat with a rounder head, bigger eyes and ears, and a shorter muzzle.</p>
+<div class="scroll"><canvas id="ladder" aria-label="Both cats at every size"></canvas></div>
+</section>
+
+<section class="panel" id="eyePanel">
+<h2>Small eyes</h2>
+<p class="tag">Every coat and a kitten of it, at the compact sizes, with the ink pills they replace (left of each pair) beside the small coloured eyes (right). The first sheet is magnified 2 times, as the compact drawing at twice the size; the second is true size. Geometry: CatCore.smallEye, pinned by small-eye-cases.json.</p>
+<div class="scroll"><canvas id="eyes2" aria-label="Small eyes, magnified 2 times"></canvas></div>
+<div class="scroll" style="margin-top:12px"><canvas id="eyes1" aria-label="Small eyes, true size"></canvas></div>
+</section>
+
+<section class="panel" id="collarPanel">
+<h2>Collar</h2>
+<p class="tag">The colour that used to fill the upstream figure becomes a thin collar, in one of three styles, or none (the default). Small cats wear their agent's collar; the big cat wears the collar of the agent driving its state, and none when idle. The coat is never recoloured. Drawn in the front pass, from Ø12 up (the Ø11 session cats on this page wear it too). Pick a style and every cat on this page wears it: the stage cats and the notch cat while they are not idle, the session cats, and the size ladder always. The colours are the real ones from the pill catalogue.</p>
+<div class="row" id="colRow"><span class="h">Style</span></div>
+<div class="row" id="agRow"><span class="h">Agent</span></div>
+<p class="note" id="collarNote"></p>
+</section>
+</div>
+<script src="cat-core.js"></script>
+<script>
+'use strict';
+// ── cat-core.js: everything that is not drawing ──────────────────────────────
+const {TAU,EZ,lerp,clamp,seg,hex,rng,COL,STATES,PRESETS,MORE,kittenOf,MOMO_WHITE,CatEngine,PROFILES,PERSONAS,TRAITS,COMPACT,GT,STREAKS,GREET_LEN,GREET_END,FLIGHT_MS}=CatCore;
+const ms=()=>performance.now(),nowS=()=>performance.now()/1000;
+// ── Wardrobe, the part drawCat needs: the choice, the palette and the painter. The outfits are CatCore.outfitGeometry; this only paints their shapes ─────
+// The theme's `outfits` group, as hex; a test keeps this copy equal to shared/theme.json.
+/* @@OUTFIT-PALETTE */
+const OW_PAL={"edgeLight":"#F4F1EA","edgeDark":"#2B2430","partyA":"#F25C7A","partyB":"#FFD166","partyStar":"#FFF3B0","santaRed":"#D93A3A","fur":"#F7F4EE","witchHat":"#4B2E83","witchBand":"#2A1A4A","gold":"#F2B632","goldDark":"#B97F12","bunnyOuter":"#F4EFEA","bunnyInner":"#F5A9B8","lens":"#17171F","frame":"#0F0F14","glint":"#DCE6F5","beanieBody":"#3F7CAC","beanieCuff":"#2E5C82","bowRed":"#E85D75","bowKnot":"#C73E5C","scarfA":"#E4572E","scarfB":"#F3D6A0","rim":"#C79A3B","glassTint":"#A8D8F0","gemA":"#E8456B","gemB":"#3BA0F5","gemC":"#3DBE8A","silver":"#B8BEC8","bandanaRed":"#D63B3B","white":"#FAF7F2","fishBody":"#7FB6D9","fishFin":"#4F8DB5","petal":"#F6A8C9","shrimp":"#F26B4E","shrimpDark":"#C94A34","blossom":"#F9B5C2","blossomDeep":"#E8869B","leaf":"#5DAA68"};
+/* @@END-OUTFIT-PALETTE */
+const WD={choice:'auto',date:null,coat:'momo'};
+const wdToday=()=>{const d=new Date();return[d.getFullYear(),d.getMonth()+1,d.getDate()]};
+const wdDay=()=>WD.date||wdToday();
+const wdResolved=()=>CatCore.resolveOutfit(WD.choice,...wdDay());
+/** The outfit every cat in a big-cat role wears now, or null for none. */
+const wdBig=()=>{const r=wdResolved();return r==='none'?null:r};
+const owCol=(role,edge)=>OW_PAL[role==='edge'?(edge==='light'?'edgeLight':'edgeDark'):role];
+/** Paints one slot of an outfit into a head-local context (the one drawCat has translated, tilted and squashed). G is {shapes, edge}. */
+function owPaint(ctx,G,slot){if(!G)return;ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
+ for(const sh of G.shapes){if(sh.slot!==slot)continue;ctx.globalAlpha=sh.a;ctx.beginPath();
+  if(sh.k==='ellipse')ctx.ellipse(sh.x,sh.y,Math.max(sh.rx,.01),Math.max(sh.ry,.01),sh.rot,0,TAU);
+  else{sh.pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));if(sh.k==='poly')ctx.closePath()}
+  if(sh.fill){ctx.fillStyle=owCol(sh.fill,G.edge);ctx.fill()}
+  if(sh.stroke&&sh.sw>0){ctx.strokeStyle=owCol(sh.stroke,G.edge);ctx.lineWidth=sh.sw;ctx.stroke()}}
+ ctx.restore()}
+// Settings the engines read. The controls below change them.
+const CFG=CatCore.cfg,OVERRIDE=CFG.override,PERS=CFG.pers;
+CFG.zoomAfter=12000; // the apps use 5 minutes of work; shortened here so you can watch it
+Object.assign(OVERRIDE,{momo:null,shrimpy:null});
+
+function rr(c,x,y,w,h,r){r=Math.max(0,Math.min(r,w/2,h/2));c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
+const rgbOf=c=>`rgb(${c.map(Math.round)})`;
+function heartP(c,s){c.beginPath();c.moveTo(0,.38*s);c.bezierCurveTo(-1.05*s,-.15*s,-.5*s,-.95*s,0,-.38*s);c.bezierCurveTo(.5*s,-.95*s,1.05*s,-.15*s,0,.38*s);c.fill()}
+function starP(c,o,i){c.beginPath();for(let k=0;k<10;k++){const r=k%2?i:o,a=-Math.PI/2+k*Math.PI/5;c.lineTo(Math.cos(a)*r,Math.sin(a)*r)}c.closePath();c.fill()}
+
+// ── Renderer ─────────────────────────────────────────────────────────────────
+/** Superellipse as a Path2D; the points come from CatCore.supPoints. */
+function sup(rx,ry,n,dy,spike,count,steps=200,bend=null){const path=new Path2D();
+ CatCore.supPoints(rx,ry,n,dy,spike,count,steps,bend).forEach(([x,y],i)=>i?path.lineTo(x,y):path.moveTo(x,y));
+ path.closePath();return path}
+
+function wEll(W,x,y,a,b,n=20){const P=new Path2D();for(let i=0;i<=n;i++){const t=i/n*TAU,[X,Y]=W(x+a*Math.cos(t),y+b*Math.sin(t));i?P.lineTo(X,Y):P.moveTo(X,Y)}P.closePath();return P}
+function wBlob(W,x,y,a,b,rot,seed,n=32){const P=new Path2D(),c=Math.cos(rot),s=Math.sin(rot);for(let i=0;i<=n;i++){const t=i/n*TAU,k=1+.12*Math.sin(3*t+seed)+.06*Math.sin(5*t+2*seed),lx=a*Math.cos(t)*k,ly=b*Math.sin(t)*k,[X,Y]=W(x+lx*c-ly*s,y+lx*s+ly*c);i?P.lineTo(X,Y):P.moveTo(X,Y)}P.closePath();return P}
+function wStroke(ctx,W,col,w,pts){const [x0,y0,cx,cy,x1,y1]=pts;ctx.strokeStyle=col;ctx.lineWidth=w;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();
+ for(let i=0;i<=12;i++){const t=i/12,m=1-t,[X,Y]=W(m*m*x0+2*m*t*cx+t*t*x1,m*m*y0+2*m*t*cy+t*t*y1);i?ctx.lineTo(X,Y):ctx.moveTo(X,Y)}ctx.stroke()}
+function momoWhite(W){const P=new Path2D();MOMO_WHITE.forEach(([x,y],i)=>{const [X,Y]=W(x,y);i?P.lineTo(X,Y):P.moveTo(X,Y)});P.closePath();return P}
+
+// Optional fur lines: seeded strands, built once per preset (same seeds as the board).
+const HIT=document.createElement('canvas').getContext('2d'),FURC=new WeakMap(),FURDEF={n:420,l0:.04,l1:.05,w:.01,dark:'rgba(0,0,0,.22)',light:'rgba(255,255,255,.2)'};
+function furStrands(p){if(FURC.has(p))return FURC.get(p);const o=p.furOpts||FURDEF,rx=p.rx,ry=p.ry,head=[],ruff=[];
+ const white=p.coat==='tuxedo'?momoWhite((x,y)=>[x*100,y*100]):null,eyes=[-1,1].map(sd=>[Math.sin(sd*p.eye.th)*Math.cos(p.eye.ph)*rx,-Math.sin(p.eye.ph)*ry]),nz=[0,-Math.sin(p.nosePh)*ry];
+ let rand=rng(13);
+ for(let i=0;i<o.n;i++){const x=(rand()*2-1)*rx,y=(rand()*2-1)*ry;if((x/rx)**2+(y/ry)**2>1)continue;
+  if(eyes.some(q=>Math.hypot(x-q[0],(y-q[1])*1.25)<.3)||Math.hypot(x-nz[0],y-nz[1]-.1)<.32)continue;
+  let dx,dy;if(y<-.32){dx=x*.35;dy=-1}else{dx=x;dy=y+.5}
+  const m=Math.hypot(dx,dy)||1,L=o.l0+rand()*o.l1,onW=white&&HIT.isPointInPath(white,x*100,y*100);
+  head.push({x,y,x2:x+dx/m*L,y2:y+dy/m*L,c:rand()<.55?(onW?o.wDark:o.dark):(onW?o.wLight:o.light)})}
+ if(p.ruff){const r=p.ruff,e=2/2.4;rand=rng(7);
+  for(let i=0;i<300;i++){const a=rand()*TAU,c=Math.cos(a),s=Math.sin(a),ex=Math.sign(c)*Math.pow(Math.abs(c),e)*r.rx,ey=Math.sign(s)*Math.pow(Math.abs(s),e)*r.ry,f=.7+rand()*.32,x=ex*f,y=ey*f+r.dy;
+   let dx=ex,dy=ey+.35*Math.max(0,s);const m=Math.hypot(dx,dy)||1;dx/=m;dy/=m;const j=(rand()-.5)*.5,ux=dx*Math.cos(j)-dy*Math.sin(j),uy=dx*Math.sin(j)+dy*Math.cos(j),L=.05+rand()*.08;
+   ruff.push({x,y,ux,uy,L,c:rand()<.5?'rgba(214,192,156,.45)':'rgba(84,66,50,.38)'})}}
+ const out={head,ruff};FURC.set(p,out);return out}
+
+function taper(ctx,x0,y0,cx,cy,x1,y1,w0,col,a0){const N=16;ctx.strokeStyle=col;ctx.lineCap='round';let px=x0,py=y0;
+ for(let i=1;i<=N;i++){const s=i/N,m=1-s,x=m*m*x0+2*m*s*cx+s*s*x1,y=m*m*y0+2*m*s*cy+s*s*y1;ctx.globalAlpha=a0*(1-.7*s);ctx.lineWidth=Math.max(.35,w0*(1-.88*s));ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(x,y);ctx.stroke();px=x;py=y}ctx.globalAlpha=1}
+
+/** ek is the ears' scale (the compact ear scale, times the ear fit's factor when there is one; 1 at full detail); flat is CatCore.flatFillColors(p) below Ø28, else null. */
+function drawEar(ctx,p,s,sd,R,rx,ry,full,yf,pf,front,ek=1,flat=null){const E=p.ear,{bx,by,rot,h,bw,tip,cx}=CatCore.earGeom(p,s,sd,R,yf,pf,ek);
+ ctx.save();ctx.translate(bx,by);ctx.rotate(rot);
+ const path=k=>{ctx.beginPath();ctx.moveTo(-bw*k,.25*R);ctx.quadraticCurveTo(-bw*k*cx,-h*k*.4,-tip*.9,-h*k+tip*1.3);ctx.quadraticCurveTo(0,-h*k-tip*.35,tip*.9,-h*k+tip*1.3);ctx.quadraticCurveTo(bw*k*cx,-h*k*.4,bw*k,.25*R);ctx.closePath()};
+ let g;if(flat)g=rgbOf(flat.ears[sd<0?0:1]);else{const ec=p.earCols&&p.earCols[sd<0?0:1];g=ctx.createLinearGradient(0,-h,0,.25*R);g.addColorStop(0,ec||p.top);g.addColorStop(1,ec||p.bot)}
+ // Folded ear (front pass, drawn over the head): the tip folds forward and down over the inner ear, with a soft crease.
+ if(front){const fw=bw*.62,yc=-h+tip*.8,ty=-h*.05,flap=()=>{ctx.beginPath();ctx.moveTo(-fw,yc);ctx.quadraticCurveTo(0,yc-fw*.75,fw,yc);ctx.quadraticCurveTo(fw*.7,(yc+ty)/2,0,ty);ctx.quadraticCurveTo(-fw*.7,(yc+ty)/2,-fw,yc);ctx.closePath()};
+  ctx.save();ctx.translate(0,.025*R);ctx.fillStyle='rgba(0,0,0,.2)';flap();ctx.fill();ctx.restore();ctx.fillStyle=g;flap();ctx.fill();
+  if(full){ctx.strokeStyle='rgba(0,0,0,.2)';ctx.lineWidth=.016*R;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-fw*.8,yc+.02*R);ctx.quadraticCurveTo(0,yc-fw*.5,fw*.8,yc+.02*R);ctx.stroke()}
+  ctx.restore();return}
+ ctx.fillStyle=g;path(1);ctx.fill();
+ if(p.rimLight){ctx.strokeStyle='rgba(255,255,255,.22)';ctx.lineWidth=Math.max(.8,.013*R);path(1);ctx.stroke()}
+ ctx.fillStyle=p.inner;ctx.globalAlpha=.9;path(.6);ctx.fill();ctx.globalAlpha=1;
+ if(E.tuft&&full){ctx.strokeStyle=p.inner;ctx.globalAlpha=.7;ctx.lineCap='round';ctx.lineWidth=.022*R;for(const k of [-1,0,1]){ctx.beginPath();ctx.moveTo(k*bw*.3,.06*R);ctx.quadraticCurveTo(k*bw*.5,-h*.25,k*bw*.42+(k>=0?1:-1)*.02*R,-h*.5);ctx.stroke()}
+  ctx.globalAlpha=1;ctx.strokeStyle=p.top;ctx.lineWidth=.025*R;ctx.beginPath();ctx.moveTo(0,-h+tip*.2);ctx.lineTo(sd*.015*R,-h-.05*R);ctx.stroke()}
+ ctx.restore()}
+
+function almondPath(ctx,p,sd,R,open){const E=p.eye,w=E.w*R,h=E.h*R*Math.max(open,.06),H=E.h*R,k=E.round?2.2:1.85,iy=(E.round?.04:.12)*H,oy=(E.round?-.04:-.18)*H,ix=-sd*w,ox=sd*w;
+ ctx.beginPath();ctx.moveTo(ix,iy);ctx.quadraticCurveTo(0,-h*k,ox,oy);ctx.quadraticCurveTo(0,H*(.55+.45*Math.max(open,.06))*k,ix,iy);ctx.closePath()}
+/** The realistic eye: iris gradient, dilating pupil, Momo's yellow lid ring, catchlights, liner. */
+function almondEye(ctx,e,p,sd,R,pupil,open){const E=p.eye,w=E.w*R,h=E.h*R,a0=ctx.globalAlpha;
+ if(open<.22){ctx.strokeStyle=p.ink;ctx.globalAlpha=a0*.9;ctx.lineWidth=Math.max(1,.045*R);ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-w,0);ctx.quadraticCurveTo(0,.4*h,w,0);ctx.stroke();ctx.globalAlpha=a0;return}
+ ctx.save();almondPath(ctx,p,sd,R,open);ctx.clip();
+ const g=ctx.createRadialGradient(0,0,0,0,0,w*1.1),ir=(sd>0&&p.irisR)||p.iris;g.addColorStop(0,ir[0]);g.addColorStop(1,ir[1]);ctx.fillStyle=g;ctx.fillRect(-w*1.3,-h*3,w*2.6,h*6);
+ const [px,py]=CatCore.pupilOffset(e.s.yaw,e.s.pitch,w,h);
+ ctx.fillStyle='#0E0B09';ctx.beginPath();ctx.ellipse(px,py,w*(p.pupil0+.5*pupil),h*1.1,0,0,TAU);ctx.fill();
+ if(p.lidTint){ctx.save();ctx.strokeStyle=p.lidTint;ctx.globalAlpha=a0*.85;ctx.lineWidth=.04*R;ctx.scale(.92,.88);almondPath(ctx,p,sd,R,open);ctx.stroke();ctx.restore()}
+ ctx.fillStyle='rgba(255,255,255,.92)';ctx.beginPath();ctx.arc(-.32*w,-.32*h,.2*w,0,TAU);ctx.fill();ctx.beginPath();ctx.arc(.22*w,.3*h,.09*w,0,TAU);ctx.fill();
+ ctx.restore();ctx.strokeStyle=p.liner;ctx.lineWidth=.05*R;almondPath(ctx,p,sd,R,open);ctx.stroke()}
+/** Expression eyes (upstream shapes), in the cat's ink colour. */
+function inkEye(ctx,shape,sd,w,h,open,T,col){ctx.fillStyle=col;ctx.strokeStyle=col;ctx.lineCap='round';
+ const pill=(W,H)=>{const hh=Math.max(H*open,.3*W);rr(ctx,-W/2,-hh/2,W,hh,Math.min(W,hh)/2);ctx.fill()};
+ const hap=()=>{ctx.lineWidth=.5*w;ctx.beginPath();ctx.arc(0,.18*h,.82*w,1.12*Math.PI,1.88*Math.PI);ctx.stroke()};
+ switch(shape){case 'pill':pill(w,h);break;case 'wide':pill(w*1.16,h*1.12);break;
+  case 'dot':ctx.beginPath();ctx.arc(0,0,.45*w,0,TAU);ctx.fill();break;
+  case 'line':ctx.rotate(-sd*.2);rr(ctx,-.78*w,-.21*w,1.56*w,.42*w,.21*w);ctx.fill();break;
+  case 'flat':rr(ctx,-.72*w,-.2*w,1.44*w,.4*w,.2*w);ctx.fill();break;
+  case 'happy':hap();break;
+  case 'closed':ctx.lineWidth=.36*w;ctx.beginPath();ctx.arc(0,-.08*h,.78*w,.15*Math.PI,.85*Math.PI);ctx.stroke();break;
+  case 'spiral':{ctx.lineWidth=.22*w;ctx.rotate(T*9*sd);ctx.beginPath();for(let a=0;a<4.4*Math.PI;a+=.2){const r=.06*w+.058*w*a,x=Math.cos(a)*r,y=Math.sin(a)*r;a?ctx.lineTo(x,y):ctx.moveTo(x,y)}ctx.stroke();break}
+  case 'heart':ctx.fillStyle='#FF4D6D';heartP(ctx,1.2*w);break;
+  case 'star':ctx.fillStyle='#F7B32B';ctx.rotate(T*1.5*sd);starP(ctx,1.05*w,.46*w);break;
+  case 'tired':rr(ctx,-w/2,-.02*h,w,.38*h,Math.min(w,.38*h)/2);ctx.fill();rr(ctx,-.62*w,-.12*h-.11*w,1.24*w,.22*w,.11*w);ctx.fill();break;
+  case 'wink':sd<0?pill(w,h):hap();break}}
+/** The small coloured eye of the compact detail level. CatCore.smallEye gives the geometry (px of the eye's own frame); the colours are the coat's: an iris gradient, the pupil colour, a catchlight and a rim in the liner colour. The bright black coats (Midnight, Oreo, Mocha) fill the lighter iris colour flat, with no rim. */
+function smallEyeDraw(ctx,p,sd,G){const a0=ctx.globalAlpha;
+ if(G.closed){const l=G.line;ctx.strokeStyle=p.ink;ctx.globalAlpha=a0*.9;ctx.lineWidth=l.width;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(l.x0,l.y0);ctx.quadraticCurveTo(l.cx,l.cy,l.x1,l.y1);ctx.stroke();ctx.globalAlpha=a0;return}
+ const I=G.iris,P=G.pupil,Lt=G.light,ir=(sd>0&&p.irisR)||p.iris;
+ if(G.flat)ctx.fillStyle=lum(ir[0])>=lum(ir[1])?ir[0]:ir[1];
+ else{const g=ctx.createRadialGradient(0,0,0,0,0,I.r);g.addColorStop(0,ir[0]);g.addColorStop(1,ir[1]);ctx.fillStyle=g}
+ ctx.beginPath();ctx.ellipse(0,0,I.rx,I.ry,0,0,TAU);ctx.fill();
+ ctx.fillStyle='#0E0B09';ctx.beginPath();ctx.ellipse(P.x,P.y,P.rx,P.ry,0,0,TAU);ctx.fill();
+ ctx.fillStyle='rgba(255,255,255,.92)';ctx.beginPath();ctx.arc(Lt.x,Lt.y,Lt.r,0,TAU);ctx.fill();
+ if(!G.flat){ctx.strokeStyle=p.liner;ctx.lineWidth=G.rim;ctx.beginPath();ctx.ellipse(0,0,I.rx,I.ry,0,0,TAU);ctx.stroke()}}
+/** Relative luminance of a #RRGGBB colour, to pick the lighter iris colour of a bright coat. */
+function lum(h){const n=parseInt(h.slice(1),16);return .2126*(n>>16&255)+.7152*(n>>8&255)+.0722*(n&255)}
+const REAL=new Set(['pill','wide','dot','tired']);
+
+function drawPaw(ctx,p,R,q){const k=q.k,w=.2*R*k,h=.18*R*k;if(w<.6)return;ctx.save();ctx.translate(q.x,q.y);ctx.rotate(q.rot||0);
+ const toes=[-1,0,1].map(i=>[i*w*.55,-h*.62]);ctx.fillStyle=p.paw;ctx.strokeStyle='rgba(0,0,0,.28)';ctx.lineWidth=Math.max(.6,.012*R);
+ ctx.beginPath();for(const [x,y] of toes){ctx.moveTo(x+w*.36,y);ctx.ellipse(x,y,w*.36,h*.38,0,0,TAU)}ctx.moveTo(w,0);ctx.ellipse(0,0,w,h*.85,0,0,TAU);ctx.stroke();ctx.fill();
+ if(q.beans){ctx.fillStyle=p.bean;ctx.beginPath();ctx.ellipse(0,h*.12,w*.42,h*.32,0,0,TAU);ctx.fill();for(const [x,y] of toes){ctx.beginPath();ctx.ellipse(x,y+h*.02,w*.16,h*.17,0,0,TAU);ctx.fill()}}
+ else{ctx.strokeStyle='rgba(0,0,0,.25)';for(const s of [-1,1]){ctx.beginPath();ctx.moveTo(s*w*.28,-h*.85);ctx.lineTo(s*w*.24,-h*.35);ctx.stroke()}}
+ ctx.restore()}
+
+function drawBadge(ctx,kind,col,x,y,R,k,small,T){ctx.save();ctx.translate(x,y);ctx.scale(k,k);
+ if(kind==='dots'&&small){const r=R*.22*(1+.25*Math.sin(((T*2.4)%1)*TAU));ctx.fillStyle='#000';ctx.beginPath();ctx.arc(0,0,R*.26,0,TAU);ctx.fill();ctx.fillStyle=col;ctx.beginPath();ctx.arc(0,0,r,0,TAU);ctx.fill()}
+ else if(kind==='dots'){ctx.fillStyle=col;rr(ctx,-.36*R,-.18*R,.72*R,.36*R,.18*R);ctx.fill();ctx.fillStyle='#fff';for(let i=0;i<3;i++){const ph=((2.4*T-.22*i)%1+1)%1,r=.055*R*(1+.4*Math.max(0,Math.sin(TAU*ph)));ctx.beginPath();ctx.arc((i-1)*.18*R,0,r,0,TAU);ctx.fill()}}
+ else if(kind==='bang'||kind==='question'){ctx.fillStyle='#000';ctx.beginPath();ctx.arc(0,0,.3*R,0,TAU);ctx.fill();ctx.fillStyle=col;ctx.beginPath();ctx.arc(0,0,.23*R,0,TAU);ctx.fill();
+  if(!small){ctx.fillStyle='#fff';ctx.font=`900 ${.32*R}px system-ui,sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(kind==='bang'?'!':'?',0,.02*R)}}
+ else{ctx.fillStyle='#000';ctx.beginPath();ctx.arc(0,0,.2*R,0,TAU);ctx.fill();ctx.fillStyle=col;ctx.beginPath();ctx.arc(0,0,.135*R,0,TAU);ctx.fill()}
+ ctx.restore()}
+
+function drawParticles(ctx,e,cx,cy,R){for(const p of e.parts){if(p.age<0)continue;const k=p.age/p.life,al=k<.2?k/.2:1-(k-.2)/.8,x=cx+(p.x+p.vx*p.age)*R*1.3,y=cy+(p.y+p.vy*p.age)*R*1.3,sz=R*p.size*(1+.4*k);
+ ctx.save();ctx.globalAlpha=Math.max(0,al);ctx.translate(x,y);
+ switch(p.k){case 'heart':ctx.rotate(Math.sin(6*p.age)*.3);ctx.fillStyle='#FF4D6D';heartP(ctx,sz*1.6);break;
+  case 'star':ctx.rotate(p.rot+2*p.age);ctx.fillStyle='#F7B32B';starP(ctx,sz,sz*.45);break;
+  case 'spark':ctx.rotate(p.rot);ctx.fillStyle='#fff';starP(ctx,sz*.8,sz*.18);break;
+  case 'sweat':ctx.fillStyle='#7CC7FF';ctx.beginPath();ctx.moveTo(0,-sz);ctx.quadraticCurveTo(sz*.8,sz*.3,0,sz*.8);ctx.quadraticCurveTo(-sz*.8,sz*.3,0,-sz);ctx.fill();break;
+  case 'dust':ctx.fillStyle='rgba(225,225,232,.55)';ctx.beginPath();ctx.arc(0,0,sz*(.6+k*.9),0,TAU);ctx.fill();break;
+  case 'hair':ctx.rotate(p.rot+p.age*1.5);ctx.strokeStyle=e.p.hairLight;ctx.lineWidth=Math.max(.6,R*.014);ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-sz*.6,0);ctx.quadraticCurveTo(0,-sz*.5,sz*.6,0);ctx.stroke();break;
+  case 'z':ctx.fillStyle='rgb(209,219,235)';ctx.font=`700 ${1.9*sz}px system-ui,sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('z',0,0);break}ctx.restore()}}
+
+/**
+ * Mouth: a closed ω that can smile, frown, skew or wobble, with an optional tongue blep,
+ * or an open mouth that runs from a wide D (meow, hiss, yawn) to a round 'o'.
+ */
+function drawMouth(ctx,p,s,R,nx,my,nf,full,mo){const sm=clamp(s.smile,-1,1),sk=clamp(s.mskew,-1,1),tg=clamp(s.tongue,0,1),rd=clamp(s.mround,0,1),wv=clamp(s.wavy,0,1),y0=my+.05*R,cxm=nx+sk*.035*R*nf,lw=.03*R;
+ ctx.lineCap='round';ctx.lineJoin='round';
+ if(mo>.04){const m=Math.min(mo,1.3),w=.13*R*(.6+.4*m)*(1-.45*rd)*(1+.25*Math.max(0,sm))*nf,h=.21*R*m*(1-.3*rd)+.012*R,top=y0-.012*R;
+  // The opening hangs under the ω upper lip; as it rounds into an 'o' the lip lifts into the top of the ring.
+  const L=.055*R*(1-rd),ty=top-h*.35*rd,cty=top-h*.3*rd+L,bot=top+h*(1.15+.15*rd)+L*.5;
+  const lip=()=>{ctx.moveTo(cxm-w,top);ctx.quadraticCurveTo(cxm-w*.5,cty,cxm,ty);ctx.quadraticCurveTo(cxm+w*.5,cty,cxm+w,top)};
+  const path=()=>{ctx.beginPath();lip();ctx.bezierCurveTo(cxm+w,bot,cxm-w,bot,cxm-w,top);ctx.closePath()};
+  ctx.fillStyle='#3A1218';path();ctx.fill();
+  ctx.save();path();ctx.clip();ctx.fillStyle='#E8798C';ctx.beginPath();ctx.ellipse(cxm,top+h*.95,w*.62,h*.34,0,0,TAU);ctx.fill();ctx.restore();
+  if(m>.45&&rd<.5&&full){ctx.fillStyle='#FBF7F0';for(const sd of [-1,1]){const fx=cxm+sd*w*.55,fy=top+L*.55;ctx.beginPath();ctx.moveTo(fx-.022*R,fy);ctx.lineTo(fx+.022*R,fy);ctx.lineTo(fx,fy+.055*R);ctx.closePath();ctx.fill()}}
+  if(tg>.05){const tl=(.03+.07*tg)*R,tw=Math.max(w*.5,.05*R*nf),ty=top+h*.9;ctx.fillStyle='#E8798C';ctx.beginPath();ctx.moveTo(cxm-tw,top+h*.7);ctx.lineTo(cxm-tw,ty+tl*.4);ctx.quadraticCurveTo(cxm-tw,ty+tl*1.2,cxm,ty+tl*1.2);ctx.quadraticCurveTo(cxm+tw,ty+tl*1.2,cxm+tw,ty+tl*.4);ctx.lineTo(cxm+tw,top+h*.7);ctx.closePath();ctx.fill();
+   if(full){ctx.strokeStyle='rgba(150,50,70,.6)';ctx.lineWidth=lw*.6;ctx.beginPath();ctx.moveTo(cxm,top+h*.95);ctx.lineTo(cxm,ty+tl*.9);ctx.stroke()}}
+  if(full){ctx.strokeStyle=p.mouthLine;ctx.lineWidth=lw;ctx.beginPath();ctx.moveTo(nx,my);ctx.lineTo(cxm,ty);ctx.stroke();const a0=ctx.globalAlpha;ctx.globalAlpha=a0*(1-rd);ctx.beginPath();lip();ctx.stroke();ctx.globalAlpha=a0}
+  return}
+ if(!full)return;
+ if(tg>.03){const th=(.025+.045*tg)*R;ctx.fillStyle='#E8798C';ctx.beginPath();ctx.ellipse(cxm,y0+.035*R+th*.5,.042*R*nf,th,0,0,TAU);ctx.fill();ctx.strokeStyle='rgba(150,50,70,.55)';ctx.lineWidth=lw*.5;ctx.beginPath();ctx.moveTo(cxm,y0+.04*R);ctx.lineTo(cxm,y0+.035*R+th*.9);ctx.stroke()}
+ const mw=.15*R*nf*(1+.18*Math.max(0,sm));ctx.strokeStyle=p.mouthLine;ctx.lineWidth=lw;ctx.beginPath();ctx.moveTo(nx,my);ctx.lineTo(cxm,y0);
+ if(wv>.05){const T=nowS();ctx.moveTo(cxm-mw,y0+.03*R);for(let i=1;i<=24;i++){const t=i/24;ctx.lineTo(cxm-mw+2*mw*t,y0+.03*R+Math.sin(t*TAU*2.5+T*6)*.022*R*wv)}}
+ else{const lobe=.08*R*(1-.6*Math.max(0,-sm)),cL=y0-sm*.05*R-sk*.035*R,cR=y0-sm*.05*R+sk*.035*R;ctx.moveTo(cxm-mw,cL);ctx.quadraticCurveTo(cxm-mw/2,y0+lobe,cxm,y0);ctx.quadraticCurveTo(cxm+mw/2,y0+lobe,cxm+mw,cR)}
+ ctx.stroke()}
+
+/** Hairballs (and rejected files wrapped in fur) bounce once and roll away. */
+function drawBalls(ctx,e,cx,cy,R){const p=e.p;for(const b of e.balls){const a=Math.min(1,(b.life-b.age)/.5);ctx.save();ctx.translate(cx+b.x*R,cy+b.y*R);ctx.rotate(b.rot);ctx.globalAlpha=Math.max(0,a);
+ const r=rng(b.seed);let fw=.17*R,fh=.11*R;
+ if(b.file){drawFile(ctx,0,0,.36*R,0,b.file);fw=.17*R;fh=.2*R}else{ctx.fillStyle=p.hair;ctx.beginPath();ctx.ellipse(0,0,fw,fh,0,0,TAU);ctx.fill()}
+ ctx.lineCap='round';ctx.lineWidth=Math.max(.6,.014*R);
+ for(let i=0;i<(b.file?26:20);i++){const t=r()*TAU,ex=Math.cos(t)*fw,ey=Math.sin(t)*fh,L=(.03+r()*.05)*R;ctx.strokeStyle=r()<.5?p.hairDark:p.hairLight;ctx.beginPath();ctx.moveTo(ex*.75,ey*.75);ctx.quadraticCurveTo(ex+Math.cos(t+.9)*L*.6,ey+Math.sin(t+.9)*L*.6,ex+Math.cos(t+.3)*L,ey+Math.sin(t+.3)*L);ctx.stroke()}
+ if(!b.file){ctx.fillStyle='rgba(255,255,255,.3)';ctx.beginPath();ctx.ellipse(-fw*.3,-fh*.4,fw*.3,fh*.2,-.3,0,TAU);ctx.fill()}
+ ctx.restore()}}
+
+/**
+ * Draws one cat. D is the head width in CSS px; below 28 it uses the compact drawing.
+ * o: {fur, tint, glow, paws (override list), detail ('full' | 'compact'), badgeSide (1 right, -1 left), badge (false hides it)}
+ */
+function drawCat(ctx,e,cx,cy,D,o={}){const p=e.p,s=e.s,T=nowS(),lay=ek=>CatCore.layout(p,s,cx,cy,D,{T,detail:o.detail,badgeSide:o.badgeSide,earScale:ek});
+ // Ears, as in the apps: a compact cat wears the compact ear scale (CatCore.earScale: 0.8 at Ø20 and below, easing to 1 at Ø28). The compact
+ // island's top is the top of the screen, so with o.earCeiling the ears shrink further, just enough that no tip leaves the strip.
+ const lv=CatCore.detailLevel(D,o.detail),k0=lv.full?1:CatCore.earScale(D);let ek=k0,L=lay(ek);
+ if(o.earCeiling!==undefined){const f=CatCore.earFit(L,s,o.earCeiling);if(f<1){ek=k0*f;L=lay(ek)}}
+ const {R,full,rx,ry,yf,pf,pt,fa,W,steps}=L,cx0=L.base.x,cy0=L.base.y,flat=lv.flatFill?CatCore.flatFillColors(p):null; // flat: the compact fills
+ e._base=L.base;e._at=L.at;cx=L.head.x;cy=L.head.y;
+ // The outfit (sub-project I): worn by the big-cat role at every size. In the compact notch the hats get the room the ears get (o.earCeiling).
+ let OWG=null;if(o.outfit&&CatCore.outfitWorn(o.role)){const ob={dpr:DPR(),detail:o.detail,earScale:ek,collar:o.collar?o.collar.style:'off'},A0=CatCore.outfitAnchors(p,s,D,ob);
+  if(o.earCeiling!==undefined)ob.room=CatCore.outfitRoom(A0,cy,o.earCeiling);OWG={shapes:CatCore.outfitGeometry(o.outfit,p,s,D,ob),edge:A0.edge}}
+ if(o.glow&&e.ga>.005){const gr=ctx.createRadialGradient(cx,cy,0,cx,cy,R*2.3),g=e.gc.map(Math.round);gr.addColorStop(0,`rgba(${g},${e.ga})`);gr.addColorStop(1,`rgba(${g},0)`);ctx.fillStyle=gr;ctx.fillRect(cx-R*2.4,cy-R*2.4,R*4.8,R*4.8)}
+ // Zoomies: afterimages and speed lines behind a cat that is moving fast.
+ const zv=e.zv||0;if(Math.abs(zv)>1.1&&D>=16){const k=Math.min(1,(Math.abs(zv)-1.1)/2.5),dir=Math.sign(zv);ctx.save();
+  for(let i=1;i<=3;i++){ctx.globalAlpha=.2*k/i;ctx.fillStyle=p.ruff?p.ruff.col[0]:p.top;ctx.beginPath();ctx.ellipse(cx-dir*i*.3*R*k,cy,rx,ry,0,0,TAU);ctx.fill()}
+  ctx.globalAlpha=.6*k;ctx.strokeStyle='#fff';ctx.lineCap='round';ctx.lineWidth=Math.max(1,.025*R);
+  for(const [yy,l] of [[-.5,.7],[-.08,1],[.32,.8],[.68,.5]]){const x0=cx-dir*(rx+.15*R),y=cy+yy*R;ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(x0-dir*l*.75*R*k,y);ctx.stroke()}
+  ctx.restore()}
+ const fur=o.fur&&full&&R>=30&&!p.hairless?furStrands(p):null;
+ ctx.save();ctx.translate(cx,cy);ctx.rotate(s.tilt);ctx.scale(s.sx,s.sy);
+ // Ruff and neck bib sit behind the head, with a little parallax.
+ if(p.ruff){const r=p.ruff;ctx.save();ctx.translate(L.ruff.dx,L.ruff.dy);
+  const rp=sup(r.rx*R,r.ry*R,2.4,r.dy*R,.06,18,steps);
+  if(flat)ctx.fillStyle=rgbOf(flat.ruff);else{const g=ctx.createRadialGradient(0,r.dy*R,.55*R,0,r.dy*R,1.55*R);g.addColorStop(0,r.col[1]);g.addColorStop(1,r.col[0]);ctx.fillStyle=g}
+  ctx.fill(rp);
+  if(fur){ctx.save();ctx.clip(rp);ctx.lineCap='round';ctx.lineWidth=Math.max(.6,.012*R);for(const q of fur.ruff){const x=q.x*R,y=q.y*R,L=q.L*R;ctx.strokeStyle=q.c;ctx.beginPath();ctx.moveTo(x-q.ux*L*.5,y-q.uy*L*.5);ctx.quadraticCurveTo(x-q.uy*L*.15,y+q.ux*L*.15,x+q.ux*L*.5,y+q.uy*L*.5);ctx.stroke()}ctx.restore()}
+  const by=(r.ry+r.dy)*R;ctx.fillStyle=p.bib;ctx.beginPath();ctx.moveTo(-.2*R,by*.97);ctx.quadraticCurveTo(-.12*R,by*.8,0,by*.72);ctx.quadraticCurveTo(.12*R,by*.8,.2*R,by*.97);ctx.quadraticCurveTo(.1*R,by*1.03,.04*R,by*.99);ctx.lineTo(0,by*1.06);ctx.lineTo(-.04*R,by*.99);ctx.quadraticCurveTo(-.1*R,by*1.03,-.2*R,by*.97);ctx.fill();
+  ctx.restore()}
+ for(const q of (o.paws||CatCore.enginePaws(e,R,rx,ry)))drawPaw(ctx,p,R,q);
+ drawEar(ctx,p,s,-1,R,rx,ry,full,yf,pf,false,ek,flat);drawEar(ctx,p,s,1,R,rx,ry,full,yf,pf,false,ek,flat);
+ owPaint(ctx,OWG,'behind');
+ const head=sup(rx,ry,p.n,0,p.fluff?.035:0,14,steps,L.bend);
+ let g;if(flat)g=rgbOf(flat.head);else{g=ctx.createLinearGradient(.45*rx,-ry,-.45*rx,ry);g.addColorStop(0,p.top);g.addColorStop(1,p.bot)}ctx.fillStyle=g;ctx.fill(head);
+ ctx.save();ctx.clip(head);ctx.globalAlpha=fa;
+ // Markings, warped onto the turning head.
+ if(p.coat==='tuxedo'){ctx.fillStyle=p.white;ctx.fill(momoWhite(W))}
+ else if(p.coat==='tabby'){const sc=hex(p.stripe).join(','),[bx,by]=W(0,-.88);
+  if(flat){const c=CatCore.FLAT_FILL.crown;ctx.fillStyle=`rgba(${sc},${c.alpha})`;ctx.beginPath();ctx.ellipse(bx,by,c.rx*R,c.ry*R,0,0,TAU);ctx.fill()}
+  else{const cb=ctx.createRadialGradient(bx,by,0,bx,by,.6*R);cb.addColorStop(0,`rgba(${sc},.9)`);cb.addColorStop(1,`rgba(${sc},0)`);ctx.fillStyle=cb;ctx.fillRect(-2*R,-2*R,4*R,4*R)}
+  wStroke(ctx,W,p.stripe,(full?.1:.13)*R,[0,-.95,0,-.62,0,-.36]);
+  if(full){for(const i of [-2,-1,1,2])wStroke(ctx,W,p.stripe,.042*R,[i*.05,-.3+Math.abs(i)*.07,i*.09,-.62,i*.17,-.98]);
+   for(const sd of [-1,1]){wStroke(ctx,W,p.stripe,.04*R,[sd*.62,.04,sd*.82,-.02,sd*1.02,-.08]);wStroke(ctx,W,p.stripe,.045*R,[sd*.7,.3,sd*.88,.22,sd*1.1,.22]);wStroke(ctx,W,p.stripe,.045*R,[sd*.72,.46,sd*.9,.42,sd*1.1,.46])}}
+  const ny=-Math.sin(p.nosePh)*p.ry;ctx.fillStyle=p.light;for(const sd of [-1,1])ctx.fill(wEll(W,sd*.17,ny+.12,.26,.21));ctx.fillStyle=p.chinCol;ctx.fill(wEll(W,0,ny+.34,.22,.16))}
+ else if(p.coat==='point'){const ny=-Math.sin(p.nosePh)*p.ry,[mx,my]=W(0,ny-.12),pc=hex(p.point).join(',');
+  if(flat){const c=CatCore.FLAT_FILL.point;ctx.fillStyle=`rgba(${flat.point.map(Math.round)},${c.alpha})`;ctx.beginPath();ctx.ellipse(mx,my,c.rx*R,c.ry*R,0,0,TAU);ctx.fill()}
+  else{ctx.save();ctx.translate(mx,my);ctx.scale(1.55,1);const pg=ctx.createRadialGradient(0,0,.05*R,0,0,.66*R);pg.addColorStop(0,`rgba(${pc},.97)`);pg.addColorStop(.6,`rgba(${pc},.82)`);pg.addColorStop(1,`rgba(${pc},0)`);ctx.fillStyle=pg;ctx.fillRect(-2*R,-2*R,4*R,4*R);ctx.restore()}}
+ else if(p.coat==='calico'){for(const q of p.patches){ctx.fillStyle=q[5];ctx.fill(wBlob(W,q[0],q[1],q[2],q[3],q[4],q[6]||1))}}
+ if(p.muzzle){const ny=-Math.sin(p.nosePh)*p.ry;ctx.fillStyle=p.muzzle;for(const sd of [-1,1])ctx.fill(wEll(W,sd*.16,ny+.12,.24,.19));ctx.fill(wEll(W,0,ny+.32,.2,.14))}
+ if(p.wrinkles&&full)for(const [y,w] of [[-.42,.2],[-.54,.27],[-.66,.18]])wStroke(ctx,W,p.bot,.026*R,[-w,y+.03,0,y-.05,w,y+.03]);
+ if(fur){ctx.lineCap='round';ctx.lineWidth=Math.max(.5,(p.furOpts||FURDEF).w*R);for(const q of fur.head){const [a,b]=W(q.x,q.y),[c,d]=W(q.x2,q.y2);ctx.strokeStyle=q.c;ctx.beginPath();ctx.moveTo(a,b);ctx.lineTo(c,d);ctx.stroke()}}
+ ctx.globalAlpha=1;
+ if(o.tint!==false&&s.tint>.01){const c=e.col.map(Math.round),lg=ctx.createLinearGradient(0,ry,0,-ry*.2);lg.addColorStop(0,`rgba(${c},${.4*s.tint})`);lg.addColorStop(1,`rgba(${c},0)`);ctx.fillStyle=lg;ctx.fillRect(-2*R,-2*R,4*R,4*R)}
+ if(!flat||CatCore.FLAT_FILL.rimGradient){const rg=ctx.createRadialGradient(0,0,.2*R,0,0,1.35*R);rg.addColorStop(0,'rgba(0,0,0,0)');rg.addColorStop(.62,'rgba(0,0,0,0)');rg.addColorStop(1,p.rimLight?'rgba(255,255,255,.07)':'rgba(0,0,0,.25)');ctx.fillStyle=rg;ctx.fillRect(-2*R,-2*R,4*R,4*R)}
+ const bl=Math.max(s.blush,e.blushBase||0);if(bl>.01){ctx.fillStyle=`rgba(255,120,150,${.5*bl*fa})`;for(const sd of [-1,1])ctx.fill(wEll(W,sd*p.blushAt[0],p.blushAt[1],.17,.1,14))}
+ // Eyes on the sphere (upstream projection), normalised so the rest pose matches the board.
+ const shape=e.eyeShape(),open=s.open*(1-s.lid);
+ for(const {sd,visible,x:ex,y:ey,fx,fy} of L.eyes){if(!visible)continue;
+  ctx.save();ctx.translate(ex,ey);ctx.scale(fx,fy);ctx.globalAlpha=fa;
+  if(full){if(p.light){ctx.save();ctx.scale(1.22,1.3);ctx.fillStyle=p.light;almondPath(ctx,p,sd,R,1);ctx.fill();ctx.restore()}
+   if(REAL.has(shape)||(shape==='wink'&&sd<0))almondEye(ctx,e,p,sd,R*s.es*(shape==='wide'?1.12:1),shape==='dot'?1:s.pupil,shape==='tired'?Math.min(open,.42):open);
+   else inkEye(ctx,shape,sd,.27*R*s.es,.31*R*s.es,open,T,p.ink)}
+  else if(o.eyes!=='ink'&&CatCore.usesSmallEye(shape,sd))smallEyeDraw(ctx,p,sd,CatCore.smallEye(shape,{sd,R,es:s.es,open,yaw:s.yaw,pitch:s.pitch,kitten:!!p.kitten,cat:p.name}));
+  else inkEye(ctx,shape,sd,.34*R*s.es,.4*R*s.es,open,T,p.ink);
+  ctx.restore()}
+ // Nose and mouth (open for yawns and the file catch).
+ if(L.nose.visible){const {nx,ny,nf,nw,nh,my}=L.nose,mo=e.mouthOpen();
+  ctx.globalAlpha=fa;
+  drawMouth(ctx,p,s,R,nx,my,nf,full,mo);
+  ctx.fillStyle=p.nose;ctx.beginPath();ctx.moveTo(nx-nw/2,ny-nh/2);ctx.quadraticCurveTo(nx,ny-nh*.8,nx+nw/2,ny-nh/2);ctx.quadraticCurveTo(nx+nw*.1,ny+nh*.6,nx,ny+nh/2);ctx.quadraticCurveTo(nx-nw*.1,ny+nh*.6,nx-nw/2,ny-nh/2);ctx.fill();
+  if(full){ctx.strokeStyle=p.noseLine;ctx.lineWidth=.02*R;ctx.stroke()}
+  e._mouth=L.mouth}
+ ctx.globalAlpha=1;ctx.restore();
+ if(p.rimLight){ctx.strokeStyle='rgba(255,255,255,.22)';ctx.lineWidth=Math.max(1,.013*R);ctx.stroke(head)}
+ if(p.ear.fold){drawEar(ctx,p,s,-1,R,rx,ry,full,yf,pf,1,ek,flat);drawEar(ctx,p,s,1,R,rx,ry,full,yf,pf,1,ek,flat)}
+ // Collar (front pass, over the head and under the whiskers): o.collar = {style, col}; the style 'off' draws nothing.
+ if(o.collar){const G=CatCore.collarGeometry(p,s,D,o.collar.style,{dpr:DPR()});if(G)drawCollar(ctx,G,o.collar.col,full)}
+ owPaint(ctx,OWG,'neck');owPaint(ctx,OWG,'top');
+ // Whiskers rooted on the pad grid beside the nose, plus eyebrow whiskers.
+ if(full&&fa>.01){const Wk=p.whisk2,rand=rng(29),nzy=-Math.sin(p.nosePh)*p.ry;
+  for(const sd of [-1,1]){const fxs=clamp(Math.cos(yf)+sd*.37*Math.sin(yf),.15,1.3),pts=[];
+   for(let row=0;row<Wk.rows;row++)for(let col=0;col<Wk.cols;col++)pts.push({row,col,x:sd*(Wk.x0+col*Wk.dx),y:nzy+Wk.y0+row*Wk.dy+col*Wk.slope});
+   ctx.fillStyle=p.padDot;ctx.globalAlpha=fa;for(const q of pts){const [X,Y]=W(q.x,q.y);ctx.beginPath();ctx.arc(X,Y,Wk.dot*R,0,TAU);ctx.fill()}ctx.globalAlpha=1;
+   for(const q of pts){if(!Wk.wcols.includes(q.col))continue;const [X,Y]=W(q.x,q.y),ang=Wk.a0+q.row*Wk.da+q.col*.04+(rand()-.5)*.06-s.wh,L=(Wk.len-q.row*Wk.dl-q.col*.05+(rand()-.5)*.1)*R,dx=sd*Math.cos(ang)*fxs,dy=Math.sin(ang);
+    taper(ctx,X,Y,X+dx*L*.5,Y+dy*L*.5-.05*R,X+dx*L,Y+dy*L+Wk.droop*L*L/R,Wk.w*R,p.whisk,Wk.alpha*fa)}
+   const ex=Math.sin(sd*p.eye.th)*Math.cos(p.eye.ph)*p.rx,ey=-Math.sin(p.eye.ph)*p.ry;
+   for(let k=0;k<Wk.brow;k++){const [bx,by]=W(ex+sd*(k*.06-.03),ey-p.eye.h*1.9-k*.015),th=1.08-k*.2-s.wh*.5,L=(.38+k*.08)*R;
+    taper(ctx,bx,by,bx+sd*(Math.cos(th)*L*.45*fxs+.07*R),by-Math.sin(th)*L*.55,bx+sd*Math.cos(th)*L*fxs,by-Math.sin(th)*L,Wk.w*.7*R,p.whisk,Wk.alpha*.85*fa)}}}
+ ctx.restore();
+ if(o.badge!==false&&e.badge&&s.badgeS>.01)drawBadge(ctx,e.badge,e.badgeCol||COL[e.state],L.badge.x,L.badge.y,R,L.badge.k,L.badge.small,T);
+ drawParticles(ctx,e,cx0,cy0,R);drawBalls(ctx,e,cx0,cy0,R)}
+
+// ── Collar drawing: the maths is CatCore.collarGeometry, this only paints it ─────────────────
+const DPR=()=>Math.min(2,devicePixelRatio||1);
+const tintW=(h,k)=>`rgb(${hex(h).map(v=>Math.round(v+(255-v)*k))})`;
+function drawCollar(ctx,G,col,full){const e1=1/DPR(),edge='rgba(0,0,0,.42)',poly=pts=>{ctx.beginPath();pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y))};
+ ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
+ if(G.kerchief){const S=G.kerchief;poly([...S.pts,S.apex]);ctx.closePath();ctx.fillStyle=col;ctx.fill();ctx.strokeStyle=edge;ctx.lineWidth=1.5*e1;ctx.stroke();
+  if(full){const m=S.pts[S.pts.length>>1];ctx.strokeStyle=tintW(col,.45);ctx.lineWidth=Math.max(e1,G.R*.025);poly([[m[0],m[1]+G.R*.05],[S.apex[0],S.apex[1]-G.R*.08]]);ctx.stroke()}}
+ else{poly(G.band);ctx.strokeStyle=edge;ctx.lineWidth=G.width+2*e1;ctx.stroke();ctx.strokeStyle=col;ctx.lineWidth=G.width;ctx.stroke();
+  if(G.tag){const T=G.tag;ctx.beginPath();ctx.arc(T.x,T.y,T.r,0,TAU);ctx.fillStyle=tintW(col,.55);ctx.fill();ctx.strokeStyle=edge;ctx.lineWidth=1.5*e1;ctx.stroke();
+   if(full){ctx.fillStyle='rgba(255,255,255,.85)';ctx.beginPath();ctx.arc(T.x-T.r*.3,T.y-T.r*.3,T.r*.25,0,TAU);ctx.fill()}}}
+ ctx.restore()}
+
+// ── Page: canvases, pointer, file flights ────────────────────────────────────
+let FUR=false,TINTON=true,CHAR='shrimpy',mx=null,my=null;
+// Collar: the agent colour as a thin collar, in the style picked in the Collar panel (Off by default). The colours are the pill catalogue's.
+const AGENTS=[['Claude Code','#E07950'],['Gemini CLI','#8AB4F8'],['Codex','#2DD4BF'],['Antigravity','#E879F9'],['Stripe (dark)','#0570DE']],AGENT_COL=Object.fromEntries(AGENTS);
+let COLLAR='off',AGENT='Claude Code';
+const collarOf=col=>COLLAR==='off'?null:{style:COLLAR,col};
+/** The big cat wears the collar of the agent driving its state (the agent picked in the panel), and none when idle. */
+const bigCollar=e=>e.state==='idle'?null:collarOf(AGENT_COL[AGENT]);
+function fit(cv,w,h){const dpr=Math.min(2,devicePixelRatio||1),W=w??cv.clientWidth,H=h??cv.clientHeight;if(cv.width!==Math.round(W*dpr)||cv.height!==Math.round(H*dpr)){cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr)}const c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,W,H);return[c,W,H]}
+function look(e,rect){if(!e._at)return;if(mx===null){e.lookX*=.9;e.lookY*=.9;return}const g=CatCore.cursorLook(mx-(rect.left+e._at.x),my-(rect.top+e._at.y));e.lookX=g.x;e.lookY=g.y}
+document.addEventListener('pointermove',ev=>{mx=ev.clientX;my=ev.clientY});
+document.documentElement.addEventListener('mouseleave',()=>{mx=null});addEventListener('blur',()=>{mx=null});
+addEventListener('dragover',ev=>ev.preventDefault());addEventListener('drop',ev=>ev.preventDefault());
+
+function drawFile(ctx,x,y,s,rot,ext){ctx.save();ctx.translate(x,y);ctx.rotate(rot);const w=s*.78,h=s,f=s*.24;
+ ctx.fillStyle='#F4F5F7';ctx.beginPath();ctx.moveTo(-w/2,-h/2);ctx.lineTo(w/2-f,-h/2);ctx.lineTo(w/2,-h/2+f);ctx.lineTo(w/2,h/2);ctx.lineTo(-w/2,h/2);ctx.closePath();ctx.fill();
+ ctx.fillStyle='#C9CDD4';ctx.beginPath();ctx.moveTo(w/2-f,-h/2);ctx.lineTo(w/2-f,-h/2+f);ctx.lineTo(w/2,-h/2+f);ctx.closePath();ctx.fill();
+ ctx.fillStyle='#3B9EFF';rr(ctx,-w/2+s*.07,h*.06,w-s*.14,s*.24,s*.05);ctx.fill();
+ ctx.fillStyle='#fff';ctx.font=`700 ${s*.15}px system-ui,sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(ext,0,h*.06+s*.125);ctx.restore()}
+/** A dropped file arcs into the cat's mouth. */
+const REJECT=new Set(['EXE','DMG','ISO','ZIP','PKG','MSI','APP','MOV','MP4','MKV']);
+function launch(list,e,x,y,name,size=0){const ext=((name||'').split('.').pop()||'file').slice(0,4).toUpperCase()||'FILE';e.catchDrop();list.push({e,x,y,ext,t0:ms(),reject:REJECT.has(ext)||size>25e6})}
+function drawFlights(ctx,list){const t=ms();for(let i=list.length-1;i>=0;i--){const f=list[i],k=seg(t,f.t0,f.t0+FLIGHT_MS),m=f.e._mouth;if(!m)continue;
+ const w=CatCore.flightAt(f,m,f.e._at.R,k);drawFile(ctx,w.x,w.y,w.size,w.rot,f.ext);
+ if(k>=1){list.splice(i,1);f.reject?f.e.catchReject(f.ext):f.e.catchArrive()}}}
+
+// ── Stage ────────────────────────────────────────────────────────────────────
+function makeStage(n,fig,cv){const e=new CatEngine(PRESETS[n]),flights=[];
+ cv.addEventListener('pointerdown',()=>e.slap());
+ fig.addEventListener('dragover',ev=>{ev.preventDefault();fig.classList.add('drop');e.catchOpen(true)});
+ fig.addEventListener('dragleave',ev=>{if(!fig.contains(ev.relatedTarget)){fig.classList.remove('drop');e.catchOpen(false)}});
+ fig.addEventListener('drop',ev=>{ev.preventDefault();fig.classList.remove('drop');const r=cv.getBoundingClientRect();launch(flights,e,ev.clientX-r.left,ev.clientY-r.top,ev.dataTransfer.files[0]?.name||'file',ev.dataTransfer.files[0]?.size||0)});
+ return{n,cv,e,flights}}
+const stage=['momo','shrimpy'].map(n=>{const cap=n[0].toUpperCase()+n.slice(1);return makeStage(n,document.getElementById('fig'+cap),document.getElementById('cv'+cap))});
+for(const n of MORE){const P=PRESETS[n],fig=document.createElement('figure'),cv=document.createElement('canvas'),fc=document.createElement('figcaption');
+ cv.setAttribute('aria-label',`${P.label}, animated`);fc.innerHTML=`<b>${P.label}</b> · ${P.desc} · <span data-pers="${n}"></span>`;fig.append(cv,fc);document.getElementById('more').appendChild(fig);stage.push(makeStage(n,fig,cv))}
+function simulateCatch(name='notes.pdf'){for(const S of stage){S.e.catchOpen(true);setTimeout(()=>{const W=S.cv.clientWidth,H=S.cv.clientHeight;launch(S.flights,S.e,W*.88,H*.14,name)},420)}}
+
+// ── Notch mock-up ────────────────────────────────────────────────────────────
+const desk=document.getElementById('cvDesk'),deskFlights=[];
+const EXP={W:600,H:200};
+let notchEng=new CatEngine(PRESETS[CHAR]),greetEng=new CatEngine(PRESETS[CHAR]);
+// ── Display modes: who wears which coat comes from CatCore.castOf ────────────────────────────────────────────────
+// The pills of the mock-up, in the order the island lists them (Claude Code, the agents, then the integrations); `last` is the time of the pill's last event.
+// Nothing here decides a coat: castOf says it, from the Display mode, the focus, the Main cat (CHAR), the pair and the agents' coats.
+let MODE='one',PAIR=CatCore.cleanPair(null),FOCUS='integration_claude',AGENT_CATS={},secondEng=null;
+const TASKS=[
+ {id:'integration_claude',name:'Claude Code',col:AGENT_COL['Claude Code'],sub:'notchmeow · editing engine.ts',state:'working',last:100},
+ {id:'agent_codex',name:'Codex',col:AGENT_COL['Codex'],sub:'api-server · wants to run npm test',state:'approval',last:90},
+ {id:'agent_gemini',name:'Gemini CLI',col:AGENT_COL['Gemini CLI'],sub:'docs · done in 42 s',state:'finished',last:80},
+ {id:'agent_antigravity',name:'Antigravity',col:AGENT_COL['Antigravity'],sub:'site · thinking',state:'thinking',last:70},
+ {id:'integration_stripe',name:'Stripe',col:AGENT_COL['Stripe (dark)'],sub:'3 payments today',state:'idle',last:5}];
+const TASK=Object.fromEntries(TASKS.map(t=>[t.id,t]));
+// The first time an agent is seen it gets a coat that no other agent and not the Main cat uses. The page seeds the roll, so a screenshot repeats; the dice use Math.random.
+AGENT_CATS=CatCore.assignAgentCats(TASKS.map(t=>t.id),AGENT_CATS,CHAR,CatCore.rng(2026));
+const castNow=()=>CatCore.castOf(MODE,{tasks:TASKS,focusId:FOCUS,mainCat:CHAR,pair:PAIR,agentCats:AGENT_CATS});
+// The small cats of the mock-up (rows, grid cells, kittens, the second cat of the greeting): one engine per (place, pill, coat), made when it is first drawn and updated only while it is drawn.
+const POOL=new Map(),KITP={};let POOLN=0;
+function poolEng(key,preset,state){let e=POOL.get(key);if(!e){e=new CatEngine(preset,{mini:true,state});POOL.set(key,e)}e._used=POOLN;if(e.state!==state)e.setState(state);return e}
+const kitPreset=cat=>KITP[cat]||(KITP[cat]=kittenOf(PRESETS[cat]));
+// Kittens: one list per pill, changed only by CatCore.kittenStep. A kitten that is leaving goes by itself: kittenView hides it from its `until`, with no timer.
+const KIT={};let kitSeq=0;
+const kitEvent=(pill,ev)=>{KIT[pill]=CatCore.kittenStep(KIT[pill]||[],{t:ms(),...ev})};
+const kitView=pill=>CatCore.kittenView(KIT[pill]||[],ms());
+const kitTarget=()=>CatCore.isAgentPill(FOCUS)?FOCUS:'integration_claude';
+function subStart(){kitEvent(kitTarget(),{type:'start',id:'sub'+(++kitSeq),agentType:'Explore'})}
+function subStop(){const l=(KIT[kitTarget()]||[]).filter(k=>k.state!=='leaving').sort((a,b)=>b.born-a.born)[0];if(l)kitEvent(kitTarget(),{type:'stop',id:l.id})}
+function subAsk(){const l=KIT[kitTarget()]||[],w=l.find(k=>k.state==='approval');if(w)kitEvent(kitTarget(),{type:'resolved',id:w.id});else{const n=l.filter(k=>k.state!=='leaving').sort((a,b)=>b.born-a.born)[0];if(n)kitEvent(kitTarget(),{type:'permission',id:n.id})}}
+for(const [pill,evs] of [['integration_claude',[{type:'start',id:'a1',agentType:'Explore'},{type:'start',id:'a2',agentType:'Explore'},{type:'start',id:'a3',agentType:'general-purpose'},{type:'start',id:'a4',agentType:'Explore'},{type:'tool',id:'a2',tool:'Grep'},{type:'permission',id:'a3'}]],['agent_codex',[{type:'start',id:'c1'},{type:'start',id:'c2'},{type:'permission',id:'c2'}]]])for(const ev of evs)kitEvent(pill,ev);
+/** Keeps the two big engines on the coats the cast names (a coat change makes a new engine, as picking a Main cat always did). */
+function syncCast(C){if(notchEng.p.name!==C.big.cat)notchEng=new CatEngine(PRESETS[C.big.cat],{state:curState});
+ if(C.second){const st=C.second.pill?TASK[C.second.pill].state:'idle';if(!secondEng||secondEng.p.name!==C.second.cat)secondEng=new CatEngine(PRESETS[C.second.cat],{state:st});else if(secondEng.state!==st)secondEng.setState(st)}}
+const ISL={exp:0,from:0,to:0,t0:0,greet:-1};
+function setExpanded(on){ISL.from=ISL.exp;ISL.to=on?1:0;ISL.t0=ms()}
+function islandPath(ctx,cx,w,h,k){const x0=cx-w/2,x1=cx+w/2,s=6*k,br=lerp(10,24,clamp((h/k-32)/60,0,1))*k;
+ ctx.beginPath();ctx.moveTo(x0-s,0);ctx.quadraticCurveTo(x0,0,x0,s);ctx.lineTo(x0,h-br);ctx.quadraticCurveTo(x0,h,x0+br,h);ctx.lineTo(x1-br,h);ctx.quadraticCurveTo(x1,h,x1,h-br);ctx.lineTo(x1,s);ctx.quadraticCurveTo(x1,0,x1+s,0);ctx.closePath()}
+const STATE_TXT={idle:'idle',working:'working',thinking:'thinking',searching:'searching',approval:'needs approval',question:'has a question',error:'error',finished:'finished',ratelimit:'rate-limited',sleeping:'sleeping',dizzy:'dizzy'};
+function pill(ctx,x,y,txt,col,k){ctx.font=`600 ${11*k}px system-ui,sans-serif`;const w=ctx.measureText(txt).width+14*k,h=18*k;const c=hex(col);ctx.fillStyle=`rgba(${c},.16)`;rr(ctx,x-w,y-h/2,w,h,h/2);ctx.fill();ctx.fillStyle=col;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(txt,x-w/2,y+.5);return w}
+
+function drawMenubar(ctx,W,k){ctx.fillStyle='rgba(12,14,20,.55)';ctx.fillRect(0,0,W,32*k);ctx.fillStyle='rgba(255,255,255,.82)';ctx.font=`600 ${12*k}px system-ui,sans-serif`;ctx.textBaseline='middle';ctx.textAlign='left';
+ let x=14*k;for(const w of ['Finder','File','Edit','View','Go']){if(x>W/2-COMPACT*k/2-40*k)break;ctx.fillText(w,x,16*k);x+=ctx.measureText(w).width+16*k;ctx.font=`${12*k}px system-ui,sans-serif`}
+ ctx.textAlign='right';ctx.fillText('Sat 6:25 PM',W-14*k,16*k)}
+// The session cats of the compact island, in the order of the grid's cells (top left, top right, bottom left, bottom right): the cats of the cast's pills, and the Main cat
+// for a cell with no pill. CatCore.miniSlots places them (a row, the glide, the grid the apps show).
+function sessionWho(){const C=castNow();return[0,1,2,3].map(i=>{const P=C.pills[i];return P?{e:poolEng('grid:'+P.pill+':'+P.cat,PRESETS[P.cat],TASK[P.pill].state),col:TASK[P.pill].col}:{e:poolEng('grid:free'+i+':'+C.greeting.sessions[i],PRESETS[C.greeting.sessions[i]],'idle'),col:'#8d9098'}})}
+function drawSessionMinis(ctx,cx,k,slots,alpha){if(alpha<=.01)return;const who=sessionWho();ctx.save();ctx.globalAlpha=alpha;
+ slots.forEach((s,i)=>{if(s.d<=0)return;drawCat(ctx,who[i].e,cx+(s.x-320)*k,s.y*k,s.d*k,{tint:TINTON,badge:false,collar:collarOf(who[i].col)})});ctx.restore()}
+/** In Two cats mode the pair arrives together: cat 2 pops in beside the cat that has settled, as the island folds. */
+function greetPair(ctx,t,X,Y,D){const G=castNow().greeting;if(!G.pair||t<=GT.leave)return;const pop=EZ.back(seg(t,GT.leave+.24,GT.leave+.42));if(pop<=.02)return;
+ drawCat(ctx,poolEng('greet2:'+G.pair[1],PRESETS[G.pair[1]],'idle'),X+D*1.2,Y,D*pop,{tint:TINTON,badge:false})}
+/** One parent's kittens in one place: CatCore.kittenSlots gives the slots in units of `unit` px from (ox, oy). Returns the slots. */
+function drawKittens(ctx,place,pill,parentCat,col,ox,oy,unit,alpha,list){const sl=CatCore.kittenSlots(place,list||kitView(pill));if(alpha<=.01)return sl;ctx.save();ctx.globalAlpha=alpha;
+ for(const q of sl.shown)drawCat(ctx,poolEng(`kit:${pill}:${q.id}:${parentCat}`,kitPreset(parentCat),q.state==='leaving'?'finished':q.state),ox+q.x*unit,oy+q.y*unit,q.d*unit,{tint:TINTON,collar:collarOf(col)});
+ const lab=(text,m)=>{const sz=Math.max(8,m.size*unit);ctx.font=`700 ${sz}px system-ui,sans-serif`;const w=ctx.measureText(text).width+sz*.6,x=ox+m.x*unit,y=oy+m.y*unit;ctx.fillStyle='#2a2c31';rr(ctx,x-w/2,y-sz*.65,w,sz*1.3,sz*.65);ctx.fill();ctx.fillStyle='#cfd0d4';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,x,y+.5)};
+ if(sl.moreAt)lab('+'+sl.more,sl.moreAt);if(sl.label)lab(sl.label.text,sl.label);
+ ctx.restore();return sl}
+
+function drawDesk(){const [ctx,W,H]=fit(desk),k=Math.min(1,(W-24)/640),cx=W/2,r=desk.getBoundingClientRect();
+ POOLN++;const C=castNow();syncCast(C);
+ drawMenubar(ctx,W,k);
+ if(ISL.greet>=0){const t=(ms()-ISL.greet)/1000;if(t>GREET_END){ISL.greet=-1;ISL.exp=ISL.from=ISL.to=0}else{drawGreeting(ctx,t,cx,k,greetEng);return}}
+ const ke=seg(ms(),ISL.t0,ISL.t0+(ISL.to>ISL.from?420:340)),e=ISL.exp=lerp(ISL.from,ISL.to,ISL.to>ISL.from?EZ.back(ke):EZ.inOut(ke)),iw=lerp(COMPACT,EXP.W,e)*k,ih=lerp(32,EXP.H,e)*k,x0=cx-iw/2;
+ ctx.fillStyle='#000';islandPath(ctx,cx,iw,ih,k);ctx.fill();
+ ctx.save();islandPath(ctx,cx,iw,ih,k);ctx.clip();
+ const two=!!C.second,ee=clamp(e,0,1.1),D=lerp(20,two?58:64,ee)*k,D2=lerp(20,46,ee)*k,n1x=x0+(two?lerp(30,56,e):lerp(40,74,e))*k,n2x=x0+lerp(54,114,e)*k,ncy=lerp(16,98,e)*k,n2y=lerp(16,106,e)*k,bigPill=C.big.pill&&TASK[C.big.pill];
+ look(notchEng,r);drawCat(ctx,notchEng,n1x,ncy,D,{tint:TINTON,fur:FUR,glow:e>.5,badgeSide:e<.5?-1:1,collar:bigCollar(notchEng),earCeiling:0,outfit:wdBig(),role:'big'});
+ if(two){look(secondEng,r);drawCat(ctx,secondEng,n2x,n2y,D2,{tint:TINTON,glow:e>.5,badgeSide:e<.5?-1:1,collar:C.second.pill?collarOf(TASK[C.second.pill].col):null,earCeiling:0,outfit:wdBig(),role:'big'})}
+ // Kittens, beside their parent wherever it is drawn (compact: tucked beside the cat, or only a count by the pair; expanded: under it).
+ const ca=1-seg(e,0,.25),ea=seg(e,.55,1),place=CatCore.kittenPlaceOf(MODE,false),placeX=CatCore.kittenPlaceOf(MODE,true);
+ if(place==='pairCompact'){drawKittens(ctx,place,C.big.pill,C.big.cat,'#fff',n2x,n2y,D2,ca,[...kitView(C.big.pill),...(C.second.pill?kitView(C.second.pill):[])])}
+ else if(C.big.pill)drawKittens(ctx,place,C.big.pill,C.big.cat,bigPill.col,n1x,ncy,D,ca);
+ if(C.big.pill)drawKittens(ctx,placeX,C.big.pill,C.big.cat,bigPill.col,n1x,ncy,D,ea);
+ if(two&&C.second.pill)drawKittens(ctx,placeX,C.second.pill,C.second.cat,TASK[C.second.pill].col,n2x,n2y,D2,ea);
+ drawSessionMinis(ctx,cx,k,CatCore.miniSlots(1,{grid:1,four:1},{W:iw/k,H:32}),1-seg(e,0,.25));
+ const a=ea;
+ if(a>.01){ctx.globalAlpha=a;const lx=x0+176*k,rxx=x0+iw-16*k;
+  ctx.fillStyle='#fff';ctx.font=`600 ${13*k}px system-ui,sans-serif`;ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText(bigPill?bigPill.name:'Nothing in focus',lx,24*k);
+  ctx.fillStyle='#8d9098';ctx.font=`${11*k}px system-ui,sans-serif`;ctx.fillText(bigPill?bigPill.sub:'',lx,40*k);
+  if(two&&C.second.pill){const T2=TASK[C.second.pill];ctx.fillStyle=COL[T2.state];ctx.fillText(`${T2.name} · ${STATE_TXT[T2.state]}`,lx,55*k)}
+  else if(two){ctx.fillStyle='#8d9098';ctx.fillText('No other agent',lx,55*k)}
+  ctx.textAlign='right';ctx.fillStyle='#8d9098';ctx.fillText(`Display: ${MODE_LABEL[MODE]}`,rxx,24*k);
+  C.pills.forEach((P,i)=>{const T=TASK[P.pill],y=(86+i*30)*k,H=28*k;drawCat(ctx,poolEng('row:'+P.pill+':'+P.cat,PRESETS[P.cat],T.state),lx+12*k,y,22*k,{tint:TINTON,collar:collarOf(T.col)});
+   ctx.textAlign='left';ctx.fillStyle='#fff';ctx.font=`600 ${12.5*k}px system-ui,sans-serif`;ctx.fillText(T.name,lx+34*k,y-7*k);
+   ctx.fillStyle='#8d9098';ctx.font=`${11*k}px system-ui,sans-serif`;ctx.fillText(T.sub,lx+34*k,y+8*k);
+   const sl=CatCore.kittenSlots('pill',kitView(P.pill)),last=sl.shown[sl.shown.length-1],kw=last?(-last.x+last.d/2+.2)*H:0;
+   pill(ctx,rxx-kw,y,STATE_TXT[T.state],COL[T.state],k);
+   if(last)drawKittens(ctx,'pill',P.pill,P.cat,T.col,rxx,y,H,1)});
+  ctx.globalAlpha=1}
+ ctx.restore();drawFlights(ctx,deskFlights)}
+const MODE_LABEL={one:'one cat',perAgent:'a cat for each agent',two:'two cats'};
+
+// The launch greeting (Greeting v2): the pose comes from CatCore.greetingPose(t); this draws the island, halo, streaks, header, cat and paws.
+function drawGreeting(ctx,t,cx,k,ge){const P=CatCore.greetingPose(t),iw=P.iw*k,ih=P.ih*k,X=cx+(P.x-320)*k,Y=P.y*k,D=P.hb*1.34*k,s=ge.s,st=CatCore.streakTime(t);
+ ctx.fillStyle='#000';islandPath(ctx,cx,iw,ih,k);ctx.fill();ctx.save();islandPath(ctx,cx,iw,ih,k);ctx.clip();
+ if(P.halo>0){const bl=P.haloBlue,c=[lerp(232,59,bl),lerp(195,158,bl),lerp(154,255,bl)].map(Math.round);for(const [rad,al] of [[D*1.3,.18],[D*2.1,.07]]){const g=ctx.createRadialGradient(X,Y,0,X,Y,rad);g.addColorStop(0,`rgba(${c},${al*P.halo})`);g.addColorStop(1,`rgba(${c},0)`);ctx.fillStyle=g;ctx.fillRect(X-rad,Y-rad,rad*2,rad*2)}}
+ for(const sk of STREAKS){const q=seg(st,sk.t0,sk.t0+.6);if(q<=0||q>=1)continue;const dist=(sk.sp*EZ.out(q)*.9+10)*k,al=(1-q)*P.fx;ctx.strokeStyle=sk.col;ctx.globalAlpha=al;ctx.lineWidth=1.6;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(X+Math.cos(sk.a)*(dist-sk.len*k),Y+Math.sin(sk.a)*(dist-sk.len*k)*.42);ctx.lineTo(X+Math.cos(sk.a)*dist,Y+Math.sin(sk.a)*dist*.42);ctx.stroke()}ctx.globalAlpha=1;
+ if(P.header>.01){ctx.globalAlpha=P.header;ctx.fillStyle='#fff';ctx.font=`600 ${13*k}px system-ui,sans-serif`;ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText('NotchMeow',cx-iw/2+20*k,20*k);
+  ctx.fillStyle='#8d9098';ctx.textAlign='right';ctx.font=`${11.5*k}px system-ui,sans-serif`;ctx.fillText(`Hi! ${ge.p.label} is watching your agents.`,cx+iw/2-20*k,20*k);ctx.globalAlpha=1}
+ Object.assign(s,{sx:P.sx,sy:P.sy,tilt:P.tilt,open:P.open,yaw:P.lookX*.55,pitch:-P.lookY*.45,roll:0,oy:0,ox:0,badgeS:P.badge,tint:P.tint,paws:0});
+ ge.eyeOv=P.eye==='happy'?'happy':P.eye==='content'?'closed':null;ge.eyeUntil=Infinity;ge.badge='dots';ge.badgeCol='#3BA0F5';ge.col=[127,180,234];ge.state='idle';
+ const R=D/(2*ge.p.rx),rx=ge.p.rx*R,ry=ge.p.ry*R,on=P.wave>=0,w=on?P.wave*TAU*4.2:0,wa=on?seg(P.wave,0,.12)*(1-seg(P.wave,.9,1.0)):0;
+ const paws=[{x:lerp(-.35*rx,-(rx+.22*R),P.handL),y:lerp(.85*ry,.62*ry,P.handL),k:P.handL,rot:-.2,beans:false},
+  {x:lerp(.35*rx,rx+.2*R,P.handR)+Math.cos(w)*ry*.05*wa,y:lerp(.85*ry,.05*ry,P.handR)+Math.sin(w+.8)*ry*.1*wa,k:P.handR,rot:.3+Math.sin(w)*.45*wa,beans:true}];
+ drawCat(ctx,ge,X,Y,D,{tint:TINTON,fur:FUR,paws,badgeSide:1-2*EZ.inOut(seg(t,GT.leave,GT.leave+GT.COLLAPSE))});
+ drawSessionMinis(ctx,cx,k,CatCore.miniSlots(P.minis,CatCore.miniGlide(t),{W:COMPACT,H:32}),1);greetPair(ctx,t,X,Y,D);ctx.restore()}
+function playGreeting(){greetEng=new CatEngine(PRESETS[CHAR]);ISL.greet=ms()}
+desk.addEventListener('pointerdown',ev=>{if(ISL.greet>=0)return;const r=desk.getBoundingClientRect(),x=ev.clientX-r.left,y=ev.clientY-r.top,a=notchEng._at;
+ if(a&&Math.hypot(x-a.x,y-a.y)<a.D*.6)notchEng.slap();else setExpanded(ISL.to<.5)});
+desk.addEventListener('dragover',ev=>{ev.preventDefault();notchEng.catchOpen(true)});
+desk.addEventListener('dragleave',()=>notchEng.catchOpen(false));
+desk.addEventListener('drop',ev=>{ev.preventDefault();const r=desk.getBoundingClientRect();launch(deskFlights,notchEng,ev.clientX-r.left,ev.clientY-r.top,ev.dataTransfer.files[0]?.name||'file',ev.dataTransfer.files[0]?.size||0)});
+
+// ── Size ladder ──────────────────────────────────────────────────────────────
+const lad=document.getElementById('ladder');
+const LSIZES=[{d:12,l:'Ø12 mini'},{d:16,l:'Ø16'},{d:20,l:'Ø20 compact'},{d:24,l:'Ø24'},{d:28,l:'Ø28 full'},{d:44,l:'Ø44'},{d:66,l:'Ø66 expanded'},{d:16,l:'kitten Ø16',kit:1},{d:40,l:'kitten Ø40',kit:1}];
+const LROWS=['momo','shrimpy'].map(n=>({n,cats:LSIZES.map(z=>({...z,e:new CatEngine(z.kit?kittenOf(PRESETS[n]):PRESETS[n])}))}));
+const slotW=d=>Math.max(62,d*2.2),LW=LSIZES.reduce((a,z)=>a+slotW(z.d),0)+24,ROWH=150;
+lad.style.width=LW+'px';lad.style.height=(ROWH*2)+'px';
+function drawLadder(){const [ctx]=fit(lad,LW,ROWH*2),r=lad.getBoundingClientRect();
+ LROWS.forEach((row,ri)=>{const top=ri*ROWH;ctx.fillStyle='#ececee';ctx.font='600 12px system-ui,sans-serif';ctx.textAlign='left';ctx.textBaseline='top';ctx.fillText(PRESETS[row.n].label,12,top+4);
+  let x=12;for(const c of row.cats){const w=slotW(c.d),cx=x+w/2,cy=top+20+ROWH*.42;if(c.kit&&c.d===16){ctx.strokeStyle='#2a2c31';ctx.beginPath();ctx.moveTo(x,top+26);ctx.lineTo(x,top+ROWH-14);ctx.stroke()}
+   ctx.fillStyle='#000';rr(ctx,x+4,top+22,w-8,ROWH-46,10);ctx.fill();look(c.e,r);drawCat(ctx,c.e,cx,cy,c.d,{tint:TINTON,fur:FUR&&c.d>=60,collar:collarOf(AGENT_COL[AGENT])});
+   ctx.fillStyle='#9a9ca3';ctx.font='11px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillText(c.l,cx,top+ROWH-8);x+=w}})}
+lad.addEventListener('pointerdown',ev=>{const r=lad.getBoundingClientRect(),x=ev.clientX-r.left,y=ev.clientY-r.top;for(const row of LROWS)for(const c of row.cats){const a=c.e._at;if(a&&Math.hypot(x-a.x,y-a.y)<Math.max(10,a.D*.7))c.e.slap()}});
+
+// ── Controls ─────────────────────────────────────────────────────────────────
+const CAP={idle:['Follows your cursor, blinks, flicks an ear and gives you a slow blink now and then, plus the odd blep or lip lick.','Follows your cursor and blinks. Ears stay still, a soft closed mouth.'],
+ working:['Ears forward, a gentle kneading bob, ear flicks, and the tongue tip out in concentration.','Blue under-light, the dots badge, tongue tip out in concentration.'],
+ thinking:['Tilts its head, one ear swivels back, gaze drifts up and to the left, mouth pushed to one side.','Gaze locks up and to the right, mouth pushed to one side.'],
+ searching:['Hunting crouch: pupils dilate, ears swivel like radar, the jaw chatters like at a bird in the window.','Eyes scan side to side, jaw chattering.'],
+ approval:['Crouches, then hops with ears shooting up, and meows with every hop.','A hop, then a steady bounce with the ! badge, meowing for you.'],
+ question:['A deep curious head tilt with one ear flopped and a small "mrr?" mouth.','Head tilt with the ? badge and a small "mrr?" mouth.'],
+ error:['A startled hiss, airplane ears, a frown, then it coughs up a hairball.','A quick head shake with flat eyes and a frown.'],
+ finished:['A content sway with a cat smile, blush and sparkles. After a long run of work (12 s here, 5 min in the app) it celebrates with zoomies.','A full forward roll and sparkles, then a cat smile.'],
+ ratelimit:['Droopy ears, panting with its tongue out, a big yawn now and then.','Tired eyes, sweat drops, panting with its tongue out.'],
+ sleeping:['Head lowered, slow breathing through a slightly open mouth, dreaming ear twitches. Waking it up sets off zoomies.','Breathing, floating z, mouth softly open.'],
+ dizzy:['Head wobbles in circles, ears spin out of sync, a wavy mouth with the tongue lolling out.','A double roll, spinning spiral eyes, a wavy mouth with the tongue out.'],
+ love:['Slow blink with closed eyes, a closed smile while it purrs, hearts.','Heart eyes, a closed smile, blush, hearts and a little hop.'],
+ happy:['A double kneading bounce, ears perk, an open happy mouth.','Happy eyes, blush and an open happy mouth.'],
+ surprised:['Ears shoot up, fur puffs, pupils and mouth go round.','A jump, eyes pop bigger, an "O" mouth.'],
+ proud:['Chin up, eyes closed, a smug smile, sparkles.','Star eyes, a tilt, stars and a smug smile.'],
+ wink:['A one-eye wink and a blep, plus an ear flick on the same side.','Wink, tilt and a blep.'],
+ yawn:['Ears fold back, a wide-open yawn with the tongue curled, eyes squeezed shut.','A long stretch, the mouth opens, then z.'],
+ annoyed:['Ears pin flat, whiskers twitch, a "hmph" mouth pushed to one side.','Line eyes and a "hmph" mouth.'],
+ hello:['Waves a paw with the toe beans out and a "mrrp!", ears perk up.','Waves a paw with the original wave timings and a "mrrp!".'],
+ catch:['Opens wide, catches the file in its mouth, gulps, chews and licks its lips. Ears perk and it blushes.','The same catch, without the ear and blush accents.'],
+ catchbad:['Catches it, gags, and coughs the file back up wrapped in fur. Happens for files NotchMeow can\'t read (apps, archives, videos, over 25 MB).','The same, without the ear accents.'],
+ hairball:['Ears back, three heaves, a hairball bounces out, then a relieved lick. Also follows the hiss on errors.','Three heaves, the hairball, a relieved smile.'],
+ zoomies:['Pupils blown, ears back, it tears from side to side with speed lines and skids, then flops happily. Fires on waking up and after a long run of work.','The same burst, on demand only.']};
+const cap=document.getElementById('cap');
+function setCap(k){cap.innerHTML=`<b>Playful</b> · ${CAP[k][0]}<br><b>Classic</b> · ${CAP[k][1]}`}
+const allMain=()=>[...stage.map(S=>S.e),notchEng,...(secondEng?[secondEng]:[]),...LROWS.flatMap(r=>r.cats.map(c=>c.e))];
+const everyone=()=>[...allMain(),...[...POOL.values()].filter(e=>e._used>=POOLN-1)];
+function group(rowId,items,get,set){const row=document.getElementById(rowId),bs=items.map(([v,l])=>{const b=document.createElement('button');b.textContent=l;b.onclick=()=>{set(v);sync()};row.appendChild(b);return[b,v]});
+ const sync=()=>bs.forEach(([b,v])=>b.classList.toggle('on',get()===v));sync();return sync}
+const persLabel=n=>PERS[n].preset==='custom'?'Custom':PERSONAS[PERS[n].preset].label;
+function labels(){document.querySelectorAll('[data-mo]').forEach(el=>{const n=el.dataset.mo,o=OVERRIDE[n];el.textContent=`${PROFILES[o||CFG.motion].label}${o?'':' (global)'} · ${persLabel(n)}`});document.querySelectorAll('[data-pers]').forEach(el=>{el.textContent=persLabel(el.dataset.pers)})}
+function reenter(){for(const e of everyone())e.setState(e.state,true);labels()}
+group('moRow',[['playful','Playful'],['classic','Classic']],()=>CFG.motion,v=>{CFG.motion=v;reenter()});
+group('ovMomo',[[null,'Use global'],['playful','Playful'],['classic','Classic']],()=>OVERRIDE.momo,v=>{OVERRIDE.momo=v;reenter()});
+group('ovShrimpy',[[null,'Use global'],['playful','Playful'],['classic','Classic']],()=>OVERRIDE.shrimpy,v=>{OVERRIDE.shrimpy=v;reenter()});
+group('opts',[[false,'Plain'],[true,'Fur lines']],()=>FUR,v=>{FUR=v});
+const optRow=document.getElementById('opts'),tb=document.createElement('button');tb.style.marginLeft='12px';const syncT=()=>{tb.textContent=TINTON?'State tint: on':'State tint: off';tb.classList.toggle('on',TINTON)};tb.onclick=()=>{TINTON=!TINTON;syncT()};syncT();optRow.appendChild(tb);
+let tour=null,curState='idle';const tourB=document.createElement('button');
+const syncState=group('stRow',STATES.map(s=>[s,s]),()=>curState,v=>{stopTour();goState(v)});
+function goState(st){curState=st;for(const e of allMain())e.setState(st);setCap(st);syncState()}
+function stopTour(){if(tour){clearInterval(tour);tour=null;tourB.textContent='play tour'}}
+tourB.textContent='play tour';tourB.onclick=()=>{if(tour)return stopTour();let i=0;const step=()=>{goState(STATES[i]);i=(i+1)%STATES.length};step();tour=setInterval(step,2800);tourB.textContent='stop tour'};
+document.getElementById('stRow').appendChild(tourB);
+const emRow=document.getElementById('emRow');
+for(const [k,l] of [['love','love'],['happy','happy'],['surprised','surprised'],['proud','proud'],['wink','wink'],['yawn','yawn'],['annoyed','annoyed'],['hello','hello (paw wave)'],['zoomies','zoomies'],['hairball','hairball'],['catch','catch a file'],['catchbad','catch an unsupported file']]){const b=document.createElement('button');b.textContent=l;
+ b.onclick=()=>{if(k==='catch')simulateCatch();else if(k==='catchbad')simulateCatch('setup.exe');else for(const e of allMain())e.emote(k);setCap(k)};emRow.appendChild(b)}
+group('chRow',[['shrimpy','Shrimpy'],['momo','Momo'],...MORE.map(n=>[n,PRESETS[n].label])],()=>CHAR,v=>{CHAR=v});
+const nk=document.getElementById('nkRow');for(const [l,fn] of [['Play greeting',playGreeting],['Expand / collapse',()=>setExpanded(ISL.to<.5)],['Subagent starts',subStart],['Subagent stops',subStop],['Subagent asks',subAsk]]){const b=document.createElement('button');b.textContent=l;b.onclick=fn;nk.appendChild(b)}
+// Personality panel: mix and match any preset or trait mix with any cat.
+const ALLCATS=['shrimpy','momo',...MORE];for(const n of ALLCATS)PERS[n]={preset:'balanced',...PERSONAS.balanced};
+let PCAT='shrimpy';
+const trEl=document.getElementById('traits'),sliders={};
+for(const [k,l,lo,hi] of TRAITS){const lab=document.createElement('label');lab.className='trait';
+ lab.innerHTML=`<b>${l}</b><span></span><input type="range" min="0" max="100" aria-label="${l}"><span class="ends"><span>${lo}</span><span>${hi}</span></span>`;
+ const inp=lab.querySelector('input'),val=lab.querySelector('span');inp.oninput=()=>{PERS[PCAT][k]=inp.value/100;PERS[PCAT].preset='custom';val.textContent=inp.value;syncPreset();labels()};
+ sliders[k]={inp,val};trEl.appendChild(lab)}
+function syncPers(){for(const [k] of TRAITS){const v=Math.round(PERS[PCAT][k]*100);sliders[k].inp.value=v;sliders[k].val.textContent=v}syncPreset()}
+group('pcRow',ALLCATS.map(n=>[n,PRESETS[n].label]),()=>PCAT,v=>{PCAT=v;syncPers()});
+const syncPreset=group('ppRow',[...Object.entries(PERSONAS).map(([k,v])=>[k,v.label]),['custom','Custom']],()=>PERS[PCAT].preset,v=>{if(v!=='custom')Object.assign(PERS[PCAT],PERSONAS[v]);PERS[PCAT].preset=v;syncPers();labels()});
+const allB=document.createElement('button');allB.textContent='Apply to every cat';allB.style.marginLeft='12px';allB.onclick=()=>{for(const n of ALLCATS)PERS[n]={...PERS[PCAT]};labels()};document.getElementById('ppRow').appendChild(allB);
+syncPers();
+reenter();setCap('idle');
+
+// ── Greeting panel: one canvas on its own clock, so Replay restarts it ──────────
+const GC={cat:'shrimpy',loop:false,slow:false,t:0,e:null,cv:document.getElementById('cvG')};
+function gcReplay(){GC.e=new CatEngine(PRESETS[GC.cat]);GC.t=0}
+(()=>{const row=document.getElementById('gcRow'),mk=(l,fn)=>{const b=document.createElement('button');b.textContent=l;b.onclick=fn;row.appendChild(b);return b},cats=[];
+ for(const n of ['shrimpy','momo']){const b=mk(PRESETS[n].label,()=>{GC.cat=n;cats.forEach(([c,m])=>c.classList.toggle('on',m===n));gcReplay()});b.classList.toggle('on',n===GC.cat);cats.push([b,n])}
+ mk('Replay',gcReplay);
+ const lp=mk('Loop',()=>{GC.loop=!GC.loop;lp.classList.toggle('on',GC.loop)}),sl=mk('Slow ×0.5',()=>{GC.slow=!GC.slow;sl.classList.toggle('on',GC.slow)});
+ gcReplay()})();
+let gcLast=performance.now();
+function gcFrame(now){const dt=Math.min(.05,Math.max(0,(now-gcLast)/1000));gcLast=now;GC.t+=dt*(GC.slow?.5:1);
+ if(GC.loop&&GC.t>GREET_END+.8)gcReplay();
+ const t=Math.min(GC.t,GREET_END);GC.e.update(dt);
+ const [ctx,W]=fit(GC.cv);drawGreeting(ctx,t,W/2,Math.min(1,(W-24)/640),GC.e);
+ requestAnimationFrame(gcFrame)}
+requestAnimationFrame(gcFrame);
+
+
+// ── Collar panel: the one global style every cat on this page wears ──────────
+const COLLAR_LABEL={tag:'Band and tag',band:'Band',kerchief:'Neckerchief',off:'Off'},MIN=CatCore.COLLAR_MIN;
+group('colRow',CatCore.COLLAR_STYLES.map(id=>[id,COLLAR_LABEL[id]]),()=>COLLAR,v=>{COLLAR=v});
+group('agRow',AGENTS.map(([n])=>[n,n]),()=>AGENT,v=>{AGENT=v});
+document.getElementById('collarNote').textContent=`In the apps, Settings has this style for every cat (Off is the default) and a "This cat's collar" row for each cat: follow the global style, or pick another style for that cat. This page has the one global style. Readability floor, in device pixels: band ${MIN.band} px thick, tag ${MIN.tag} px across, neckerchief ${MIN.kerchiefW} px wide and ${MIN.kerchiefDrop} px deep. Above that the sizes scale with the head (band a tenth of the head radius). A dark edge keeps light collars apart from light coats.`;
+
+// ── Display: the mode, the pair, the agents' coats, the focus ──────────────────────────────────────────────────────
+const syncDisplay=group('dpRow',CatCore.DISPLAY_MODES.map(m=>[m,MODE_LABEL[m][0].toUpperCase()+MODE_LABEL[m].slice(1)]),()=>MODE,v=>{MODE=v;showRows()});
+function showRows(){document.getElementById('pr1Row').style.display=document.getElementById('pr2Row').style.display=MODE==='two'?'':'none';document.getElementById('acRow').style.display=MODE==='perAgent'?'':'none'}
+const syncPair=[0,1].map(i=>group('pr'+(i+1)+'Row',ALLCATS.map(n=>[n,PRESETS[n].label]),()=>PAIR[i],v=>{const q=[...PAIR];q[i]=v;PAIR=CatCore.cleanPair(q);syncPair.forEach(f=>f())}));
+group('fcRow',[...TASKS.map(t=>[t.id,t.name]),[null,'None']],()=>FOCUS,v=>{FOCUS=v});
+/** One button per agent: its cat, and a dice that rolls a new random one (never the current coat, never another agent's or the Main cat's while a free coat is left). */
+function renderAgents(){const row=document.getElementById('acRow');row.querySelectorAll('button').forEach(b=>b.remove());
+ for(const T of TASKS.filter(t=>CatCore.isAgentPill(t.id))){const b=document.createElement('button');b.textContent=`${T.name}: ${PRESETS[CatCore.agentCatFor(T.id,AGENT_CATS,CHAR,Math.random).cat].label} \u{1F3B2}`;b.title='Roll a new random cat';b.onclick=()=>{AGENT_CATS=CatCore.rerollAgentCat(T.id,AGENT_CATS,CHAR,Math.random).agentCats;renderAgents()};row.appendChild(b)}
+ const r=document.createElement('button');r.textContent='Reset to defaults';r.style.marginLeft='12px';r.onclick=()=>{AGENT_CATS=CatCore.assignAgentCats(TASKS.map(t=>t.id),{},CHAR,Math.random);renderAgents()};row.appendChild(r)}
+renderAgents();showRows();
+
+// ── Small eyes: every coat and a kitten of it, ink pills beside the coloured eyes ─────────────────────────────────────
+const EYE_COLS=[{d:12},{d:16},{d:20},{d:24},{d:12,kit:1},{d:16,kit:1},{d:20,kit:1}],EYE_LEFT=74,EYE_HEAD=36,EYE_ENG=new Map();
+function eyeEng(n,kit){const key=n+(kit?':k':'');let e=EYE_ENG.get(key);if(!e){e=new CatEngine(kit?kittenOf(PRESETS[n]):PRESETS[n],{quiet:true,state:'idle'});EYE_ENG.set(key,e)}return e}
+/** scale 1 is true size; scale 2 draws each cat at twice the head width with the compact drawing forced, so the sheet is the compact cat magnified. */
+function drawEyeSheet(cv,scale){const colW=EYE_COLS.map(z=>Math.max(80,z.d*scale*2+34)),rowH=Math.max(34,24*scale+10),W=EYE_LEFT+colW.reduce((a,b)=>a+b,0)+8,H=EYE_HEAD+ALLCATS.length*rowH+6;
+ cv.style.width=W+'px';cv.style.height=H+'px';const [ctx]=fit(cv,W,H);
+ ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);ctx.textBaseline='alphabetic';ctx.textAlign='center';
+ let x=EYE_LEFT;EYE_COLS.forEach((z,i)=>{const w=colW[i];ctx.fillStyle='#ececee';ctx.font='600 11px system-ui,sans-serif';ctx.fillText(`${z.kit?'kitten ':''}Ø${z.d}`,x+w/2,15);
+  ctx.fillStyle='#9a9ca3';ctx.font='10px system-ui,sans-serif';ctx.fillText('ink · coloured',x+w/2,29);ctx.strokeStyle='#2a2c31';ctx.beginPath();ctx.moveTo(x+.5,6);ctx.lineTo(x+.5,H-6);ctx.stroke();x+=w});
+ ALLCATS.forEach((n,ri)=>{const cy=EYE_HEAD+ri*rowH+rowH/2;ctx.fillStyle='#ececee';ctx.font='11px system-ui,sans-serif';ctx.textAlign='left';ctx.fillText(PRESETS[n].label,10,cy+4);
+  let cx0=EYE_LEFT;EYE_COLS.forEach((z,i)=>{const w=colW[i],e=eyeEng(n,z.kit);for(const [fx,ink] of [[.27,true],[.73,false]])drawCat(ctx,e,cx0+w*fx,cy,z.d*scale,{tint:false,badge:false,detail:'compact',eyes:ink?'ink':undefined});cx0+=w})})}
+function drawEyeSheets(){drawEyeSheet(document.getElementById('eyes2'),2);drawEyeSheet(document.getElementById('eyes1'),1)}
+drawEyeSheets();addEventListener('resize',drawEyeSheets);
+
+// ── Desktop: the big cat out of the notch (sub-project H) ─────────────────────────────────────────────────────────
+// A mock screen of 960 x 540 points. Nothing here decides anything: CatCore.desktopStep says what each event does, desktopFlightAt where the cat is in a flight, desktopFps how often to
+// draw it, clampSpot, spotFor and rememberSpot where it may sit, and desktopKittenSlots where its kittens stand. Two canvases: the base is the screen with the notch and is drawn every frame (the
+// notch is its own window); the cat is the desktop window and is drawn only at the frame rate desktopFps asks for.
+const DKW=960,DKH=540,DKC=DKW/2,DKMENU=32,DKFLY=CatCore.DESKTOP_FLIGHT_MS;
+const dkBase=document.getElementById('cvDkBase'),dkCatCv=document.getElementById('cvDkCat'),dkBox=document.getElementById('dkDesk'),dkOut=document.getElementById('dkReadout'),dkSaved=document.getElementById('dkStored');
+const DK={ph:'home',size:CatCore.DEFAULT_DESKTOP_SIZE,settings:CatCore.defaultDesktopSettings(),dock:'bottom',alert:false,state:'working',spot:null,fl:null,drag:null,isl:{from:0,to:0,t0:0},peek:0,emote:0,hidden:false,music:false,
+ mark:true,hit:false,clamp:false,last:'nothing yet',acc:0,stamps:[],tDraw:0,cleared:false,clickT:0,fps:0,why:''};
+let dkEng=new CatEngine(PRESETS[CHAR],{state:DK.state});
+/** The mock screen in the contract's terms: points, y down, the origin at the top left of the main screen. The Dock is at the bottom (64) or on the left (70). */
+const dkScreens=()=>[{frame:{x:0,y:0,w:DKW,h:DKH},visible:DK.dock==='left'?{x:70,y:DKMENU,w:DKW-70,h:DKH-DKMENU}:{x:0,y:DKMENU,w:DKW,h:DKH-DKMENU-64},main:true}];
+const dkPh=()=>CatCore.DESKTOP_PHASE_INFO[DK.ph],dkD=()=>CatCore.DESKTOP_SIZES[DK.size],dkSpot=()=>DK.spot||(DK.spot=CatCore.spotFor(DK.settings.spots,dkScreens(),DK.size));
+/** The island opens for an alert, and for 2.4 s after a click on the cat; its big-cat spot moves with it (the notch mock's numbers). */
+const dkIsl=()=>{const a=DK.isl;return lerp(a.from,a.to,EZ.out(seg(ms(),a.t0,a.t0+400)))};
+const dkIslTo=to=>{if(DK.isl.to!==to)DK.isl={from:dkIsl(),to,t0:ms()}};
+const dkNotch=e=>({x:DKC-lerp(COMPACT,EXP.W,e)/2+lerp(40,74,e),y:lerp(16,98,e)});
+const dkProg=()=>DK.fl?clamp((ms()-DK.fl.t0)/DKFLY,0,1):0;
+const dkFly=(from,to,delay=0)=>{DK.fl={from,to,t0:ms()+delay}};
+/** Where the cat is on the desktop layer: under the pointer while dragged, along the flight, or at its spot. */
+function dkPos(){if(DK.drag&&DK.drag.moved)return DK.drag.at;if(DK.fl&&dkPh().flight){const q=CatCore.desktopFlightAt(DK.fl.from,DK.fl.to,dkProg());return{x:q.x,y:q.y}}return DK.ph==='onDesktop'?dkSpot():null}
+/** Kittens go to the left of the cat when it is in the right half of its screen, so they stay on the screen. */
+const dkSide=p=>p.x>DKW/2?-1:1;
+/** One event into the machine; the act it answers with is what the page does. `at` is where the cat is on screen when that is not its saved spot (a cat dropped on the notch flies home from the drop). */
+function dkSend(ev,at){const prev=DK.ph,t=dkProg(),r=CatCore.desktopStep(prev,ev);DK.ph=r.state;DK.last=`${ev.type}: ${prev} → ${r.state}${r.act?` (${r.act})`:' (nothing)'}`;
+ const notch=()=>dkNotch(DK.alert?1:0);
+ switch(r.act){
+  case 'place':case 'move':DK.settings.spots=CatCore.rememberSpot(DK.settings.spots,dkScreens(),ev.spot,DK.size);DK.spot=null;dkSpot();break;
+  case 'resettle':DK.spot=null;if(DK.fl&&dkPh().flight)DK.fl.to=dkSpot();else dkSpot();break;
+  case 'flyOut':dkFly(notch(),dkSpot());break;
+  case 'flyHome':dkFly(at||dkSpot(),notch());break;
+  case 'retract':dkEng.emote('surprised');DK.emote=ms()+1800;dkFly(dkSpot(),notch(),350);break;
+  case 'turn':{const f=DK.fl;DK.fl={from:f.to,to:dkPh().dir==='in'?notch():f.from,t0:ms()-(1-t)*DKFLY};break}
+  case 'land':case 'dock':case 'goHome':DK.fl=null;break}
+ DK.settings=CatCore.cleanDesktopSettings({...DK.settings,on:dkPh().on,size:DK.size});dkIslTo(DK.alert||ms()<DK.peek?1:0)}
+function dkTick(){if(DK.fl&&dkPh().flight&&dkProg()>=1)dkSend({type:'flightDone'});if(!DK.alert&&DK.peek&&ms()>DK.peek){DK.peek=0;dkIslTo(0)}}
+const dkOpen=()=>{dkEng.emote('happy');DK.emote=ms()+1800;DK.peek=ms()+2400;dkIslTo(1)};
+function dkSetSize(id){DK.size=id;DK.settings=CatCore.cleanDesktopSettings({...DK.settings,size:id});DK.spot=null;drawStrip();syncSize()}
+function dkRestart(){DK.ph='home';DK.fl=null;DK.alert=false;DK.spot=null;DK.peek=0;DK.drag=null;DK.isl={from:0,to:0,t0:0};DK.last='the app restarted';if(CatCore.cleanDesktopSettings(DK.settings).on)dkSend({type:'launch'})}
+const dkSync=()=>{const C=castNow(),st=DK.alert?'approval':DK.state;if(dkEng.p.name!==C.big.cat)dkEng=new CatEngine(PRESETS[C.big.cat],{state:st});if(dkEng.state!==st)dkEng.setState(st);return C};
+
+/** One mock screen into ctx (already scaled to points): the wallpaper, two windows, the Dock, the menu bar, the island and the cat's spot in it. o: {e: how open the island is, eng, inNotch: the cat is in its notch spot, mark, C: the cast}. */
+function dkScene(ctx,o){const e=o.e,W=DKW,H=DKH,left=DK.dock==='left';
+ const g=ctx.createLinearGradient(0,0,W*.4,H);g.addColorStop(0,'#34405a');g.addColorStop(.55,'#1d2330');g.addColorStop(1,'#12151c');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+ for(const [x,y,w,h,t] of [[120,130,420,250,'Terminal'],[430,210,390,240,'Editor']]){ctx.fillStyle='rgba(26,29,38,.94)';rr(ctx,x,y,w,h,10);ctx.fill();ctx.strokeStyle='rgba(255,255,255,.1)';ctx.lineWidth=1;ctx.stroke();
+  ctx.fillStyle='rgba(255,255,255,.07)';rr(ctx,x,y,w,26,10);ctx.fill();ctx.fillStyle='rgba(255,255,255,.5)';ctx.font='600 11px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(t,x+w/2,y+13);
+  ctx.fillStyle='rgba(255,255,255,.14)';for(let i=0;i<5;i++)rr(ctx,x+16,y+44+i*24,w*(.3+.11*((i*3)%5)),8,4),ctx.fill()}
+ const dcol=['#E07950','#8AB4F8','#2DD4BF','#E879F9','#F7B32B','#9a9ca3','#5EEAD4'];ctx.fillStyle='rgba(255,255,255,.12)';
+ if(left){rr(ctx,8,DKMENU+60,54,7*48+8,14);ctx.fill();dcol.forEach((c,i)=>{ctx.fillStyle=c;rr(ctx,15,DKMENU+66+i*48,40,40,9);ctx.fill()})}
+ else{rr(ctx,DKC-190,H-58,380,50,14);ctx.fill();dcol.forEach((c,i)=>{ctx.fillStyle=c;rr(ctx,DKC-176+i*50,H-52,38,38,9);ctx.fill()})}
+ drawMenubar(ctx,W,1);
+ const iw=lerp(COMPACT,EXP.W,e),ih=lerp(32,EXP.H,e),x0=DKC-iw/2,sp=dkNotch(e);
+ ctx.fillStyle='#000';islandPath(ctx,DKC,iw,ih,1);ctx.fill();ctx.save();islandPath(ctx,DKC,iw,ih,1);ctx.clip();
+ if(e<.95)drawSessionMinis(ctx,DKC,1,CatCore.miniSlots(1,{grid:1,four:1},{W:iw,H:32}),1-seg(e,0,.25));
+ if(e>.5){const a=seg(e,.55,1),T=TASK[o.C.big.pill||'integration_claude'];ctx.globalAlpha=a;ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillStyle='#fff';ctx.font='600 13px system-ui,sans-serif';ctx.fillText(T.name,x0+176,24);
+  ctx.fillStyle='#8d9098';ctx.font='11px system-ui,sans-serif';ctx.fillText(DK.alert||o.alertText?'wants to run npm test':'notchmeow · editing engine.ts',x0+176,40);
+  if(DK.alert||o.alertText)pill(ctx,x0+iw-16,24,'needs approval',COL.approval,1);ctx.globalAlpha=1}
+ if(o.inNotch){drawCat(ctx,o.eng,sp.x,sp.y,lerp(20,64,clamp(e,0,1.1)),{tint:TINTON,badgeSide:e<.5?-1:1,collar:bigCollar(o.eng),earCeiling:0,glow:e>.5,outfit:wdBig(),role:'big'});
+  if(o.C.big.pill)drawKittens(ctx,CatCore.kittenPlaceOf('one',e>.5),o.C.big.pill,o.C.big.cat,TASK[o.C.big.pill].col,sp.x,sp.y,lerp(20,64,clamp(e,0,1.1)),1)}
+ else if(o.mark){ctx.setLineDash([3,4]);ctx.strokeStyle='rgba(255,255,255,.38)';ctx.lineWidth=1;ctx.beginPath();ctx.arc(sp.x,sp.y,lerp(10,31,e),0,TAU);ctx.stroke();ctx.setLineDash([])}
+ ctx.restore()}
+/** The desktop cat's kittens: CatCore.desktopKittenSlots gives the slots in units of the cat's head width D from its centre. Returns the slots. */
+function dkKittens(ctx,pill,cat,col,ox,oy,D,side,dt){const sl=CatCore.desktopKittenSlots(kitView(pill),side);
+ for(const q of sl.shown){const e=poolEng(`kit:${pill}:${q.id}:${cat}`,kitPreset(cat),q.state==='leaving'?'finished':q.state);if(dt)e.update(dt);drawCat(ctx,e,ox+q.x*D,oy+q.y*D,q.d*D,{tint:TINTON,collar:collarOf(col)})}
+ if(sl.moreAt){const m=sl.moreAt,sz=Math.max(9,m.size*D),text='+'+sl.more;ctx.font=`700 ${sz}px system-ui,sans-serif`;const w=ctx.measureText(text).width+sz*.6,x=ox+m.x*D,y=oy+m.y*D;
+  ctx.fillStyle='#2a2c31';rr(ctx,x-w/2,y-sz*.65,w,sz*1.3,sz*.65);ctx.fill();ctx.fillStyle='#cfd0d4';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,x,y+.5)}
+ return sl}
+/** The cat and what travels with it: the cat itself, then (when it sits on the desktop) its badge, drawn by drawCat, and its kittens. */
+function dkCatDraw(ctx,eng,pos,D,C,withKittens,side,dt){drawCat(ctx,eng,pos.x,pos.y,D,{tint:TINTON,fur:FUR&&D>=60,badgeSide:1,collar:bigCollar(eng),outfit:wdBig(),role:'big'});
+ if(withKittens&&C.big.pill)dkKittens(ctx,C.big.pill,C.big.cat,TASK[C.big.pill].col,pos.x,pos.y,D,side,dt)}
+const dkCircles=(pos,D,C,side,eng)=>{const L=CatCore.layout(eng.p,eng.s,pos.x,pos.y,D,{badgeSide:1}),sl=CatCore.desktopKittenSlots(C.big.pill?kitView(C.big.pill):[],side);
+ return[{x:pos.x,y:pos.y,r:D*.55},{x:L.badge.x,y:L.badge.y,r:.3*L.R+3},...sl.shown.map(q=>({x:pos.x+q.x*D,y:pos.y+q.y*D,r:q.d*D/2+2})),...(sl.moreAt?[{x:pos.x+sl.moreAt.x*D,y:pos.y+sl.moreAt.y*D,r:sl.moreAt.size*D*.9}]:[])]};
+function dkLook(e,rect,k){if(!e._at)return;if(mx===null){e.lookX*=.9;e.lookY*=.9;return}const g=CatCore.cursorLook((mx-rect.left)/k-e._at.x,(my-rect.top)/k-e._at.y);e.lookX=g.x;e.lookY=g.y}
+
+/** What desktopFps is told, and the words for its answer. */
+function dkFpsInput(rect,k,C){const st=dkEng.state,p=dkPos(),list=C.big.pill?(KIT[C.big.pill]||[]):[];
+ return{phase:DK.ph,hidden:DK.hidden,dragging:!!(DK.drag&&DK.drag.moved),emote:ms()<DK.emote,kittenMotion:DK.ph==='onDesktop'&&list.some(q=>q.state==='leaving'||ms()-q.born<500),dance:DK.music,asleep:st==='sleeping',working:CatCore.BUSY.has(st),
+  cursorDist:mx===null||!p?undefined:Math.hypot((mx-rect.left)/k-p.x,(my-rect.top)/k-p.y)}}
+const dkWhy=(i,f)=>f===0?(i.hidden?'hidden: a fullscreen app, a locked or sleeping screen':'the cat is in the notch'):f===60?(CatCore.DESKTOP_PHASE_INFO[i.phase].flight?'flying':i.dragging?'being dragged':i.emote?'an emote':i.kittenMotion?'a kitten arriving or leaving':'music'):f===.5?'asleep: a still frame every 2 s':f===20?(i.working?'an agent is working':'the cursor is within 150 points'):'idle and awake';
+let dkReadAt=0;
+function drawDesktop(dt){const C=dkSync();dkTick();
+ const [bctx,W]=fit(dkBase),k=W/DKW,rect=dkBox.getBoundingClientRect(),e=dkIsl(),dragNotch=DK.drag&&DK.drag.src==='notch'&&DK.drag.moved;
+ bctx.save();bctx.scale(k,k);dkScene(bctx,{e,eng:dkEng,C,inNotch:!dkPh().notchEmpty&&!dragNotch,mark:DK.mark,alertText:DK.alert});
+ if(DK.clamp){const v=dkScreens()[0].visible,m=24+dkD()/2;bctx.setLineDash([5,5]);bctx.strokeStyle='rgba(94,234,212,.7)';bctx.strokeRect(v.x+m,v.y+m,v.w-2*m,v.h-2*m);bctx.setLineDash([]);bctx.fillStyle='rgba(94,234,212,.8)';bctx.font='11px system-ui,sans-serif';bctx.textAlign='left';bctx.fillText('where the cat\'s centre may be: clampSpot',v.x+m+6,v.y+m+14)}
+ bctx.restore();
+ const inp=dkFpsInput(rect,k,C),fps=CatCore.desktopFps(inp);DK.fps=fps;DK.why=dkWhy(inp,fps);DK.acc+=dt;const now=ms();
+ if(fps===0){if(!DK.cleared){fit(dkCatCv);DK.cleared=true}}
+ else if(now-DK.tDraw>=1000/fps-3){DK.cleared=false;DK.tDraw=now;DK.stamps.push(now);const step=DK.acc;dkEng.update(step);DK.acc=0;
+  const [cctx]=fit(dkCatCv),pos=dkPos(),D=dkD();cctx.save();cctx.scale(k,k);
+  if(pos){dkLook(dkEng,rect,k);dkCatDraw(cctx,dkEng,pos,D,C,DK.ph==='onDesktop',dkSide(pos),step);
+   if(DK.hit){cctx.setLineDash([3,3]);cctx.strokeStyle='rgba(94,234,212,.9)';cctx.lineWidth=1;for(const c of dkCircles(pos,D,C,dkSide(pos),dkEng)){cctx.beginPath();cctx.arc(c.x,c.y,c.r,0,TAU);cctx.stroke()}cctx.setLineDash([])}}
+  cctx.restore()}
+ while(DK.stamps.length&&DK.stamps[0]<now-1000)DK.stamps.shift();
+ if(now-dkReadAt>200){dkReadAt=now;const sc=dkScreens(),sp=DK.spot;
+  dkOut.textContent=`Phase: ${DK.ph} · last event: ${DK.last}\nFrame rate asked for: ${fps} fps (${DK.why}) · drawn in the last second: ${DK.stamps.length}\nSpot: ${sp?`${Math.round(sp.x)}, ${Math.round(sp.y)}`:'none yet'} · size ${DK.size} (Ø${dkD()}) · screens ${CatCore.screenKey(sc)}`;
+  dkSaved.textContent=`Settings it would store (Mac: cat.desktop.on, .size, .spots; Windows and Linux: the desktop object of the cat block): ${JSON.stringify(DK.settings)}`}}
+
+// Pointer: press the cat (in the notch or on the desktop) to pick it up; release on empty desktop to drop it; release on the island to send it home. Only the cat's body takes the mouse.
+const dkPt=ev=>{const r=dkBox.getBoundingClientRect(),k=r.width/DKW;return{x:(ev.clientX-r.left)/k,y:(ev.clientY-r.top)/k}};
+function dkHitTest(p){const D=dkD();
+ if(DK.ph==='onDesktop'&&!DK.fl&&!DK.drag){const c=dkSpot();if(dkCircles(c,D,castNow(),dkSide(c),dkEng).some(q=>Math.hypot(p.x-q.x,p.y-q.y)<=q.r))return 'cat'}
+ if(DK.ph==='home'||DK.ph==='atNotchForAlert'){const e=dkIsl(),n=dkNotch(e);if(Math.hypot(p.x-n.x,p.y-n.y)<=Math.max(12,lerp(20,64,e)*.6))return 'notch'}
+ return null}
+const dkOnIsland=p=>{const e=dkIsl(),iw=lerp(COMPACT,EXP.W,e),ih=lerp(32,EXP.H,e);return Math.abs(p.x-DKC)<=iw/2&&p.y<=ih};
+function dkClick(){if(DK.clickT){clearTimeout(DK.clickT);DK.clickT=0;dkSend({type:'sendHome'});return}DK.clickT=setTimeout(()=>{DK.clickT=0;dkOpen()},300)}
+const dkMenu=document.createElement('div');dkMenu.className='dkmenu';dkMenu.hidden=true;dkBox.appendChild(dkMenu);
+dkBox.addEventListener('pointerdown',ev=>{if(ev.button!==0)return;dkMenu.hidden=true;const p=dkPt(ev),h=dkHitTest(p);if(!h)return;try{dkBox.setPointerCapture(ev.pointerId)}catch{}DK.drag={src:h,start:p,at:p,moved:false}});
+dkBox.addEventListener('pointermove',ev=>{const p=dkPt(ev);if(DK.drag){DK.drag.at=p;if(!DK.drag.moved&&Math.hypot(p.x-DK.drag.start.x,p.y-DK.drag.start.y)>6)DK.drag.moved=true}else dkBox.style.cursor=dkHitTest(p)?'grab':'default'});
+dkBox.addEventListener('pointerup',ev=>{const d=DK.drag;if(!d)return;DK.drag=null;const p=dkPt(ev);
+ if(d.moved){if(dkOnIsland(p)){if(d.src==='cat')dkSend({type:'sendHome'},p)}else dkSend(d.src==='notch'?{type:'dragOut',spot:p}:{type:'move',spot:p})}
+ else if(d.src==='cat')dkClick();else dkEng.slap()});
+dkBox.addEventListener('contextmenu',ev=>{const p=dkPt(ev);if(dkHitTest(p)!=='cat')return;ev.preventDefault();dkMenu.innerHTML='';
+ const add=(t,fn,sc)=>{const b=document.createElement('button');b.innerHTML=t+(sc?`<span class="sc">${sc}</span>`:'');b.onclick=()=>{dkMenu.hidden=true;fn()};dkMenu.appendChild(b)};
+ add('Open the notch',dkOpen);add('Send home',()=>dkSend({type:'sendHome'}));dkMenu.insertAdjacentHTML('beforeend','<div class="gap"></div>');
+ dkMenu.insertAdjacentHTML('beforeend','<div style="padding:4px 10px 2px;color:var(--dim);font-size:11px">Size ▸</div>');
+ for(const id of CatCore.DESKTOP_SIZE_IDS)add(`${id[0].toUpperCase()+id.slice(1)}${id===DK.size?' ✓':''}`,()=>dkSetSize(id),`Ø${CatCore.DESKTOP_SIZES[id]}`);
+ dkMenu.insertAdjacentHTML('beforeend','<div class="gap"></div>');add('Cat on the desktop',()=>dkSend({type:'toggle'}),'⌃⌥D');
+ const r=dkBox.getBoundingClientRect();dkMenu.style.left=Math.min(ev.clientX-r.left,r.width-200)+'px';dkMenu.style.top=Math.min(ev.clientY-r.top,r.height-230)+'px';dkMenu.hidden=false});
+addEventListener('pointerdown',ev=>{if(!dkMenu.contains(ev.target))dkMenu.hidden=true},true);
+
+// Controls.
+const dkRow=id=>document.getElementById(id),dkBtn=(row,label,fn)=>{const b=document.createElement('button');b.textContent=label;b.onclick=fn;dkRow(row).appendChild(b);return b};
+const dkToggle=dkBtn('dkTripRow','Cat on the desktop',()=>dkSend({type:'toggle'}));
+dkBtn('dkTripRow','Send home',()=>dkSend({type:'sendHome'}));
+dkBtn('dkTripRow','Approval arrives',()=>{DK.alert=true;dkSend({type:'alertOn'})});
+dkBtn('dkTripRow','Answered',()=>{DK.alert=false;dkSend({type:'alertOff'})});
+dkBtn('dkTripRow','Screens changed',()=>{DK.dock=DK.dock==='left'?'bottom':'left';dkSend({type:'screensChanged'})});
+dkBtn('dkTripRow','Restart the app',dkRestart);
+const syncSize=group('dkSizeRow',CatCore.DESKTOP_SIZE_IDS.map(id=>[id,`${id[0].toUpperCase()+id.slice(1)} Ø${CatCore.DESKTOP_SIZES[id]}`]),()=>DK.size,v=>dkSetSize(v));
+group('dkStateRow',['idle','working','thinking','searching','finished','sleeping','error'].map(s=>[s,s]),()=>DK.state,v=>{DK.state=v});
+for(const [label,key] of [['Mark the empty spot','mark'],['Hit area','hit'],['Clamp area','clamp'],['Hidden (fullscreen app, locked screen)','hidden'],['Music playing','music']]){const b=dkBtn('dkViewRow',label,()=>{DK[key]=!DK[key];b.classList.toggle('on',DK[key])});b.classList.toggle('on',DK[key])}
+setInterval(()=>{dkToggle.textContent=dkPh().on?'Bring the cat home':'Cat on the desktop'},100);
+
+// The alert flight as a strip of frames: two rows of five, each a small mock screen (half size) around the notch and the cat's spot.
+const dkStrip=document.getElementById('dkStrip');
+function drawStrip(){const CW=216,CH=150,GAP=8,CAP=20,LAB=16,RH=CAP+CH+LAB+8,W=5*CW+4*GAP,H=2*RH,s=.5,X0=190,D=dkD(),C=castNow();
+ dkStrip.style.width=W+'px';dkStrip.style.height=H+'px';const [ctx]=fit(dkStrip,W,H);ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);
+ const spot=CatCore.spotFor({},dkScreens(),DK.size),notch=dkNotch(1);
+ const rows=[{title:'An approval arrives: the surprised emote, then it flies into its notch spot',from:spot,to:notch,state:'approval',frames:[[0,0,'surprised'],[.25,.35],[.5,.7],[.75,1],[1,1]],alert:true},
+  {title:'It is answered: the cat flies back out to its spot',from:notch,to:spot,state:'working',frames:[[0,1],[.25,.65],[.5,.3],[.75,0],[1,0]],alert:false}];
+ rows.forEach((row,ri)=>{const y0=ri*RH;ctx.fillStyle='#ececee';ctx.font='600 12px system-ui,sans-serif';ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText(row.title,2,y0+CAP/2);
+  row.frames.forEach(([prog,open,emote],ci)=>{const x0=ci*(CW+GAP),y=y0+CAP;let t=0;const eng=new CatEngine(PRESETS[C.big.cat],{now:()=>t,rand:CatCore.rng(5),quiet:true,state:row.state});
+   if(emote)eng.emote(emote);for(let i=0;i<(emote?12:90);i++){t+=1000/60;eng.update(1/60)}
+   const inNotch=(ri===0&&prog===1)||(ri===1&&prog===0),pos=CatCore.desktopFlightAt(row.from,row.to,prog);
+   ctx.save();ctx.beginPath();ctx.rect(x0,y,CW,CH);ctx.clip();ctx.translate(x0,y);ctx.scale(s,s);ctx.translate(-X0,0);
+   dkScene(ctx,{e:open,eng,C,inNotch,mark:false,alertText:row.alert&&prog>0});
+   ctx.setLineDash([2,6]);ctx.strokeStyle='rgba(255,255,255,.45)';ctx.lineWidth=2;ctx.beginPath();for(let i=0;i<=40;i++){const q=CatCore.desktopFlightAt(row.from,row.to,i/40);i?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y)}ctx.stroke();ctx.setLineDash([]);
+   if(!inNotch)drawCat(ctx,eng,pos.x,pos.y,D,{tint:TINTON,badgeSide:1,outfit:wdBig(),role:'big'});
+   ctx.restore();ctx.fillStyle='#9a9ca3';ctx.font='11px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+   ctx.fillText(emote?'the alert arrives':prog===0||prog===1?(inNotch?'in the notch':'at its spot'):`${(prog*DKFLY/1000).toFixed(2)} s`,x0+CW/2,y+CH+LAB/2+2)})})}
+drawStrip();addEventListener('resize',drawStrip);
+
+// The three sizes side by side, the cat in its working state with its badge and its agent's kittens; below, mirrored to the left, with the body outlined.
+const dkSizes=document.getElementById('dkSizes'),SIZE_ENG=new Map();
+function sizeEng(cat,state){const key=cat+':'+state;let e=SIZE_ENG.get(key);if(!e){let t=0;e=new CatEngine(PRESETS[cat],{now:()=>t,rand:CatCore.rng(9),quiet:true,state});for(let i=0;i<90;i++){t+=1000/60;e.update(1/60)}SIZE_ENG.set(key,e)}return e}
+function drawSizes(){const C=castNow(),ids=CatCore.DESKTOP_SIZE_IDS,cw=ids.map(id=>Math.round(CatCore.DESKTOP_SIZES[id]*2.4+44)),ROW=176,LEFTW=64,W=LEFTW+cw.reduce((a,b)=>a+b,0)+8,H=2*ROW+22;
+ dkSizes.style.width=W+'px';dkSizes.style.height=H+'px';const [ctx]=fit(dkSizes,W,H);ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);
+ const eng=sizeEng(C.big.cat,'working');let x=LEFTW;
+ ids.forEach((id,i)=>{const D=CatCore.DESKTOP_SIZES[id];ctx.fillStyle='#ececee';ctx.font='600 12px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(`${id[0].toUpperCase()+id.slice(1)} Ø${D}`,x+cw[i]/2,12);
+  ctx.strokeStyle='#2a2c31';ctx.beginPath();ctx.moveTo(x+.5,6);ctx.lineTo(x+.5,H-6);ctx.stroke();
+  [1,-1].forEach((side,ri)=>{const cy=22+ri*ROW+ROW/2,pos={x:side===1?x+22+D*.55:x+cw[i]-22-D*.55,y:cy};
+   dkCatDraw(ctx,eng,pos,D,C,true,side,.25);
+   if(ri){ctx.setLineDash([3,3]);ctx.strokeStyle='rgba(94,234,212,.9)';ctx.lineWidth=1;for(const c of dkCircles(pos,D,C,side,eng)){ctx.beginPath();ctx.arc(c.x,c.y,c.r,0,TAU);ctx.stroke()}ctx.setLineDash([])}});
+  x+=cw[i]});
+ ctx.fillStyle='#9a9ca3';ctx.font='11px system-ui,sans-serif';ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText('right',8,22+ROW/2);ctx.fillText('left, body',8,22+ROW*1.5)}
+drawSizes();setInterval(drawSizes,500);addEventListener('resize',drawSizes);
+
+// ── Wardrobe panel: the chooser, the preview and the sheets ─────────────────────────────────────────────────────────────────────
+const wdAutoName=()=>{const r=CatCore.autoOutfitFor(...wdDay());return r==='none'?'none':CatCore.OUTFIT_NAMES[r]};
+const wdLabel=id=>id==='auto'?`Auto: ${WD.date?WD.date.join('-'):'today'}, ${wdAutoName()}`:CatCore.OUTFIT_NAMES[id];
+const wdBtns={};
+{const pick=document.getElementById('wdPick');
+ for(const G of CatCore.OUTFIT_GROUPS){const row=document.createElement('div');row.className='row';const h=document.createElement('span');h.className='h';h.textContent=G.name||'Choose';row.appendChild(h);
+  for(const id of G.ids){const b=document.createElement('button');b.onclick=()=>{WD.choice=id;wdRefresh()};wdBtns[id]=b;row.appendChild(b)}pick.appendChild(row)}
+ group('wdCoatRow',CatCore.CAT_IDS.map(id=>[id,id]),()=>WD.coat,v=>{WD.coat=v;drawWardrobe()});
+ document.getElementById('wdDate').oninput=ev=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(ev.target.value);WD.date=m?[+m[1],+m[2],+m[3]]:null;wdRefresh()};
+ document.getElementById('wdNow').onclick=()=>{document.getElementById('wdDate').value='';WD.date=null;wdRefresh()}}
+function wdRefresh(){for(const id of CatCore.OUTFIT_IDS){wdBtns[id].textContent=wdLabel(id);wdBtns[id].classList.toggle('on',WD.choice===id)}
+ const [y,m,d]=wdDay(),E=CatCore.easterOf(y);
+ document.getElementById('wdReadout').textContent=`${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}: Auto wears ${wdAutoName()}. Easter ${y} is ${E?`${E.day}/${E.month}`:'out of range'}. Every big cat wears: ${wdBig()?CatCore.OUTFIT_NAMES[wdBig()]:'nothing'}.`;
+ drawWardrobe()}
+/** One cat from the shared idle engines, optionally with the head turned, dressed for a big-cat role. */
+function owCat(ctx,cat,id,cx,cy,D,o={}){const e=sizeEng(cat,'idle'),sv=[e.s.yaw,e.s.pitch];if(o.yaw!==undefined)e.s.yaw=o.yaw;if(o.pitch!==undefined)e.s.pitch=o.pitch;
+ drawCat(ctx,e,cx,cy,D,{tint:false,badge:false,outfit:id,role:o.role||'big',earCeiling:o.earCeiling,collar:o.collar,detail:o.detail});e.s.yaw=sv[0];e.s.pitch=sv[1]}
+/* A hyphenated name breaks after its hyphen, so the long word fits its column; the rest of the name stays on one line. */
+const owShort=id=>{const n=CatCore.OUTFIT_NAMES[id].replace('Round glasses','Round glass.'),h=n.indexOf('-');return h<0?n.split(' '):[n.slice(0,h+1),n.slice(h+1)]};
+function owHeads(ctx,ids,LW,CW,font){ctx.fillStyle='#ececee';ctx.font=font;ctx.textAlign='center';ids.forEach((id,i)=>{const w=owShort(id);w.forEach((t,j)=>ctx.fillText(t,LW+i*CW+CW/2,12+j*11))})}
+function drawWdSheet(){const cv=document.getElementById('wdSheet'),cats=CatCore.CAT_IDS,ids=CatCore.OUTFIT_DRAWN,CW=66,RH=64,LW=78,HH=34,W=LW+ids.length*CW,H=HH+cats.length*RH;
+ cv.style.width=W+'px';cv.style.height=H+'px';const [ctx]=fit(cv,W,H);ctx.fillStyle='#0b0c0e';ctx.fillRect(0,0,W,H);owHeads(ctx,ids,LW,CW,'600 10px system-ui,sans-serif');
+ cats.forEach((c,j)=>{ctx.fillStyle='#9a9ca3';ctx.font='11px system-ui,sans-serif';ctx.textAlign='left';ctx.fillText(c,8,HH+j*RH+RH/2+4);
+  ids.forEach((id,i)=>owCat(ctx,c,id,LW+i*CW+CW/2,HH+j*RH+RH/2+4,40))})}
+/** The compact notch's big cat: Ø20 in the 32 pt strip, Ø18 in the 24 pt strip of a screen without a notch, magnified k times. */
+function drawWdCompact(cv,k,cats,rows){const ids=CatCore.OUTFIT_DRAWN,CW=42,LW=64,HH=26,gap=3,rowH=rows.reduce((a,r)=>a+r.H+gap,0),W=LW+ids.length*CW*k,H=HH+cats.length*rowH*k;
+ cv.style.width=W+'px';cv.style.height=H+'px';const [ctx]=fit(cv,W,H);ctx.fillStyle='#16171a';ctx.fillRect(0,0,W,H);owHeads(ctx,ids,LW,CW*k,'600 10px system-ui,sans-serif');
+ cats.forEach((c,j)=>{let y=HH+j*rowH*k;rows.forEach(r=>{ctx.fillStyle='#9a9ca3';ctx.font='10px system-ui,sans-serif';ctx.textAlign='left';ctx.fillText(`${c} Ø${r.D}`,4,y+r.H*k/2+3);
+  ctx.save();ctx.translate(LW,y);ctx.scale(k,k);ids.forEach((id,i)=>{ctx.fillStyle='#000';ctx.fillRect(i*CW+1,0,CW-2,r.H);ctx.fillStyle='#3a3c42';ctx.fillRect(i*CW+1,0,CW-2,1/DPR());owCat(ctx,c,id,i*CW+CW/2,r.H/2,r.D,{earCeiling:0})});ctx.restore();y+=(r.H+gap)*k})})}
+const WD_STRIPS=[{H:32,D:20},{H:24,D:18}];
+function drawWdTurn(){const cv=document.getElementById('wdTurn'),cats=['momo','shrimpy','button','midnight'],turns=[-.6,.6],ids=CatCore.OUTFIT_DRAWN,CW=66,RH=64,LW=96,HH=34,W=LW+ids.length*CW,H=HH+cats.length*turns.length*RH;
+ cv.style.width=W+'px';cv.style.height=H+'px';const [ctx]=fit(cv,W,H);ctx.fillStyle='#0b0c0e';ctx.fillRect(0,0,W,H);owHeads(ctx,ids,LW,CW,'600 10px system-ui,sans-serif');
+ cats.forEach((c,j)=>turns.forEach((yw,t)=>{const y=HH+(j*2+t)*RH+RH/2+4;ctx.fillStyle='#9a9ca3';ctx.font='11px system-ui,sans-serif';ctx.textAlign='left';ctx.fillText(`${c} ${yw<0?'left':'right'}`,8,y+4);
+  ids.forEach((id,i)=>owCat(ctx,c,id,LW+i*CW+CW/2,y,40,{yaw:yw,pitch:.15}))}))}
+function drawWdCollars(){const cv=document.getElementById('wdCollars'),styles=CatCore.COLLAR_STYLES,cols=[['momo','bell'],['momo','bandana'],['momo','scarf'],['ginger','bell'],['ginger','bandana'],['ginger','scarf']],CW=124,RH=116,LW=70,HH=22,W=LW+cols.length*CW,H=HH+styles.length*RH;
+ cv.style.width=W+'px';cv.style.height=H+'px';const [ctx]=fit(cv,W,H);ctx.fillStyle='#0b0c0e';ctx.fillRect(0,0,W,H);ctx.fillStyle='#ececee';ctx.font='600 11px system-ui,sans-serif';ctx.textAlign='center';
+ cols.forEach(([c,id],i)=>ctx.fillText(`${c} · ${id}`,LW+i*CW+CW/2,14));
+ styles.forEach((st,j)=>{ctx.fillStyle='#9a9ca3';ctx.textAlign='left';ctx.fillText(`collar: ${st}`,6,HH+j*RH+RH/2+4);cols.forEach(([c,id],i)=>owCat(ctx,c,id,LW+i*CW+CW/2,HH+j*RH+RH/2,78,{collar:collarOf2(st)}))})}
+const collarOf2=style=>style==='off'?null:{style,col:AGENT_COL['Claude Code']};
+/** Headroom above the preview's cats, in px: a Ø170 witch hat's tip sits 179 px above the head centre, which is 150 px down the 270 px canvas, so 46 px more keeps the tip in with 16 px to spare. */
+const WD_PREVIEW_TOP=46;
+function drawWdPreview(){const cv=document.getElementById('wdPreview'),id=wdBig(),c=WD.coat,W=820,H=270+WD_PREVIEW_TOP;cv.style.width=W+'px';cv.style.height=H+'px';const [ctx]=fit(cv,W,H);ctx.fillStyle='#0b0c0e';ctx.fillRect(0,0,W,H);ctx.translate(0,WD_PREVIEW_TOP);
+ owCat(ctx,c,id,130,150,170);ctx.fillStyle='#9a9ca3';ctx.font='11px system-ui,sans-serif';ctx.textAlign='center';ctx.fillText(`${c}, ${id?CatCore.OUTFIT_NAMES[id]:'no outfit'}`,130,262);
+ [[64,'Ø64',270],[48,'Ø48',360],[28,'Ø28',430]].forEach(([D,l,x])=>{owCat(ctx,c,id,x,150,D);ctx.fillText(l,x,262)});
+ ctx.fillStyle='#000';ctx.fillRect(480,98,60,32);ctx.fillStyle='#3a3c42';ctx.fillRect(480,98,60,1/DPR());owCat(ctx,c,id,510,114,20,{earCeiling:98});ctx.fillStyle='#9a9ca3';ctx.fillText('Ø20 notch',510,262);
+ ctx.save();ctx.translate(560,50);ctx.scale(3,3);ctx.fillStyle='#000';ctx.fillRect(0,0,60,32);ctx.fillStyle='#3a3c42';ctx.fillRect(0,0,60,1/DPR());owCat(ctx,c,id,30,16,20,{earCeiling:0});ctx.restore();ctx.fillText('Ø20 × 3',650,262);
+ owCat(ctx,c,id,740,100,20,{role:'small'});owCat(ctx,c,id,780,100,12,{role:'small'});ctx.fillText('small cats: bare',760,128)}
+function drawWardrobe(){drawWdPreview();drawWdSheet();drawWdCompact(document.getElementById('wdCompact3'),2.5,['momo','shrimpy','latte','midnight'],WD_STRIPS);drawWdCompact(document.getElementById('wdCompact1'),1,CatCore.CAT_IDS,WD_STRIPS.slice(0,1));drawWdTurn();drawWdCollars()}
+// ── Frame loop ───────────────────────────────────────────────────────────────
+let last=performance.now();
+function frame(t){const dt=Math.min(.05,Math.max(0,(t-last)/1000));last=t;
+ for(const e of everyone())e.update(dt);if(ISL.greet<0)greetEng.parts.length=0;
+ for(const S of stage){const [ctx,W,H]=fit(S.cv),r=S.cv.getBoundingClientRect();look(S.e,r);drawCat(ctx,S.e,W/2,H*.57,Math.min(W*.4,H*.5),{fur:FUR,tint:TINTON,glow:true,collar:bigCollar(S.e),outfit:wdBig(),role:'big'});drawFlights(ctx,S.flights)}
+ drawDesk();drawLadder();drawDesktop(dt);requestAnimationFrame(frame)}
+requestAnimationFrame(frame);
+wdRefresh();
+</script></body></html>

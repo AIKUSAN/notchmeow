@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "note": "What the chat says for each Claude Code failure (the codes are AIError.code / AiError.code on top of the twelve shared error kinds). `resetsAt` is Unix seconds; the time is shown in the viewer's time zone and locale, lower-cased (3:45 pm). `action` is the one button under the note.",
+  "cases": [
+    {"code": "nm_claude_missing", "kind": "unreachable", "text": "Claude Code isn't installed.", "action": "installGuide"},
+    {"code": "nm_signed_out", "kind": "auth", "text": "Claude Code is signed out.", "action": "signIn"},
+    {"code": "nm_plan_limit", "kind": "billing", "resetsAt": null, "text": "Your Claude plan's limit was reached.", "action": null},
+    {"code": "nm_plan_limit", "kind": "billing", "resetsAt": 1791301500, "timeZone": "UTC", "locale": "en_US", "text": "Your Claude plan's limit resets at 3:45 pm.", "action": null},
+    {"code": "nm_plan_limit", "kind": "billing", "resetsAt": 1791301500, "timeZone": "UTC", "locale": "fr_FR", "text": "Your Claude plan's limit resets at 15:45.", "action": null},
+    {"code": "nm_claude_old", "kind": "bad_request", "text": "Update Claude Code.", "action": "updateGuide"},
+    {"code": "nm_claude_crashed", "kind": "server", "text": "Claude stopped unexpectedly.", "action": "retry"},
+    {"code": "nm_claude_offline", "kind": "unreachable", "text": "Couldn't reach Claude.", "action": null},
+    {"code": "nm_needs_git", "kind": "bad_request", "text": "Claude Code needs Git for Windows.", "action": "gitGuide"},
+    {"code": "nm_tools_present", "kind": "bad_request", "text": "Claude Code started with tools a quick action must not have, so NotchMeow stopped it.", "action": null},
+    {"code": "nm_folder_missing", "kind": "bad_request", "text": "That folder isn't there any more. Pick another one.", "action": null}
+  ]
+}

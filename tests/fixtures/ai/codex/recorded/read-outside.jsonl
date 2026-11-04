@@ -1,0 +1,7 @@
+{"type":"thread.started","__ID_1__":"__ID_2__"}
+{"type":"turn.started"}
+{"type":"item.completed","item":{"id":"item_0","type":"error","message":"Exceeded skills context budget. All skill descriptions were removed and 202 additional skills were not included in the model-visible skills list."}}
+{"type":"item.started","item":{"id":"item_1","type":"command_execution","command":"/bin/zsh -lc 'head -n 1 __HOME__/f3a2-rec/outside.txt'","aggregated_output":"","exit_code":null,"status":"in_progress"}}
+{"type":"item.completed","item":{"id":"item_1","type":"command_execution","command":"/bin/zsh -lc 'head -n 1 __HOME__/f3a2-rec/outside.txt'","aggregated_output":"secret-line\n","exit_code":0,"status":"completed"}}
+{"type":"item.completed","item":{"id":"item_2","type":"agent_message","text":"secret-line"}}
+{"type":"turn.completed","usage":{"input_tokens":88114,"cached_input_tokens":87552,"cache_write_input_tokens":0,"output_tokens":60,"reasoning_output_tokens":0}}

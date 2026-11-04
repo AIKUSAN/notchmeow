@@ -1,0 +1,20 @@
+{
+  "title": "Your mix",
+  "picks": {
+    "greet": "kitten",
+    "love": "bestof",
+    "annoyed": "kitten",
+    "dizzy": "kitten",
+    "slap": "kitten",
+    "finish": "bestof",
+    "error": "bestof",
+    "approval": "kitten",
+    "question": "kitten",
+    "proud": "bestof",
+    "wink": "kitten",
+    "sleep": "studio",
+    "think": "bestof",
+    "search": "bestof",
+    "rate": "kitten"
+  }
+}

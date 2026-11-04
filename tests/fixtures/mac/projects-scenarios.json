@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "note": "Scripted Claude Code sessions for the Projects model (P-mac, Task 5). Each step sends its event (a full hook payload, as Claude Code sends it) at `at` milliseconds after 1760000000000; `wait_ms` is the pause before the step (the gap from the step before, 0 for the first); `event: null` is a time-only step that reads the view without sending anything. A `cwd` that starts with `~` stands for the home folder (the test replaces it with `home`; the fake events script expands it with the real home). Paths are made up under /tmp/nm-projects-demo/ and no name is real. `expect` is typed by hand: `projects` lists each project in pill order as `name:state:waiting`; `rows` lists each project's sessions as `label:state`; `notes` lists the rows that carry a note as `label:note`; `waiting` and `layout` are the view's count and the island's layout. Only the keys a step names are checked. Each expect must agree with shared/projects-core.js.",
+  "home": "/Users/sam",
+  "scenarios": {
+    "two-projects": {
+      "about": "A main and a side session in notchmeow (the side in a worktree), two subagents, a second project site; Stop, then finished, then idle after 5.2 s.",
+      "steps": [
+        {"say": "The main session starts in notchmeow.", "at": 0, "wait_ms": 0,
+         "event": {"hook_event_name": "SessionStart", "session_id": "s-main", "cwd": "/tmp/nm-projects-demo/notchmeow"},
+         "expect": {"projects": ["notchmeow:idle:0"], "rows": {"notchmeow": ["main:idle"]}, "waiting": 0, "layout": "projects"}},
+        {"say": "The owner sends a prompt; the prompt is not kept.", "at": 1000, "wait_ms": 1000,
+         "event": {"hook_event_name": "UserPromptSubmit", "session_id": "s-main", "cwd": "/tmp/nm-projects-demo/notchmeow", "prompt": "fix the notch"},
+         "expect": {"projects": ["notchmeow:working:0"], "rows": {"notchmeow": ["main:working"]}}},
+        {"say": "A test run is about to start.", "at": 2000, "wait_ms": 1000,
+         "event": {"hook_event_name": "PreToolUse", "session_id": "s-main", "cwd": "/tmp/nm-projects-demo/notchmeow", "tool_name": "Bash", "tool_input": {"command": "swift test"}},
+         "expect": {"projects": ["notchmeow:working:0"], "rows": {"notchmeow": ["main:working"]}}},
+        {"say": "The first subagent starts.", "at": 3000, "wait_ms": 1000,
+         "event": {"hook_event_name": "SubagentStart", "session_id": "s-main", "cwd": "/tmp/nm-projects-demo/notchmeow", "agent_id": "sub-1", "agent_type": "Explore"},
+         "expect": {"projects": ["notchmeow:working:0"], "rows": {"notchmeow": ["main:working"]}}},
+        {"say": "The second subagent starts.", "at": 3500, "wait_ms": 500,
+         "event": {"hook_event_name": "SubagentStart", "session_id": "s-main", "cwd": "/tmp/nm-projects-demo/notchmeow", "agent_id": "sub-2", "agent_type": "Plan"},
+         "expect": {"projects": ["notchmeow:working:0"], "rows": {"notchmeow": ["main:working"]}}},
+        {"say": "A side session works in notchmeow's worktree p-mac.", "at": 4000, "wait_ms": 500,
+         "event": {"hook_event_name": "PreToolUse", "session_id": "s-side", "cwd": "/tmp/nm-projects-demo/notchmeow/.claude/worktrees/p-mac", "tool_name": "Read", "tool_input": {"file_path": "/tmp/nm-projects-demo/notchmeow/.claude/worktrees/p-mac/NotchBuddy/README.md"}},
+         "expect": {"projects": ["notchmeow:working:0"], "rows": {"notchmeow": ["main:working", "p-mac:working"]}}},
+        {"say": "A session starts in site, the newest activity.", "at": 5000, "wait_ms": 1000,
+         "event": {"hook_event_name": "PreToolUse", "session_id": "s-site", "cwd": "/tmp/nm-projects-demo/site", "tool_name": "Grep", "tool_input": {"query": "TODO"}},
+         "expect": {"projects": ["site:working:0", "notchmeow:working:0"], "rows": {"site": ["main:working"], "notchmeow": ["main:working", "p-mac:working"]}}},
+        {"say": "The main session stops; the side session still works.", "at": 6000, "wait_ms": 1000,
+         "event": {"hook_event_name": "Stop", "session_id": "s-main", "cwd": "/tmp/nm-projects-demo/notchmeow", "stop_hook_active": false},
+         "expect": {"projects": ["notchmeow:working:0", "site:working:0"], "rows": {"notchmeow": ["main:finished", "p-mac:working"]}}},
+        {"say": "The side session stops: notchmeow is finished.", "at": 6100, "wait_ms": 100,
+         "event": {"hook_event_name": "Stop", "session_id": "s-side", "cwd": "/tmp/nm-projects-demo/notchmeow/.claude/worktrees/p-mac", "stop_hook_active": false},
+         "expect": {"projects": ["notchmeow:finished:0", "site:working:0"], "rows": {"notchmeow": ["main:finished", "p-mac:finished"]}}},
+        {"say": "site stops too: both are finished.", "at": 7000, "wait_ms": 900,
+         "event": {"hook_event_name": "Stop", "session_id": "s-site", "cwd": "/tmp/nm-projects-demo/site", "stop_hook_active": false},
+         "expect": {"projects": ["site:finished:0", "notchmeow:finished:0"], "rows": {"site": ["main:finished"], "notchmeow": ["main:finished", "p-mac:finished"]}}},
+        {"say": "5.2 s after the stop, nothing is finished any more (the boundary is later-side).", "at": 12200, "wait_ms": 5200, "event": null,
+         "expect": {"projects": ["site:idle:0", "notchmeow:idle:0"], "rows": {"site": ["main:idle"], "notchmeow": ["main:idle", "p-mac:idle"]}}}
+      ]
+    },
+    "claude-app-wait": {
+      "about": "A session in the Claude App asks for an approval: it counts once, is in the app (Waiting in Claude App) and ends at its next PreToolUse.",
+      "steps": [
+        {"say": "The Claude App starts a session in notes.", "at": 0, "wait_ms": 0,
+         "event": {"nm_agent": "claude-desktop", "hook_event_name": "SessionStart", "session_id": "s-app", "cwd": "/tmp/nm-projects-demo/notes"},
+         "expect": {"projects": ["notes:idle:0"], "rows": {"notes": ["main:idle"]}, "waiting": 0, "layout": "projects"}},
+        {"say": "The owner sends a prompt in the app.", "at": 1000, "wait_ms": 1000,
+         "event": {"nm_agent": "claude-desktop", "hook_event_name": "UserPromptSubmit", "session_id": "s-app", "cwd": "/tmp/nm-projects-demo/notes", "prompt": "draft the reply"},
+         "expect": {"projects": ["notes:working:0"], "rows": {"notes": ["main:working"]}}},
+        {"say": "The app asks for a permission: amber, counted once, in the app.", "at": 2000, "wait_ms": 1000,
+         "event": {"nm_agent": "claude-desktop", "hook_event_name": "PermissionRequest", "session_id": "s-app", "cwd": "/tmp/nm-projects-demo/notes", "tool_name": "Bash", "tool_input": {"command": "git push"}},
+         "expect": {"projects": ["notes:approval:1"], "rows": {"notes": ["main:approval"]}, "notes": ["main:Waiting in Claude App"], "waiting": 1, "layout": "projects"}},
+        {"say": "The owner answers in the app: the next PreToolUse ends the wait.", "at": 3000, "wait_ms": 1000,
+         "event": {"nm_agent": "claude-desktop", "hook_event_name": "PreToolUse", "session_id": "s-app", "cwd": "/tmp/nm-projects-demo/notes", "tool_name": "Read", "tool_input": {"file_path": "/tmp/nm-projects-demo/notes/draft.md"}},
+         "expect": {"projects": ["notes:working:0"], "rows": {"notes": ["main:working"]}, "notes": [], "waiting": 0}}
+      ]
+    },
+    "collide-and-home": {
+      "about": "Two folders named site get their parent folders as names; a session in the home folder is the project Home; the home session ends and its project goes with it.",
+      "steps": [
+        {"say": "A session in the home folder is the project Home.", "at": 0, "wait_ms": 0,
+         "event": {"hook_event_name": "SessionStart", "session_id": "h1", "cwd": "~"},
+         "expect": {"projects": ["Home:idle:0"], "rows": {"Home": ["main:idle"]}}},
+        {"say": "A site folder under a starts alone: it is named plainly.", "at": 1000, "wait_ms": 1000,
+         "event": {"hook_event_name": "SessionStart", "session_id": "s-a", "cwd": "/tmp/nm-projects-demo/a/site"},
+         "expect": {"projects": ["site:idle:0", "Home:idle:0"]}},
+        {"say": "A site folder under b starts: the names split by parent.", "at": 2000, "wait_ms": 1000,
+         "event": {"hook_event_name": "SessionStart", "session_id": "s-b", "cwd": "/tmp/nm-projects-demo/b/site"},
+         "expect": {"projects": ["site — b:idle:0", "site — a:idle:0", "Home:idle:0"], "rows": {"site — a": ["main:idle"], "site — b": ["main:idle"]}}},
+        {"say": "The site under a is prompted: the newest activity leads.", "at": 3000, "wait_ms": 1000,
+         "event": {"hook_event_name": "UserPromptSubmit", "session_id": "s-a", "cwd": "/tmp/nm-projects-demo/a/site", "prompt": "rename it"},
+         "expect": {"projects": ["site — a:working:0", "site — b:idle:0", "Home:idle:0"]}},
+        {"say": "The site under b asks for an approval: it leads and counts as waiting.", "at": 4000, "wait_ms": 1000,
+         "event": {"hook_event_name": "PermissionRequest", "session_id": "s-b", "cwd": "/tmp/nm-projects-demo/b/site", "tool_name": "Bash", "tool_input": {"command": "rm -rf build"}},
+         "expect": {"projects": ["site — b:approval:1", "site — a:working:0", "Home:idle:0"], "rows": {"site — b": ["main:approval"]}, "waiting": 1}},
+        {"say": "The approval is answered: the next tool event ends the ask.", "at": 5000, "wait_ms": 1000,
+         "event": {"hook_event_name": "PreToolUse", "session_id": "s-b", "cwd": "/tmp/nm-projects-demo/b/site", "tool_name": "Read", "tool_input": {"file_path": "/tmp/nm-projects-demo/b/site/README.md"}},
+         "expect": {"projects": ["site — b:working:0", "site — a:working:0", "Home:idle:0"], "waiting": 0}},
+        {"say": "The home session ends: Home goes with it.", "at": 6000, "wait_ms": 1000,
+         "event": {"hook_event_name": "SessionEnd", "session_id": "h1", "cwd": "~"},
+         "expect": {"projects": ["site — b:working:0", "site — a:working:0"], "rows": {"site — b": ["main:working"], "site — a": ["main:working"]}}}
+      ]
+    },
+    "other-agent": {
+      "about": "Another agent (Codex) sends an event: the island shows the agents layout, and no Claude session is made.",
+      "steps": [
+        {"say": "Codex runs a tool.", "at": 0, "wait_ms": 0,
+         "event": {"nm_agent": "codex", "hook_event_name": "PreToolUse", "tool_name": "apply_patch", "cwd": "/tmp/nm-projects-demo/notchmeow"},
+         "expect": {"projects": [], "rows": {}, "waiting": 0, "layout": "agents"}},
+        {"say": "A minute later, still the agents layout.", "at": 60000, "wait_ms": 60000, "event": null,
+         "expect": {"projects": [], "waiting": 0, "layout": "agents"}}
+      ]
+    },
+    "end": {
+      "about": "Two sessions, then each ends: the project leaves with its last session.",
+      "steps": [
+        {"say": "The main session starts in notchmeow.", "at": 0, "wait_ms": 0,
+         "event": {"hook_event_name": "SessionStart", "session_id": "s1", "cwd": "/tmp/nm-projects-demo/notchmeow"},
+         "expect": {"projects": ["notchmeow:idle:0"], "layout": "projects"}},
+        {"say": "A session starts in site.", "at": 1000, "wait_ms": 1000,
+         "event": {"hook_event_name": "SessionStart", "session_id": "s2", "cwd": "/tmp/nm-projects-demo/site"},
+         "expect": {"projects": ["site:idle:0", "notchmeow:idle:0"]}},
+        {"say": "The notchmeow session ends.", "at": 2000, "wait_ms": 1000,
+         "event": {"hook_event_name": "SessionEnd", "session_id": "s1", "cwd": "/tmp/nm-projects-demo/notchmeow"},
+         "expect": {"projects": ["site:idle:0"], "rows": {"site": ["main:idle"]}}},
+        {"say": "The last session ends: no project is left.", "at": 3000, "wait_ms": 1000,
+         "event": {"hook_event_name": "SessionEnd", "session_id": "s2", "cwd": "/tmp/nm-projects-demo/site"},
+         "expect": {"projects": [], "rows": {}, "waiting": 0}}
+      ]
+    }
+  }
+}

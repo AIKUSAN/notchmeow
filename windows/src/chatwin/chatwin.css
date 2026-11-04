@@ -1,0 +1,29 @@
+/* The chat's own window (the pop-out): the island's chat view, full window. The island's rules for the view, the chat and the Markdown (style.css, companion.css) apply as
+   they are; this file only gives the window a background and takes the island's cat room out of the chat's padding. */
+body.chat-window {
+  background: var(--card-flat);
+}
+
+#chat-root {
+  position: fixed;
+  inset: 0;
+}
+
+/* The island's view is hidden until it is "on" and has its own fade: here it is simply there. */
+body.chat-window .view {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+  transition: none;
+}
+
+body.chat-window .card {
+  border-radius: 0;
+  border: 0;
+  background: var(--card-flat);
+}
+
+/* The island's chat leaves 84 px for its cat; the window has no cat. */
+body.chat-window .chat-body {
+  padding: 12px 16px 14px;
+}

@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "note": "claudeOnly(activePills, otherAgentSeen) -> false when another agent pill is declared or another agent has sent an event, else true; islandLayout(current, claudeOnlyNow, open) -> projects | agents, changing only while folded.",
+  "claudeOnly": [
+    {"name":"Claude Code and integrations only","activePills":["integration_claude","integration_github","integration_stripe"],"otherAgentSeen":false,"expect":true},
+    {"name":"another agent pill is declared","activePills":["integration_claude","agent_codex"],"otherAgentSeen":false,"expect":false},
+    {"name":"another agent has sent an event","activePills":["integration_claude"],"otherAgentSeen":true,"expect":false},
+    {"name":"nothing declared, nothing seen","activePills":[],"otherAgentSeen":false,"expect":true},
+    {"name":"the Claude app pill counts as Claude","activePills":["integration_claude","agent_claude-desktop"],"otherAgentSeen":false,"expect":true},
+    {"name":"a list that is not a list, a flag that is not true","activePills":"agent_codex","otherAgentSeen":"yes","expect":true},
+    {"name":"IDs that are not agent pills","activePills":["agent_","Agent_X"],"otherAgentSeen":false,"expect":true}
+  ],
+  "layout": [
+    {"name":"folded: it switches to project pills","current":"agents","claudeOnly":true,"open":false,"expect":"projects"},
+    {"name":"open: it waits until the island folds","current":"agents","claudeOnly":true,"open":true,"expect":"agents"},
+    {"name":"open: project pills stay while the owner looks","current":"projects","claudeOnly":false,"open":true,"expect":"projects"},
+    {"name":"folded: back to agent pills","current":"projects","claudeOnly":false,"open":false,"expect":"agents"},
+    {"name":"no layout yet: decided now, even open","current":null,"claudeOnly":true,"open":true,"expect":"projects"}
+  ]
+}

@@ -1,0 +1,10 @@
+: keep-alive
+
+data: {"choices":[{"index":0,"delta":{"content":"Partial "}}]}
+
+: keep-alive
+
+data: not json at all
+
+data: {"choices":[{"index":0,"delta":{"content":"answer"}}]}
+

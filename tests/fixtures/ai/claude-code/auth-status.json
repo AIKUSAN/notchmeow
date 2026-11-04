@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "note": "`claude auth status` exits 0 when signed in and 1 when not. Only `authMethod` is read; every other field is ignored and never kept. `exit` is null when the program could not be run.",
+  "authMethods": ["none", "claude.ai", "oauth_token", "api_key", "api_key_helper", "third_party"],
+  "cases": [
+    {"name": "signed in with a Claude plan", "exit": 0, "stdout": "{\"authMethod\":\"claude.ai\"}", "expect": {"state": "signedIn", "authMethod": "claude.ai"}},
+    {"name": "an OAuth token", "exit": 0, "stdout": "{\"authMethod\":\"oauth_token\"}", "expect": {"state": "signedIn", "authMethod": "oauth_token"}},
+    {"name": "an API key", "exit": 0, "stdout": "{\"authMethod\":\"api_key\"}", "expect": {"state": "signedIn", "authMethod": "api_key"}},
+    {"name": "an API key helper", "exit": 0, "stdout": "{\"authMethod\":\"api_key_helper\"}", "expect": {"state": "signedIn", "authMethod": "api_key_helper"}},
+    {"name": "a cloud account", "exit": 0, "stdout": "{\"authMethod\":\"third_party\"}", "expect": {"state": "signedIn", "authMethod": "third_party"}},
+    {"name": "signed out: exit 1 and none", "exit": 1, "stdout": "{\"authMethod\":\"none\"}", "expect": {"state": "signedOut", "authMethod": null}},
+    {"name": "signed out: exit 1 and nothing on stdout", "exit": 1, "stdout": "", "expect": {"state": "signedOut", "authMethod": null}},
+    {"name": "none on exit 0 is still signed out", "exit": 0, "stdout": "{\"authMethod\":\"none\"}", "expect": {"state": "signedOut", "authMethod": null}},
+    {"name": "other fields are ignored", "exit": 0, "stdout": "{\"authMethod\":\"claude.ai\",\"email\":\"someone@example.com\",\"orgName\":\"Example Org\"}", "expect": {"state": "signedIn", "authMethod": "claude.ai"}},
+    {"name": "a method this build does not know", "exit": 0, "stdout": "{\"authMethod\":\"something_new\"}", "expect": {"state": "signedIn", "authMethod": "something_new"}},
+    {"name": "exit 0 with output that is not JSON", "exit": 0, "stdout": "Logged in as someone", "expect": {"state": "signedIn", "authMethod": null}},
+    {"name": "any other exit status is unknown", "exit": 2, "stdout": "", "expect": {"state": "unknown", "authMethod": null}},
+    {"name": "the program could not be run", "exit": null, "stdout": "", "expect": {"state": "unknown", "authMethod": null}}
+  ]
+}

@@ -1,0 +1,14 @@
+--disable
+shell_tool
+--disable
+unified_exec
+--disable
+apps
+--disable
+browser_use
+--disable
+computer_use
+--disable
+in_app_browser
+-c
+web_search="disabled"

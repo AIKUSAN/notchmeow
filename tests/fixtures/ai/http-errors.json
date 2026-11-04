@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "cases": [
+    {"status": 401, "headers": {}, "body": {"type": "error", "error": {"type": "authentication_error", "message": "invalid x-api-key"}}, "kind": "auth", "retryAfter": null},
+    {"status": 403, "headers": {}, "body": {"error": {"type": "invalid_request_error", "code": "unsupported_country_region_territory", "message": "Country not supported"}}, "kind": "auth", "retryAfter": null},
+    {"status": 400, "headers": {}, "body": {"type": "error", "error": {"type": "invalid_request_error", "message": "messages: field required"}}, "kind": "bad_request", "retryAfter": null},
+    {"status": 400, "headers": {}, "body": {"type": "error", "error": {"type": "invalid_request_error", "message": "Your credit balance is too low to access the Anthropic API."}}, "kind": "billing", "retryAfter": null},
+    {"status": 404, "headers": {}, "body": {"error": {"message": "model 'unknown-model' not found, try pulling it first", "type": "not_found"}}, "kind": "bad_request", "retryAfter": null},
+    {"status": 429, "headers": {"Retry-After": "2"}, "body": {"error": {"type": "rate_limit_error", "code": "slow_down", "message": "Slow down"}}, "kind": "rate_limited", "retryAfter": 2},
+    {"status": 429, "headers": {}, "body": {"error": {"type": "insufficient_quota", "code": "insufficient_quota", "message": "You exceeded your current quota"}}, "kind": "billing", "retryAfter": null},
+    {"status": 429, "headers": {}, "body": {"error": {"type": "rate_limit_error", "code": "credit_balance_exhausted", "message": "Credit exhausted"}}, "kind": "billing", "retryAfter": null},
+    {"status": 429, "headers": {}, "body": {"error": {"type": "rate_limit_error", "code": "project_spend_limit_exceeded", "message": "Spend limit"}}, "kind": "billing", "retryAfter": null},
+    {"status": 429, "headers": {}, "body": {"error": {"type": "rate_limit_error", "code": "organization_usage_limit_exceeded", "message": "Usage limit"}}, "kind": "billing", "retryAfter": null},
+    {"status": 500, "headers": {}, "body": {"type": "error", "error": {"type": "api_error", "message": "Internal server error"}}, "kind": "server", "retryAfter": null},
+    {"status": 502, "headers": {}, "body": null, "kind": "server", "retryAfter": null},
+    {"status": 503, "headers": {"retry-after": "7"}, "body": {"error": {"type": "service_unavailable_error", "code": "server_is_overloaded", "message": "Busy"}}, "kind": "overloaded", "retryAfter": 7},
+    {"status": 529, "headers": {}, "body": {"type": "error", "error": {"type": "overloaded_error", "message": "Overloaded"}}, "kind": "overloaded", "retryAfter": null},
+    {"status": 402, "headers": {}, "body": {"type": "error", "error": {"type": "billing_error", "message": "Billing issue"}}, "kind": "billing", "retryAfter": null},
+    {"status": 402, "headers": {}, "body": null, "kind": "billing", "retryAfter": null},
+    {"status": 429, "headers": {}, "body": {"error": {"type": "rate_limit_error", "code": "user_spend_limit_exceeded", "message": "Spend limit"}}, "kind": "billing", "retryAfter": null},
+    {"status": 500, "headers": {}, "body": {"error": "boom"}, "kind": "server", "retryAfter": null},
+    {"status": 400, "headers": {}, "body": [{"error": {"code": 400, "message": "bad"}}], "kind": "bad_request", "retryAfter": null},
+    {"status": 429, "headers": {"Retry-After": "²"}, "body": null, "kind": "rate_limited", "retryAfter": null},
+    {"status": 429, "headers": {"Retry-After": "0"}, "body": null, "kind": "rate_limited", "retryAfter": null}
+  ]
+}

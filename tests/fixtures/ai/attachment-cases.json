@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "maxFileBytes": 26214400,
+  "rejectExtensions": ["zip", "gz", "tar", "7z", "rar", "dmg", "iso", "pkg", "msi", "exe", "app", "mov", "mp4", "mkv", "avi"],
+  "imageExtensions": {"png": "image/png", "jpg": "image/jpeg", "jpeg": "image/jpeg", "gif": "image/gif", "webp": "image/webp", "heic": "image/heic"},
+  "cases": [
+    {"file": "note.txt", "kind": "text", "contains": ["Hello Shrimpy", "Second line"]},
+    {"file": "code.swift", "kind": "text", "contains": ["print(\"meow\")"]},
+    {"file": "empty.txt", "kind": "text", "contains": []},
+    {"file": "text.pdf", "kind": "pdf_text", "contains": ["Hello from NotchMeow"]},
+    {"file": "Upper.PDF", "kind": "pdf_text", "contains": ["Hello from NotchMeow"]},
+    {"file": "scan.pdf", "kind": "pdf_scanned"},
+    {"file": "photo.png", "kind": "image", "mime": "image/png"},
+    {"file": "letter.docx", "kind": "docx", "contains": ["Shrimpy and Momo", "live in the notch."]},
+    {"file": "doc.rtf", "kind": "rtf", "contains": ["Plain RTF text."], "notContains": ["Helvetica", "\\par"]},
+    {"file": "page.html", "kind": "html", "contains": ["Momo says hi"], "notContains": ["hidden", "p{}"]},
+    {"file": "Legacy.HTM", "kind": "html", "contains": ["Momo says hi"], "notContains": ["hidden"]},
+    {"file": "archive.zip", "kind": "rejected", "reason": "type"},
+    {"file": "setup.exe", "kind": "rejected", "reason": "type"},
+    {"file": "blob.dat", "kind": "rejected", "reason": "type"},
+    {"file": "big.txt", "kind": "rejected", "reason": "size"}
+  ]
+}

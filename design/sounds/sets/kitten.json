@@ -1,0 +1,22 @@
+{
+  "set": "kitten",
+  "title": "Kitten",
+  "pitch_st": 1.5,
+  "entries": [
+    {"slot": "greet", "source": "love/fs-64017-Department64.mp3", "start": 0.0, "end": 0.42, "pitch_st": 1.0, "mood": "happy", "signature": true, "note": "kitten22, the first 0.4 s, up one more semitone (relative to the set's shift)."},
+    {"slot": "love", "source": "love/fs-64017-Department64.mp3", "mood": "happy", "signature": true, "note": "kitten22, a friendly purr-meow."},
+    {"slot": "annoyed", "source": "annoyed/fs-64008-Department64.mp3", "mood": "upset", "signature": false, "note": "kitten13, the offended half-growl."},
+    {"slot": "dizzy", "source": "dizzy/fs-64007-Department64.mp3", "effects": [{"type": "wobble", "rate_hz": 5.0, "depth_st": 1.0}], "mood": "upset", "signature": false, "note": "kitten12, a short howl, with the 5 Hz wobble."},
+    {"slot": "slap", "source": "dizzy/fs-64007-Department64.mp3", "start": 0.0, "end": 0.3, "pitch_st": -1.0, "mood": "calm", "signature": false, "note": "kitten12, the first 0.3 s, down one semitone (relative to the set's shift)."},
+    {"slot": "finish", "source": "rate/fs-64011-Department64.mp3", "start": 0.05, "end": 0.65, "effects": [{"type": "glide", "from_st": 0.0, "to_st": 2.0}], "mood": "happy", "signature": true, "note": "kitten16, its loud first meow, with a rising pitch ramp (0 to +2 semitones (relative to the set's shift))."},
+    {"slot": "error", "source": "error/fs-64015-Department64.mp3", "effects": [{"type": "glide", "from_st": 0.0, "to_st": -4.0}], "mood": "upset", "signature": true, "note": "kitten20, the sad howl-meow, with a falling pitch ramp (0 to -4 semitones (relative to the set's shift))."},
+    {"slot": "approval", "source": "approval/fs-64005-Department64.mp3", "mood": "attention", "signature": true, "note": "kitten10, a friendly alert meow."},
+    {"slot": "question", "source": "error/fs-64015-Department64.mp3", "start": 0.1, "end": 0.6, "effects": [{"type": "glide", "from_st": -2.0, "to_st": 4.0}], "mood": "attention", "signature": true, "note": "kitten20, its middle, with a rising pitch ramp (-2 to +4 semitones (relative to the set's shift))."},
+    {"slot": "proud", "source": "approval/fs-64005-Department64.mp3", "start": 0.0, "end": 0.4, "pitch_st": 2.0, "mood": "happy", "signature": false, "note": "kitten10, the first 0.4 s, up two semitones (relative to the set's shift)."},
+    {"slot": "wink", "source": "annoyed/fs-64008-Department64.mp3", "start": 0.45, "end": 0.8, "pitch_st": 2.0, "mood": "happy", "signature": false, "note": "kitten13, the last third, up two semitones (relative to the set's shift)."},
+    {"slot": "sleep", "source": "sleep/fs-64004-Department64.mp3", "mood": "calm", "signature": false, "note": "Buddha Purr, close-mic."},
+    {"slot": "think", "source": "rate/fs-64011-Department64.mp3", "start": 0.55, "end": 0.95, "pitch_st": -2.0, "mood": "attention", "signature": false, "note": "kitten16, the low tail, down two semitones (relative to the set's shift): 'hmm'."},
+    {"slot": "search", "source": "synth:search", "mood": "attention", "signature": false, "note": "Made in code: 12 Hz chatter."},
+    {"slot": "rate", "source": "rate/fs-64012-Department64.mp3", "effects": [{"type": "thump"}], "mood": "upset", "signature": false, "note": "kitten17, getting frustrated, then the tail thump."}
+  ]
+}

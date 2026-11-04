@@ -1,0 +1,568 @@
+{
+  "version": 1,
+  "note": "The Settings control map (docs/superpowers/specs/2026-10-17-settings-restyle-design.md, 'Control map'). Each control: its id, the spec's first-column wording (was), its homes (page, tab or null, card) and the stored keys it reads and writes (store: defaults = UserDefaults on the Mac, keychain = a Keychain item, file = a file the app writes outside preferences). Every stored key sits under exactly one control, with its name and store unchanged. The Windows plan starts from this file. SettingsMap.swift must match it field by field (tests/SettingsMapTests.swift, scripts/test-settings-map.sh). The Windows/Linux columns (winHomes, win, winOnly, winPages) are read by windows/scripts/settings-tests/map.test.mjs; the Mac ignores them.",
+  "pages": [
+    { "page": "general", "title": "General", "tabs": ["general", "shortcuts"] },
+    { "page": "agents", "title": "Agents", "tabs": [] },
+    { "page": "chat", "title": "AI and chat", "tabs": ["yourai", "keys", "localmodels", "sidekick", "companion"] },
+    { "page": "services", "title": "Services", "tabs": [] },
+    { "page": "cat", "title": "Cat", "tabs": ["look", "outfits", "personality", "agentcats"] },
+    { "page": "devices", "title": "Devices", "tabs": [] }
+  ],
+  "winPages": [
+    { "page": "general", "title": "General", "tabs": [] },
+    { "page": "agents", "title": "Agents", "tabs": [] },
+    { "page": "chat", "title": "AI and chat", "tabs": ["yourai", "keys", "localmodels", "sidekick", "companion"] },
+    { "page": "services", "title": "Services", "tabs": [] },
+    { "page": "cat", "title": "Cat", "tabs": ["look", "outfits", "personality", "agentcats"] },
+    { "page": "devices", "title": "Devices", "tabs": [] }
+  ],
+  "winOnly": [
+    {
+      "id": "island.screen",
+      "was": "General: Island lives on (Windows and Linux)",
+      "winHomes": [{ "page": "general", "tab": null, "card": "Island" }],
+      "win": [{ "key": "screen", "store": "settings" }]
+    }
+  ],
+  "controls": [
+    {
+      "id": "sound.enabled",
+      "was": "General: Enable sounds",
+      "homes": [{ "page": "general", "tab": "general", "card": "Sound" }],
+      "winHomes": [{ "page": "general", "tab": null, "card": "Sound" }],
+      "win": [{ "key": "soundEnabled", "store": "settings" }],
+      "mac": [{ "key": "soundEnabled", "store": "defaults" }]
+    },
+    {
+      "id": "sound.volume",
+      "was": "General: Volume",
+      "homes": [{ "page": "general", "tab": "general", "card": "Sound" }],
+      "winHomes": [{ "page": "general", "tab": null, "card": "Sound" }],
+      "win": [{ "key": "soundVolume", "store": "settings" }],
+      "mac": [{ "key": "soundVolume", "store": "defaults" }]
+    },
+    {
+      "id": "island.openOnHover",
+      "was": "General: Open on hover",
+      "homes": [{ "page": "general", "tab": "general", "card": "Island" }],
+      "winHomes": [{ "page": "general", "tab": null, "card": "Island" }],
+      "win": [{ "key": "openOnHover", "store": "settings" }],
+      "mac": [{ "key": "openOnHover", "store": "defaults" }]
+    },
+    {
+      "id": "island.focusAware",
+      "was": "(new) Focus awareness: Step back when I'm already in the app",
+      "homes": [{ "page": "general", "tab": "general", "card": "Island" }],
+      "winHomes": [{ "page": "general", "tab": null, "card": "Island" }],
+      "win": [{ "key": "focusAware", "store": "settings" }],
+      "mac": [{ "key": "island.focusAware", "store": "defaults" }]
+    },
+    {
+      "id": "island.hoverGlow",
+      "was": "General: Hover glow",
+      "homes": [{ "page": "general", "tab": "general", "card": "Island" }],
+      "winHomes": [{ "page": "general", "tab": null, "card": "Island" }],
+      "win": [{ "key": "hoverGlow", "store": "settings" }],
+      "mac": [{ "key": "island.hoverGlow", "store": "defaults" }]
+    },
+    {
+      "id": "island.tuckAway",
+      "was": "General: Tuck the island away",
+      "homes": [{ "page": "general", "tab": "general", "card": "Island" }],
+      "winHomes": [{ "page": "general", "tab": null, "card": "Island" }],
+      "win": [{ "key": "tuckAway", "store": "settings" }],
+      "mac": [{ "key": "island.tuckAway", "store": "defaults" }]
+    },
+    {
+      "id": "island.closeAfter",
+      "was": "General: Close after N s inactive",
+      "homes": [{ "page": "general", "tab": "general", "card": "Island" }],
+      "winHomes": [{ "page": "general", "tab": null, "card": "Island" }],
+      "win": [{ "key": "autoCloseInterval", "store": "settings" }],
+      "mac": [{ "key": "autoCloseInterval", "store": "defaults" }]
+    },
+    {
+      "id": "startup.launch",
+      "was": "General: Launch at Mac startup",
+      "homes": [{ "page": "general", "tab": "general", "card": "Startup" }],
+      "winHomes": [{ "page": "general", "tab": null, "card": "Startup" }],
+      "win": [{ "key": "autostart", "store": "settings" }],
+      "mac": []
+    },
+    {
+      "id": "pills.main",
+      "was": "Active pills: Main",
+      "homes": [{ "page": "general", "tab": "general", "card": "On the island" }],
+      "winHomes": [],
+      "win": [],
+      "mac": [{ "key": "mainPill", "store": "defaults" }]
+    },
+    {
+      "id": "pills.slots",
+      "was": "Active pills: N/4 slots used",
+      "homes": [{ "page": "general", "tab": "general", "card": "On the island" }],
+      "winHomes": [{ "page": "general", "tab": null, "card": "On the island" }],
+      "win": [],
+      "mac": []
+    },
+    {
+      "id": "pills.switches",
+      "was": "Active pills: Claude Code, Cursor, Antigravity, Codex; Active pills: Gemini CLI; Active pills: Anthropic, Google AI, OpenAI; Active pills: Ollama, LM Studio; Active pills: Resend, n8n, Vercel, GitHub, Notion, Cal.com, Stripe, Apple Music",
+      "homes": [
+        { "page": "agents", "tab": null, "card": "On the island" },
+        { "page": "chat", "tab": "keys", "card": "Anthropic, Google AI, OpenAI" },
+        { "page": "chat", "tab": "localmodels", "card": "Local models" },
+        { "page": "services", "tab": null, "card": "Resend, n8n, Vercel, GitHub, Stripe, Cal.com, Notion, Music" }
+      ],
+      "winHomes": [{ "page": "agents", "tab": null, "card": "Where you code" }, { "page": "services", "tab": null, "card": "Resend, n8n, Vercel, GitHub, Stripe, Cal.com, Notion" }],
+      "win": [{ "key": "activeIntegrations", "store": "settings" }],
+      "mac": [{ "key": "activeIntegrations", "store": "defaults" }]
+    },
+    {
+      "id": "hooks.claude",
+      "was": "Agents: Claude Code hooks (Install, Uninstall, Update, Confirm); Agents: Claude Code hooks, App Store install state",
+      "homes": [{ "page": "agents", "tab": null, "card": "Claude Code hooks" }],
+      "winHomes": [{ "page": "agents", "tab": null, "card": "Claude Code hooks" }],
+      "win": [{ "key": "~/.claude/settings.json", "store": "file" }, { "key": "hooksInstalled", "store": "settings" }],
+      "mac": [
+        { "key": "~/.claude/notchmeow/nm-hook", "store": "file" },
+        { "key": "~/.claude/settings.json", "store": "file" },
+        { "key": "notchmeowHooksInstalled", "store": "defaults" }
+      ]
+    },
+    {
+      "id": "hooks.gemini",
+      "was": "Agents: Gemini CLI, Antigravity, Codex hooks",
+      "homes": [{ "page": "agents", "tab": null, "card": "Gemini CLI hooks" }],
+      "winHomes": [{ "page": "agents", "tab": null, "card": "Gemini CLI hooks" }],
+      "win": [{ "key": "~/.gemini/settings.json", "store": "file" }],
+      "mac": [{ "key": "~/.gemini/settings.json", "store": "file" }]
+    },
+    {
+      "id": "hooks.antigravity",
+      "was": "Agents: Gemini CLI, Antigravity, Codex hooks",
+      "homes": [{ "page": "agents", "tab": null, "card": "Antigravity hooks" }],
+      "winHomes": [{ "page": "agents", "tab": null, "card": "Antigravity hooks" }],
+      "win": [{ "key": "~/.gemini/config/hooks.json", "store": "file" }],
+      "mac": [{ "key": "~/.gemini/config/hooks.json", "store": "file" }]
+    },
+    {
+      "id": "hooks.codex",
+      "was": "Agents: Gemini CLI, Antigravity, Codex hooks",
+      "homes": [{ "page": "agents", "tab": null, "card": "Codex hooks" }],
+      "winHomes": [],
+      "win": [],
+      "mac": [{ "key": "~/.codex/hooks.json", "store": "file" }]
+    },
+    {
+      "id": "plan.usage",
+      "was": "Agents: Plan usage, Show in the notch, relay",
+      "homes": [{ "page": "agents", "tab": null, "card": "Plan usage" }],
+      "winHomes": [],
+      "win": [],
+      "mac": [
+        { "key": "showPlanInNotch", "store": "defaults" },
+        { "key": "claudePlanUsage", "store": "defaults" },
+        { "key": "~/.claude/settings.json", "store": "file" }
+      ]
+    },
+    {
+      "id": "ai.claudePlan",
+      "was": "AI: Connect Claude (Use my Claude plan, Stop using it, Check again)",
+      "homes": [{ "page": "chat", "tab": "yourai", "card": "Choose your AI" }],
+      "winHomes": [{ "page": "chat", "tab": "yourai", "card": "Choose your AI" }],
+      "win": [{ "key": "ai.claudeCodeEnabled", "store": "settings" }, { "key": "ai.claudeCodeModel", "store": "settings" }],
+      "mac": [
+        { "key": "aiClaudeCodeEnabled", "store": "defaults" },
+        { "key": "aiClaudeCodeModel", "store": "defaults" }
+      ]
+    },
+    {
+      "id": "ai.openAIPlan",
+      "was": "(new) ChatGPT plan, Gemini rows, Make main",
+      "homes": [{ "page": "chat", "tab": "yourai", "card": "Choose your AI" }],
+      "winHomes": [{ "page": "chat", "tab": "yourai", "card": "Choose your AI" }],
+      "win": [],
+      "mac": []
+    },
+    {
+      "id": "ai.routing",
+      "was": "AI: Which model answers: Chat, File questions; AI: Preferred cloud",
+      "homes": [
+        { "page": "chat", "tab": "yourai", "card": "Which one answers" },
+        { "page": "chat", "tab": "yourai", "card": "Choose your AI" }
+      ],
+      "winHomes": [{ "page": "chat", "tab": "yourai", "card": "Which one answers" }, { "page": "chat", "tab": "yourai", "card": "Choose your AI" }],
+      "win": [{ "key": "ai.chat", "store": "settings" }, { "key": "ai.files", "store": "settings" }, { "key": "ai.preferredCloud", "store": "settings" }, { "key": "ai.cloudModels", "store": "settings" }],
+      "mac": [
+        { "key": "aiChoices", "store": "defaults" },
+        { "key": "aiPreferredCloud", "store": "defaults" }
+      ]
+    },
+    {
+      "id": "ai.key.anthropic",
+      "was": "AI: Paste an API key (Anthropic); AI: Anthropic API key, Save; AI: Anthropic Model, Custom",
+      "homes": [{ "page": "chat", "tab": "keys", "card": "Anthropic" }],
+      "winHomes": [{ "page": "chat", "tab": "keys", "card": "Anthropic" }],
+      "win": [{ "key": "anthropic-api-key", "store": "credential" }],
+      "mac": [
+        { "key": "anthropic-api-key", "store": "keychain" },
+        { "key": "claudeModel", "store": "defaults" }
+      ]
+    },
+    {
+      "id": "ai.key.google",
+      "was": "AI: Google AI key",
+      "homes": [{ "page": "chat", "tab": "keys", "card": "Google AI" }],
+      "winHomes": [{ "page": "chat", "tab": "keys", "card": "Google AI" }],
+      "win": [{ "key": "google-api-key", "store": "credential" }],
+      "mac": [
+        { "key": "google-api-key", "store": "keychain" },
+        { "key": "googleChatModel", "store": "defaults" }
+      ]
+    },
+    {
+      "id": "ai.key.openai",
+      "was": "AI: OpenAI key",
+      "homes": [{ "page": "chat", "tab": "keys", "card": "OpenAI" }],
+      "winHomes": [{ "page": "chat", "tab": "keys", "card": "OpenAI" }],
+      "win": [{ "key": "openai-api-key", "store": "credential" }],
+      "mac": [
+        { "key": "openai-api-key", "store": "keychain" },
+        { "key": "openAIChatModel", "store": "defaults" }
+      ]
+    },
+    {
+      "id": "ai.local",
+      "was": "AI: Local models list, Rescan, Add server",
+      "homes": [{ "page": "chat", "tab": "localmodels", "card": "Local models" }],
+      "winHomes": [{ "page": "chat", "tab": "localmodels", "card": "Local models" }],
+      "win": [{ "key": "ai.customServer", "store": "settings" }, { "key": "ai.localModels", "store": "settings" }, { "key": "ai.lastUsedLocal", "store": "settings" }, { "key": "custom-server-key.default", "store": "credential" }],
+      "mac": [
+        { "key": "aiCustomServers", "store": "defaults" },
+        { "key": "custom-server-key.<id>", "store": "keychain" },
+        { "key": "aiLastUsedLocal", "store": "defaults" },
+        { "key": "aiLocalModels", "store": "defaults" }
+      ]
+    },
+    {
+      "id": "ai.apple",
+      "was": "AI: Apple on-device status",
+      "homes": [
+        { "page": "chat", "tab": "localmodels", "card": "Local models" },
+        { "page": "chat", "tab": "yourai", "card": "Choose your AI" }
+      ],
+      "winHomes": [],
+      "win": [],
+      "mac": []
+    },
+    {
+      "id": "service.resend",
+      "was": "Integrations: Resend key, From",
+      "homes": [{ "page": "services", "tab": null, "card": "Resend" }],
+      "winHomes": [{ "page": "services", "tab": null, "card": "Resend" }],
+      "win": [{ "key": "resend-api-key", "store": "credential" }],
+      "mac": [
+        { "key": "resend-api-key", "store": "keychain" },
+        { "key": "resend-from", "store": "keychain" }
+      ]
+    },
+    {
+      "id": "service.n8n",
+      "was": "Integrations: n8n URL, key, Workflows filter",
+      "homes": [{ "page": "services", "tab": null, "card": "n8n" }],
+      "winHomes": [{ "page": "services", "tab": null, "card": "n8n" }],
+      "win": [{ "key": "n8n-url", "store": "credential" }, { "key": "n8n-api-key", "store": "credential" }],
+      "mac": [
+        { "key": "n8n-url", "store": "keychain" },
+        { "key": "n8n-api-key", "store": "keychain" },
+        { "key": "n8nWorkflowFilter", "store": "defaults" }
+      ]
+    },
+    {
+      "id": "service.vercel",
+      "was": "Integrations: Vercel token, Projects filter",
+      "homes": [{ "page": "services", "tab": null, "card": "Vercel" }],
+      "winHomes": [{ "page": "services", "tab": null, "card": "Vercel" }],
+      "win": [{ "key": "vercel-token", "store": "credential" }],
+      "mac": [
+        { "key": "vercel-token", "store": "keychain" },
+        { "key": "vercelProjectFilter", "store": "defaults" }
+      ]
+    },
+    {
+      "id": "service.github",
+      "was": "Integrations: GitHub token",
+      "homes": [{ "page": "services", "tab": null, "card": "GitHub" }],
+      "winHomes": [{ "page": "services", "tab": null, "card": "GitHub" }],
+      "win": [{ "key": "github-token", "store": "credential" }],
+      "mac": [{ "key": "github-token", "store": "keychain" }]
+    },
+    {
+      "id": "service.stripe",
+      "was": "Integrations: Stripe, Cal.com, Notion",
+      "homes": [{ "page": "services", "tab": null, "card": "Stripe" }],
+      "winHomes": [{ "page": "services", "tab": null, "card": "Stripe" }],
+      "win": [{ "key": "stripe-api-key", "store": "credential" }],
+      "mac": [{ "key": "stripe-api-key", "store": "keychain" }]
+    },
+    {
+      "id": "service.calcom",
+      "was": "Integrations: Stripe, Cal.com, Notion",
+      "homes": [{ "page": "services", "tab": null, "card": "Cal.com" }],
+      "winHomes": [{ "page": "services", "tab": null, "card": "Cal.com" }],
+      "win": [{ "key": "calcom-api-key", "store": "credential" }],
+      "mac": [{ "key": "calcom-api-key", "store": "keychain" }]
+    },
+    {
+      "id": "service.notion",
+      "was": "Integrations: Stripe, Cal.com, Notion",
+      "homes": [{ "page": "services", "tab": null, "card": "Notion" }],
+      "winHomes": [{ "page": "services", "tab": null, "card": "Notion" }],
+      "win": [{ "key": "notion-api-key", "store": "credential" }],
+      "mac": [{ "key": "notion-api-key", "store": "keychain" }]
+    },
+    {
+      "id": "service.music",
+      "was": "Active pills: Resend, n8n, Vercel, GitHub, Notion, Cal.com, Stripe, Apple Music",
+      "homes": [{ "page": "services", "tab": null, "card": "Music" }],
+      "winHomes": [],
+      "win": [],
+      "mac": []
+    },
+    {
+      "id": "shortcuts.global",
+      "was": "General: Show island with shortcut, Shortcut recorder; Shortcuts: Global shortcuts (11 actions), Turn all on, Reset to defaults",
+      "homes": [{ "page": "general", "tab": "shortcuts", "card": "Global shortcuts" }],
+      "winHomes": [],
+      "win": [],
+      "mac": [
+        { "key": "hotkeyEnabled", "store": "defaults" },
+        { "key": "hotkeyFlags", "store": "defaults" },
+        { "key": "hotkeyCode", "store": "defaults" },
+        { "key": "shortcut.<id>.enabled", "store": "defaults" },
+        { "key": "shortcut.<id>.keyCode", "store": "defaults" },
+        { "key": "shortcut.<id>.flags", "store": "defaults" }
+      ]
+    },
+    {
+      "id": "shortcuts.island",
+      "was": "Shortcuts: In the island",
+      "homes": [{ "page": "general", "tab": "shortcuts", "card": "In the island" }],
+      "winHomes": [],
+      "win": [],
+      "mac": []
+    },
+    {
+      "id": "cat.main",
+      "was": "Cat: Main cat",
+      "homes": [{ "page": "cat", "tab": "look", "card": "Main cat" }],
+      "winHomes": [{ "page": "cat", "tab": "look", "card": "Main cat" }],
+      "win": [{ "key": "cat.character", "store": "settings" }],
+      "mac": [{ "key": "cat.character", "store": "defaults" }]
+    },
+    {
+      "id": "cat.look",
+      "was": "Cat: Look (collar, this cat's collar, fur lines)",
+      "homes": [{ "page": "cat", "tab": "look", "card": "Look" }],
+      "winHomes": [{ "page": "cat", "tab": "look", "card": "Look" }],
+      "win": [{ "key": "cat.collar", "store": "settings" }, { "key": "cat.cats.<id>.collar", "store": "settings" }, { "key": "cat.furLines", "store": "settings" }],
+      "mac": [
+        { "key": "cat.collar", "store": "defaults" },
+        { "key": "cat.collar.<id>", "store": "defaults" },
+        { "key": "cat.furLines", "store": "defaults" }
+      ]
+    },
+    {
+      "id": "cat.desktop",
+      "was": "Cat: Desktop",
+      "homes": [{ "page": "cat", "tab": "look", "card": "Desktop" }],
+      "winHomes": [{ "page": "cat", "tab": "look", "card": "Desktop" }],
+      "win": [{ "key": "cat.desktop.on", "store": "settings" }, { "key": "cat.desktop.size", "store": "settings" }, { "key": "cat.desktop.spots", "store": "settings" }],
+      "mac": [
+        { "key": "cat.desktop.on", "store": "defaults" },
+        { "key": "cat.desktop.size", "store": "defaults" },
+        { "key": "cat.desktop.spots", "store": "defaults" }
+      ]
+    },
+    {
+      "id": "cat.wardrobe",
+      "was": "Cat: Wardrobe",
+      "homes": [{ "page": "cat", "tab": "outfits", "card": "Wardrobe" }],
+      "winHomes": [{ "page": "cat", "tab": "outfits", "card": "Wardrobe" }],
+      "win": [{ "key": "cat.outfit", "store": "settings" }],
+      "mac": [{ "key": "cat.outfit", "store": "defaults" }]
+    },
+    {
+      "id": "cat.personality",
+      "was": "Cat: Personality",
+      "homes": [{ "page": "cat", "tab": "personality", "card": "Personality" }],
+      "winHomes": [{ "page": "cat", "tab": "personality", "card": "Personality" }],
+      "win": [{ "key": "cat.cats.<id>.personality", "store": "settings" }],
+      "mac": [{ "key": "cat.personality.<id>", "store": "defaults" }]
+    },
+    {
+      "id": "cat.motion",
+      "was": "Cat: Motion",
+      "homes": [{ "page": "cat", "tab": "personality", "card": "Motion" }],
+      "winHomes": [{ "page": "cat", "tab": "personality", "card": "Motion" }],
+      "win": [{ "key": "cat.motionStyle", "store": "settings" }, { "key": "cat.cats.<id>.motion", "store": "settings" }],
+      "mac": [
+        { "key": "cat.motionStyle", "store": "defaults" },
+        { "key": "cat.motion.<id>", "store": "defaults" }
+      ]
+    },
+    {
+      "id": "cat.everyCat",
+      "was": "Cat: Every cat (Apply to every cat)",
+      "homes": [{ "page": "cat", "tab": "personality", "card": "Every cat" }],
+      "winHomes": [{ "page": "cat", "tab": "personality", "card": "Every cat" }],
+      "win": [],
+      "mac": []
+    },
+    {
+      "id": "cat.display",
+      "was": "Cat: Display, Your two cats, Cats for your agents",
+      "homes": [
+        { "page": "cat", "tab": "agentcats", "card": "Display" },
+        { "page": "cat", "tab": "agentcats", "card": "Your two cats" },
+        { "page": "cat", "tab": "agentcats", "card": "Cats for your agents" },
+        { "page": "cat", "tab": "agentcats", "card": "Project cats" }
+      ],
+      "winHomes": [{ "page": "cat", "tab": "agentcats", "card": "Display" }, { "page": "cat", "tab": "agentcats", "card": "Your two cats" }, { "page": "cat", "tab": "agentcats", "card": "Cats for your agents" }, { "page": "cat", "tab": "agentcats", "card": "Project cats" }],
+      "win": [{ "key": "cat.displayMode", "store": "settings" }, { "key": "cat.pair", "store": "settings" }, { "key": "cat.agentCats", "store": "settings" }, { "key": "cat.projectCats", "store": "settings" }],
+      "mac": [
+        { "key": "cat.displayMode", "store": "defaults" },
+        { "key": "cat.pair", "store": "defaults" },
+        { "key": "cat.agentCat.<pillId>", "store": "defaults" },
+        { "key": "cat.projectCat.<catKey>", "store": "defaults" }
+      ]
+    },
+    {
+      "id": "sidekick.master",
+      "was": "Sidekick: Recaps and nudges",
+      "homes": [{ "page": "chat", "tab": "sidekick", "card": "Notes" }],
+      "winHomes": [{ "page": "chat", "tab": "sidekick", "card": "Notes" }],
+      "win": [{ "key": "sidekick.on", "store": "settings" }],
+      "mac": [{ "key": "sidekick.on", "store": "defaults" }]
+    },
+    {
+      "id": "sidekick.kinds",
+      "was": "Sidekick: Muted notes, Unmute; (new) per-kind switches, Show me an example",
+      "homes": [
+        { "page": "chat", "tab": "sidekick", "card": "Notes" },
+        { "page": "chat", "tab": "sidekick", "card": "Muted notes" }
+      ],
+      "winHomes": [{ "page": "chat", "tab": "sidekick", "card": "Notes" }, { "page": "chat", "tab": "sidekick", "card": "Muted notes" }],
+      "win": [{ "key": "sidekick.dismissals", "store": "settings" }],
+      "mac": [{ "key": "sidekick.dismissals", "store": "defaults" }]
+    },
+    {
+      "id": "sidekick.example",
+      "was": "(new) per-kind switches, Show me an example",
+      "homes": [{ "page": "chat", "tab": "sidekick", "card": "Notes" }],
+      "winHomes": [{ "page": "chat", "tab": "sidekick", "card": "Notes" }],
+      "win": [],
+      "mac": []
+    },
+    {
+      "id": "sidekick.words",
+      "was": "Sidekick: Nicer wording from a local model",
+      "homes": [{ "page": "chat", "tab": "sidekick", "card": "Where its words come from" }],
+      "winHomes": [{ "page": "chat", "tab": "sidekick", "card": "Where its words come from" }],
+      "win": [{ "key": "sidekick.local", "store": "settings" }],
+      "mac": [{ "key": "sidekick.local", "store": "defaults" }]
+    },
+    {
+      "id": "sidekick.quiet",
+      "was": "(new)",
+      "homes": [{ "page": "chat", "tab": "sidekick", "card": "Quiet times" }],
+      "winHomes": [{ "page": "chat", "tab": "sidekick", "card": "Quiet times" }],
+      "win": [],
+      "mac": []
+    },
+    {
+      "id": "sidekick.today",
+      "was": "(new)",
+      "homes": [{ "page": "chat", "tab": "sidekick", "card": "Today so far" }],
+      "winHomes": [{ "page": "chat", "tab": "sidekick", "card": "Today so far" }],
+      "win": [],
+      "mac": []
+    },
+    {
+      "id": "companion.humor",
+      "was": "(new) Companion: Humor",
+      "homes": [{ "page": "chat", "tab": "companion", "card": "Personality" }],
+      "winHomes": [{ "page": "chat", "tab": "companion", "card": "Personality" }],
+      "win": [{ "key": "companion.humor", "store": "settings" }],
+      "mac": [{ "key": "companion.humor", "store": "defaults" }]
+    },
+    {
+      "id": "companion.sessions",
+      "was": "(new) Companion: See my sessions, the one-time cloud line",
+      "homes": [{ "page": "chat", "tab": "companion", "card": "What the chat knows" }],
+      "winHomes": [{ "page": "chat", "tab": "companion", "card": "What the chat knows" }],
+      "win": [{ "key": "companion.seeSessions", "store": "settings" }],
+      "mac": [{ "key": "companion.seeSessions", "store": "defaults" }, { "key": "companion.cloudNoticeShown", "store": "defaults" }]
+    },
+    {
+      "id": "companion.conversations",
+      "was": "(new) Companion: Conversations, Delete all",
+      "homes": [{ "page": "chat", "tab": "companion", "card": "Conversations" }],
+      "winHomes": [{ "page": "chat", "tab": "companion", "card": "Conversations" }],
+      "win": [],
+      "mac": [{ "key": "~/Library/Application Support/NotchMeow/companion/conversations/<id>.json", "store": "file" }]
+    },
+    {
+      "id": "companion.sawLast",
+      "was": "(new) Companion: What the AI saw last",
+      "homes": [{ "page": "chat", "tab": "companion", "card": "What the AI saw last" }],
+      "winHomes": [{ "page": "chat", "tab": "companion", "card": "What the AI saw last" }],
+      "win": [],
+      "mac": []
+    },
+    {
+      "id": "devices.thisMac",
+      "was": "Devices: Visible on this network, Name",
+      "homes": [{ "page": "devices", "tab": null, "card": "This Mac" }],
+      "winHomes": [{ "page": "devices", "tab": null, "card": "This computer" }],
+      "win": [{ "key": "visible", "store": "link" }, { "key": "deviceName", "store": "link" }],
+      "mac": [
+        { "key": "link.visible", "store": "defaults" },
+        { "key": "link.deviceName", "store": "defaults" }
+      ]
+    },
+    {
+      "id": "devices.machines",
+      "was": "Devices: Machines, Pair, Forget, Local Network permission",
+      "homes": [{ "page": "devices", "tab": null, "card": "Machines" }],
+      "winHomes": [{ "page": "devices", "tab": null, "card": "Machines" }],
+      "win": [{ "key": "link.peer.<id>", "store": "credential" }, { "key": "link.peers", "store": "credential" }, { "key": "link.static-key", "store": "credential" }, { "key": "link.device-id", "store": "credential" }],
+      "mac": [
+        { "key": "link.peer.<id>", "store": "keychain" },
+        { "key": "link.static-key", "store": "keychain" },
+        { "key": "link.device-id", "store": "keychain" }
+      ]
+    },
+    {
+      "id": "devices.received",
+      "was": "Devices: Show in Finder",
+      "homes": [{ "page": "devices", "tab": null, "card": "Received files" }],
+      "winHomes": [{ "page": "devices", "tab": null, "card": "Received files" }],
+      "win": [],
+      "mac": []
+    },
+    {
+      "id": "settings.selection",
+      "was": "Sidebar selection",
+      "homes": [{ "page": "general", "tab": null, "card": "(the shell)" }],
+      "winHomes": [{ "page": "general", "tab": null, "card": "(the shell)" }],
+      "win": [{ "key": "settingsSection", "store": "local" }, { "key": "settingsTab.<page>", "store": "local" }],
+      "mac": [
+        { "key": "settingsSection", "store": "defaults" },
+        { "key": "settingsTab.<page>", "store": "defaults" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,181 @@
+/* The link between your machines (sub-project G2): the island's link card, the "To a device" bar on the shelf and the machines list of Settings → Devices. Only new classes, all
+   prefixed lk-, plus two owner-approved shelf-head exceptions (see CLAUDE.md). No other rule of a shipped view changes. The colours are the existing variables. */
+
+.lk-body {
+  height: 100%;
+}
+
+.lk-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-bottom: 3px;
+}
+
+.lk-name {
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lk-pairrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+/* Large enough to read out and compare across a desk. */
+.lk-code {
+  font: 600 24px var(--mono);
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  white-space: nowrap;
+  user-select: text;
+}
+
+.lk-pairrow .sub {
+  font-size: 12px;
+  min-width: 0;
+}
+
+.lk-detail {
+  font: 400 12px var(--font);
+  color: var(--dim);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.lk-bar {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.lk-fill {
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  background: var(--cyan);
+  transition: width 0.12s linear;
+}
+
+.lk-progressrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lk-words {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.lk-spacer {
+  flex: 1;
+}
+
+.lk-body .btn:disabled {
+  opacity: 0.55;
+}
+
+/* ── "To a device" on the shelf's head row ── */
+
+.lk-devbar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.lk-line {
+  font: 400 11px var(--font);
+  color: var(--dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+/* The shelf head at its narrowest: the status line gives way and truncates (as on the Mac); the count, the buttons and the laptop keep their width. */
+.sh-head > .sh-count, .sh-head > .btn {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.lk-devbtn {
+  flex-shrink: 0;
+}
+
+.lk-cancel {
+  font: 400 11px var(--font);
+  color: var(--dim);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: default;
+  flex: 0 0 auto;
+}
+
+.lk-chips {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.lk-chip {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+}
+
+.lk-chip.off {
+  opacity: 0.35;
+}
+
+.lk-none {
+  font: 400 11px var(--font);
+  color: var(--dim);
+  white-space: nowrap;
+}
+
+/* While the machines are listed, the head shows only the title and the list. */
+.sh-head.sh-choosing > :not(.sh-title):not(.lk-devbar) {
+  display: none;
+}
+
+/* ── Settings → Devices (the settings page) ── */
+
+.lk-sub {
+  font-weight: 600;
+  color: var(--ink);
+  margin-top: 4px;
+}
+
+.lk-machines {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lk-machine {
+  flex-wrap: nowrap;
+}
+
+.lk-mname {
+  min-width: 0;
+  max-width: 190px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lk-mstate {
+  min-width: 100px;
+}

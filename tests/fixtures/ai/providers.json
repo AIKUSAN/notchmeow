@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "providers": [
+    {"id": "anthropic", "name": "Anthropic", "placement": "cloud", "api": "anthropic",
+     "baseURL": "https://api.anthropic.com", "chatPath": "/v1/messages", "modelsPath": "/v1/models",
+     "keychainKey": "anthropic-api-key", "defaultModel": "claude-sonnet-5-5"},
+    {"id": "openai", "name": "OpenAI", "placement": "cloud", "api": "openai-responses",
+     "baseURL": "https://api.openai.com", "chatPath": "/v1/responses", "modelsPath": "/v1/models",
+     "keychainKey": "openai-api-key", "defaultModel": "gpt-6.1-sol"},
+    {"id": "google", "name": "Google", "placement": "cloud", "api": "openai-chat",
+     "baseURL": "https://generativelanguage.googleapis.com/v1beta/openai", "chatPath": "/chat/completions", "modelsPath": "/models",
+     "keychainKey": "google-api-key", "defaultModel": null, "defaultModelRule": "first id containing 'flash', else first"},
+    {"id": "ollama", "name": "Ollama", "placement": "local", "api": "openai-chat",
+     "baseURL": "http://127.0.0.1:11434", "port": 11434, "probePath": "/api/version",
+     "chatPath": "/v1/chat/completions", "modelsPath": "/v1/models", "keychainKey": null, "defaultModel": null},
+    {"id": "lmstudio", "name": "LM Studio", "placement": "local", "api": "openai-chat",
+     "baseURL": "http://127.0.0.1:1234", "port": 1234, "probePath": "/v1/models",
+     "chatPath": "/v1/chat/completions", "modelsPath": "/v1/models", "keychainKey": null, "defaultModel": null},
+    {"id": "llamacpp", "name": "llama.cpp", "placement": "local", "api": "openai-chat",
+     "baseURL": "http://127.0.0.1:8080", "port": 8080, "probePath": "/health",
+     "chatPath": "/v1/chat/completions", "modelsPath": "/v1/models", "keychainKey": null, "defaultModel": null},
+    {"id": "jan", "name": "Jan", "placement": "local", "api": "openai-chat",
+     "baseURL": "http://127.0.0.1:1337", "port": 1337, "probePath": "/v1/models",
+     "chatPath": "/v1/chat/completions", "modelsPath": "/v1/models", "keychainKey": null, "defaultModel": null},
+    {"id": "apple", "name": "Apple on-device", "placement": "local", "api": "apple",
+     "keychainKey": null, "defaultModel": "system"},
+    {"id": "custom", "name": "Local server", "placement": "computed", "api": "openai-chat",
+     "chatPath": "/v1/chat/completions", "modelsPath": "/v1/models", "keychainKey": "custom-server-key", "defaultModel": null},
+    {"id": "claudeCode", "name": "Claude plan", "placement": "cloud", "api": "claude-code",
+     "keychainKey": null, "defaultModel": "sonnet"},
+    {"id": "codexPlan", "name": "OpenAI plan", "placement": "cloud", "api": "codex", "keychainKey": null, "defaultModel": null}
+  ],
+  "cloudOrder": ["anthropic", "openai", "google"],
+  "webSearch": {
+    "anthropic": {"type": "web_search_20260209", "name": "web_search", "max_uses": 5,
+                  "legacyType": "web_search_20250305", "legacyModelPrefixes": ["claude-haiku-4", "claude-3"]},
+    "openai": {"type": "web_search"}
+  },
+  "modelFilters": {
+    "local": {"exclude": ["embed", "bge-", "all-minilm", "clip", "rerank"]},
+    "google": {"exclude": ["embed", "imagen", "veo", "aqa", "tts", "audio", "live"]},
+    "openai": {"includePrefixes": ["gpt-", "o1", "o3", "o4", "o5"],
+               "exclude": ["embed", "tts", "whisper", "dall-e", "audio", "realtime", "moderat", "codex",
+                           "computer-use", "transcribe", "image", "sora", "babbage", "davinci", "instruct",
+                           "search", "live"]}
+  },
+  "timeoutsMs": {"probe": 300, "connectLocal": 5000, "connectCloud": 10000,
+                 "firstTokenLocal": 60000, "firstTokenCloud": 30000},
+  "limits": {"maxFileBytes": 26214400, "cloudTextCapChars": 204800, "budgetFractionOfContext": 0.5,
+             "charsPerToken": 3.5, "defaultLocalContextTokens": 4096},
+  "maxOutputTokens": {"cloud": 16000, "network": 4096, "local": 4096}
+}

@@ -1,0 +1,18 @@
+{"type": "system", "subtype": "init", "session_id": "__SESSION_ID__", "model": "claude-sonnet-5-5", "claude_code_version": "2.1.211", "cwd": "__CWD__", "tools": ["Bash", "Write", "Edit"], "permissionMode": "default", "apiKeySource": "none"}
+{"type": "stream_event", "event": {"type": "message_start", "message": {"role": "assistant", "content": []}}, "session_id": "__SESSION_ID__"}
+{"type": "stream_event", "event": {"type": "content_block_start", "index": 0, "content_block": {"type": "tool_use", "id": "toolu_02A", "name": "Bash", "input": {}}}, "session_id": "__SESSION_ID__"}
+{"type": "stream_event", "event": {"type": "content_block_start", "index": 1, "content_block": {"type": "tool_use", "id": "toolu_02B", "name": "Write", "input": {}}}, "session_id": "__SESSION_ID__"}
+{"type": "stream_event", "event": {"type": "content_block_stop", "index": 0}, "session_id": "__SESSION_ID__"}
+{"type": "stream_event", "event": {"type": "content_block_stop", "index": 1}, "session_id": "__SESSION_ID__"}
+{"type": "assistant", "message": {"role": "assistant", "content": [{"type": "tool_use", "id": "toolu_02A", "name": "Bash", "input": {"command": "npm test -- --watch=false\nsecond line", "description": "Run the tests"}}, {"type": "tool_use", "id": "toolu_02B", "name": "Write", "input": {"file_path": "/work/notes.txt", "content": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}}]}, "session_id": "__SESSION_ID__"}
+{"type": "stream_event", "event": {"type": "message_delta", "delta": {"stop_reason": "tool_use"}}, "session_id": "__SESSION_ID__"}
+{"type": "stream_event", "event": {"type": "message_stop"}, "session_id": "__SESSION_ID__"}
+{"type": "user", "message": {"role": "user", "content": [{"type": "tool_result", "tool_use_id": "toolu_02B", "content": "File created", "is_error": false}, {"type": "tool_result", "tool_use_id": "toolu_02A", "content": "1 passed", "is_error": false}]}, "session_id": "__SESSION_ID__"}
+{"type": "stream_event", "event": {"type": "message_start", "message": {"role": "assistant", "content": []}}, "session_id": "__SESSION_ID__"}
+{"type": "stream_event", "event": {"type": "content_block_start", "index": 0, "content_block": {"type": "text", "text": ""}}, "session_id": "__SESSION_ID__"}
+{"type": "stream_event", "event": {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "Done."}}, "session_id": "__SESSION_ID__"}
+{"type": "stream_event", "event": {"type": "content_block_stop", "index": 0}, "session_id": "__SESSION_ID__"}
+{"type": "assistant", "message": {"role": "assistant", "content": [{"type": "text", "text": "Done."}]}, "session_id": "__SESSION_ID__"}
+{"type": "stream_event", "event": {"type": "message_delta", "delta": {"stop_reason": "end_turn"}}, "session_id": "__SESSION_ID__"}
+{"type": "stream_event", "event": {"type": "message_stop"}, "session_id": "__SESSION_ID__"}
+{"type": "result", "subtype": "success", "is_error": false, "result": "Done.", "session_id": "__SESSION_ID__", "total_cost_usd": 0.02, "usage": {"input_tokens": 5, "output_tokens": 5}, "num_turns": 2, "permission_denials": [], "terminal_reason": "completed"}

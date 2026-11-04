@@ -1,0 +1,4 @@
+{"type":"thread.started","__ID_1__":"__ID_2__"}
+{"type":"turn.started"}
+{"type":"item.started","item":{"id":"item_1","type":"command_execution","command":"rg --files","aggregated_output":"","exit_code":null,"status":"in_progress"}}
+{"type":"turn.completed","usage":{"input_tokens":44005,"cached_input_tokens":0,"cache_write_input_tokens":0,"output_tokens":13,"reasoning_output_tokens":0}}

@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="NotchMeow: Shrimpy and Momo, two cats who live in your Mac's notch, or at the top of your screen on Windows and Linux, and keep an eye on your AI coding agents.">
+<title>NotchMeow</title>
+<link rel="icon" href="assets/img/icon.png">
+<link rel="stylesheet" href="assets/cats.css">
+<link rel="stylesheet" href="site.css">
+<script src="assets/cats.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the content</a>
+<div class="wrap">
+<header class="top">
+  <a class="brand" href="./"><img src="assets/img/icon.png" width="128" height="128" alt="NotchMeow's icon"> NotchMeow</a>
+  <nav aria-label="Pages">
+    <a href="#what">What it does</a>
+    <a href="#private">Private</a>
+    <a href="#get">Get it</a>
+    <a href="#credits">Credits</a>
+    <a href="https://github.com/AIKUSAN/notchmeow">GitHub</a>
+  </nav>
+</header>
+
+<main id="main">
+<section class="hero" aria-labelledby="hero-title">
+  <h1 id="hero-title">Two cats that live in your notch</h1>
+  <p class="lead">Shrimpy and Momo keep an eye on your AI coding agents from your Mac's notch, or from the top of your screen on Windows and Linux. Watch Claude Code, Codex, Cursor, Gemini CLI and Antigravity work, approve a permission request, drop a file, chat with Claude, all without leaving what you're doing.</p>
+  <p class="cta"><a class="btn" href="testers.html">Try a tester build</a><a class="btn ghost" href="https://github.com/AIKUSAN/notchmeow">View on GitHub</a></p>
+  <div class="stage" id="stage">
+    <div class="cat" data-cat="0"><button type="button" class="cat-btn" aria-label="Shrimpy: poke to say hello"><canvas aria-hidden="true"></canvas></button><p class="cat-name">Shrimpy</p></div>
+    <div class="cat" data-cat="1"><button type="button" class="cat-btn" aria-label="Momo: poke to say hello"><canvas aria-hidden="true"></canvas></button><p class="cat-name">Momo</p></div>
+  </div>
+  <p class="hint" id="hint" aria-live="polite">Pick a coat for Shrimpy, the left cat.</p>
+  <div class="coats" id="coats" role="group" aria-label="The sixteen coats"></div>
+</section>
+
+<section id="what" aria-labelledby="what-h">
+  <h2 id="what-h">What it does</h2>
+  <p class="lead">Every picture below is drawn by NotchMeow's own code, from its own views.</p>
+  <div class="features">
+    <figure class="feat wide">
+      <div class="pan" tabindex="0" role="region" aria-label="The island in the three display modes (scrolls sideways on a small screen)"><img src="assets/img/island.png" width="2358" height="1192" alt="The island at the notch in the three display modes. Each row shows the compact strip, with a cat on the left of the notch and four small cats for the other agents on the right, and the expanded island, with Claude Code's session and its steps beside a grid of the other agents."></div>
+      <figcaption><h3>Every agent at a glance</h3><p>The island sits in the notch and opens when something needs you. Each agent has its own pill, and the cat shows what the agent in focus is doing: thinking, working, searching, waiting for you, finished, or in trouble.</p></figcaption>
+    </figure>
+    <figure class="feat">
+      <div class="pan sm" tabindex="0" role="region" aria-label="The approval card (scrolls sideways on a small screen)"><img src="assets/img/approval-card.png" width="1344" height="352" alt="The approval card. Claude Code needs permission to run npm test, with Deny, Allow and Always buttons, and Shrimpy beside it with an amber exclamation mark."></div>
+      <figcaption><h3>Approve from the notch</h3><p>Allow, Deny or Always for a Claude Code permission request, and answer its questions, with one click. NotchMeow never approves anything without your click.</p></figcaption>
+    </figure>
+    <figure class="feat">
+      <img src="assets/img/plan-card.png" width="640" height="196" alt="The Claude plan card: 63 percent of the five-hour limit used, resetting in 4 hours 59, and 100 percent of the week used, resetting on Thursday at 14:30.">
+      <figcaption><h3>Your plan, at a glance</h3><p>On the Mac, once you turn it on in Settings, a small gauge shows how much of your Claude plan's five-hour and weekly limits you have used, and when each resets.</p></figcaption>
+    </figure>
+    <figure class="feat wide">
+      <div class="pan" tabindex="0" role="region" aria-label="A subagent's life, in three moments (scrolls sideways on a small screen)"><img src="assets/img/kittens.png" width="2850" height="1112" alt="Three moments of a subagent's life, each with the compact strip and the expanded island. A second kitten arrives beside Shrimpy; one kitten waits on an approval, marked with an amber dot; and one kitten leaves after a happy blink."></div>
+      <figcaption><h3>Subagents become kittens</h3><p>When Claude Code starts a subagent, a kitten of its coat appears beside the parent's cat, shows what the subagent is doing, and leaves with a happy blink when it stops.</p></figcaption>
+    </figure>
+    <figure class="feat wide">
+      <div class="modes">
+        <figcaption><h3>One cat, a cat for each agent, or two cats</h3><p>Pick how the cats share the island. One cat shows every agent. A cat for each agent gives each agent its own coat, so you can tell them apart at a glance. Two cats shows the agent you are looking at and the busiest other one, side by side.</p></figcaption>
+        <div class="stack">
+          <div><p>One cat</p><img src="assets/img/mode-one.png" width="1040" height="340" alt="Settings, Display, set to One cat. The preview shows one cat on the left of the notch and four small cats on the right."></div>
+          <div><p>A cat for each agent</p><img src="assets/img/mode-per-agent.png" width="1040" height="396" alt="Settings, Display, set to A cat for each agent. The preview shows Shrimpy on the left of the notch and four small cats on the right, each in its own coat."></div>
+          <div><p>Two cats</p><img src="assets/img/mode-two.png" width="1040" height="366" alt="Settings, Display, set to Two cats. The preview shows Shrimpy and Momo side by side on the left of the notch and three small cats on the right."></div>
+        </div>
+      </div>
+    </figure>
+    <figure class="feat wide">
+      <div class="scroll" tabindex="0" role="region" aria-label="Every coat at the sizes the island uses (scrolls)">
+        <img src="assets/img/coats.png" width="983" height="4816" alt="A sheet of the sixteen coats, one row each, from Shrimpy and Momo to Noodle. Each row shows the coat at a small and a large size, and a kitten of the coat at two sizes.">
+      </div>
+      <figcaption><h3>Sixteen coats, two motion styles, six personality sliders</h3><p>Shrimpy and Momo are the defaults, and fourteen more coats from the same blueprint are a pick away in Settings, from Ginger and Midnight to Noodle. The sheet scrolls: it shows each coat at the sizes the island uses, and its kitten.</p></figcaption>
+    </figure>
+  </div>
+  <ul class="more">
+    <li><strong>Drop a file on the notch</strong>to ask a question about it.</li>
+    <li><strong>Chat</strong>with Claude, or on the Mac with Gemini, OpenAI or a local model, using your own keys.</li>
+    <li><strong>See what Claude is editing</strong>each edit shows up with its added and removed lines, and opens as a diff.</li>
+    <li><strong>Keyboard shortcuts</strong>on the Mac: open the chat, jump to a waiting alert, switch pills, mute.</li>
+    <li class="wide"><strong>A cat on your desktop</strong>On the Mac, drag the big cat out of the notch and it lives on your desktop, watches the pointer and flies back when an agent needs you. Off until you turn it on.</li>
+  </ul>
+</section>
+
+<section id="react" aria-labelledby="react-h">
+  <h2 id="react-h">How the cats react</h2>
+  <p class="lead">Each button puts the big cat into a state the notch shows, and the line under the cat says what that state means there.</p>
+  <div class="react">
+    <div class="react-stage">
+      <button type="button" class="react-cat" aria-label="Shrimpy: poke to say hello"><canvas aria-hidden="true"></canvas></button>
+      <p class="react-line" data-line aria-live="polite">Claude Code is busy with your task: the cat shows dots while it edits and runs commands.</p>
+    </div>
+    <div class="react-states" role="group" aria-label="The states the notch shows">
+      <button type="button" data-state="working" aria-pressed="true">Working</button>
+      <button type="button" data-state="thinking" aria-pressed="false">Thinking</button>
+      <button type="button" data-state="approval" aria-pressed="false">Needs your OK</button>
+      <button type="button" data-state="question" aria-pressed="false">Has a question</button>
+      <button type="button" data-state="finished" aria-pressed="false">Done</button>
+      <button type="button" data-state="error" aria-pressed="false">Something failed</button>
+      <button type="button" data-state="ratelimit" aria-pressed="false">Hit a limit</button>
+      <button type="button" data-state="sleeping" aria-pressed="false">Asleep</button>
+    </div>
+    <div class="react-actions">
+      <button type="button" data-action="poke">Poke</button>
+      <button type="button" data-action="outfit">Try an outfit</button>
+      <p class="react-note" data-outfit-note aria-live="polite">Nothing on.</p>
+    </div>
+  </div>
+</section>
+
+<section id="private" aria-labelledby="private-h">
+  <h2 id="private-h">Private by design</h2>
+  <ul class="cards">
+    <li class="card"><h3>No telemetry</h3><p>NotchMeow sends nothing home. It calls only the services you set up yourself.</p></li>
+    <li class="card"><h3>No account</h3><p>There is nothing to sign up for. NotchMeow never signs in to Claude.ai and never reads Claude Code's credentials.</p></li>
+    <li class="card"><h3>Keys stay in the keychain</h3><p>Your API keys live in the macOS Keychain, the Windows Credential Manager or the Linux Secret Service, never in a file.</p></li>
+  </ul>
+  <p class="lead" style="margin-top:20px">If NotchMeow isn't running, its hook exits at once, so Claude Code is never blocked. Before it writes to <code>~/.claude/settings.json</code>, it backs the file up and shows you the diff. And this page makes no request to any other site, sets no cookies and has no analytics.</p>
+</section>
+
+<section id="get" aria-labelledby="get-h">
+  <h2 id="get-h">Get it</h2>
+  <ul class="cards">
+    <li class="card main"><h3>Tester builds by invitation</h3><p>Version 0.9.x for macOS, Windows and Linux, checked on the author's own machines first and handed out as private files. <a href="testers.html">How to install one, and what to try.</a></p></li>
+    <li class="card"><h3>The public release</h3><p>Coming: 1.0.0 on a release page on GitHub, a Mac disk image that is not notarized by Apple (open it once with Open Anyway in System Settings → Privacy &amp; Security).</p></li>
+    <li class="card"><h3>Build from source</h3><p>macOS 15 with Xcode, or Tauri on Windows and Linux. <a href="https://github.com/AIKUSAN/notchmeow#build-from-source">The README has the steps.</a></p></li>
+  </ul>
+</section>
+
+<section id="credits" class="credits" aria-labelledby="credits-h">
+  <h2 id="credits-h">Credits</h2>
+  <p>NotchMeow is a fork of <a href="https://github.com/louis-cfm/coucou">Coucou</a> by <a href="https://louisraille.fr">Louis Raillé</a> (MIT): the engine, the island and the integrations come from it. The cats, the name, the icons and the sounds are NotchMeow's own. Built by <a href="https://github.com/AIKUSAN">Lorenz Tazan</a> with Claude Code. NotchMeow is an independent fork, not affiliated with or endorsed by Coucou or its author.</p>
+  <ul>
+    <li><a href="https://github.com/AIKUSAN/notchmeow/blob/main/docs/SOUND-CREDITS.md">The sound credits</a>: every CC0 clip NotchMeow's sounds are built from, with its maker and its page.</li>
+    <li><a href="https://github.com/AIKUSAN/notchmeow/blob/main/LICENSE-ASSETS.md">NotchMeow's own assets</a>: the name, Shrimpy and Momo, the icons and the sounds are all rights reserved, and the CC0 clips stay CC0.</li>
+    <li><a href="https://github.com/AIKUSAN/notchmeow/blob/main/LICENSE">The code's licence</a>: MIT, which keeps the original copyright notice.</li>
+  </ul>
+</section>
+</main>
+
+<footer class="end">© 2026 Lorenz Tazan · The code is free and open source (MIT) · <a href="https://github.com/AIKUSAN/notchmeow">GitHub</a> · <a href="testers.html">Tester builds</a></footer>
+</div>
+</body>
+</html>

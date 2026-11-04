@@ -1,0 +1,26 @@
+{
+  "set": "_shared",
+  "title": "Shared: ticks and made-in-code fill-ins, identical in every set",
+  "entries": [
+    {"slot": "yawn", "source": "synth:yawn", "mood": "calm", "signature": false, "note": "Made in code. The only real yawn found (Daphne_in_Wonderland, 106 s of purring) has no burst in the energy survey that isolates a yawn: steady purr, band above 1 kHz at -50 dB or lower."},
+    {"slot": "work", "source": "synth:work", "mood": "calm", "signature": false, "note": "Made in code: three soft fabric pats at 2 Hz. The real clip (ArcticWanderer) is purr and kneading together, with no clean pat to cut."},
+    {"slot": "gulp", "source": "gulp/fs-730097-Sadiquecat.mp3", "start": 0.0, "end": 0.9, "hp_hz": 1000, "mood": "happy", "signature": false, "note": "Foley, same in every set. Sadiquecat's paw licking, the first 0.9 s, high-passed at 1 kHz (below that the clip is body and room noise). kyles' milk lapping was tried first and dropped: its laps are so spiky the limiter had to take off 10 dB."},
+    {"slot": "hairball", "source": "placed", "end": 1.48, "mood": "upset", "signature": false,
+     "segments": [
+       {"source": "hairball/fs-561726-har2h.mp3", "start": 2.143, "end": 2.558, "at": 0.0, "level": 0.132, "fade_in_ms": 5.0, "fade_out_ms": 60.0},
+       {"source": "hairball/fs-561726-har2h.mp3", "start": 4.196, "end": 4.576, "at": 0.355, "level": 0.1716, "fade_in_ms": 48.0, "fade_out_ms": 60.0},
+       {"source": "hairball/fs-561726-har2h.mp3", "start": 7.278, "end": 7.658, "at": 0.675, "level": 0.22, "fade_in_ms": 48.0, "fade_out_ms": 60.0}],
+     "synth_layers": [{"name": "hairball_retch_plop", "seed": 1205, "at": 0.93}],
+     "note": "The owner's pick of 2026-10-05, version B, the hybrid. Three real dry coughs from har2h's Cat Coughing (Freesound 561726, CC0). The coughs start at 2.258, 4.276 and 7.358 s in the clip; each window runs from before its cough (115 ms for the first, 80 ms for the others) to 300 ms after it, and the pieces are placed so the onsets fall at 115, 435 and 755 ms, just before the animation's heave peaks at 140, 460 and 780 ms. They are joined with equal-power fades (60 ms out; 48 ms in, 5 ms for the first), and their levels follow the mouth: 0.60, 0.78 and 1.00 of 0.22 on the 4 ms RMS scale. Then the made-in-code retch from 930 ms and the plop at 1110 ms, when the ball comes out (synth.hairball_retch_plop, seed 1205). 1.48 s. No touch layer, no signature; plays at rate 1 for every cat."},
+    {"slot": "approve", "source": "approve/fs-487999-BenDrain.mp3", "mood": "none", "signature": false, "note": "Soft cardboard paw stamp. The bell (connersaw8) stays free for tick."},
+    {"slot": "peek", "source": "peek/fs-541360-JoshuaPomeroy.mp3", "mood": "none", "signature": false, "note": "Tiny sleigh-bell jingle, a collar bell."},
+    {"slot": "open", "source": "open/fs-364740-newagesoup.mp3", "start": 0.22, "end": 0.62, "mood": "none", "signature": false, "note": "Box flap: the impact is at 0.26 s, then rustle. Cut to 0.4 s."},
+    {"slot": "close", "source": "close/fs-320847-Mafon2.mp3", "start": 0.2, "end": 0.56, "mood": "none", "signature": false, "note": "Soft thunk; the impact is at 0.26 s."},
+    {"slot": "hover", "source": "hover/fs-371274-Mafon2.mp3", "mood": "none", "signature": false, "note": "Bead into a water bowl."},
+    {"slot": "blip", "source": "synth:blip", "mood": "none", "signature": false, "note": "Made in code. The recorded candidate (qubodup, Cute Computer Squeak) is excluded from every set."},
+    {"slot": "tick", "source": "tick/fs-371278-Mafon2.mp3", "mood": "none", "signature": false, "note": "Ceramic ball click."},
+    {"slot": "send", "source": "send/fs-402453-jimmyfisher.mp3", "mood": "none", "signature": false, "note": "Kibble rattle."},
+    {"slot": "attach", "source": "synth:clink", "mood": "none", "signature": false, "note": "Made in code: collar-tag clink, two inharmonic partials at 3.2 and 5.3 kHz."},
+    {"slot": "pop", "source": "pop/fs-258269-jcallison.mp3", "mood": "none", "signature": false, "note": "Soft mouth pop."}
+  ]
+}

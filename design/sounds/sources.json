@@ -1,0 +1,886 @@
+{
+  "title": "NotchMeow sound sources",
+  "note": "One entry per recorded clip of Your mix (design/sounds/sets/mine.json). 'stated' is what the clip's own page said on stated_read_on; the licence re-check re-reads it. tools/sounds/sources.py says what the build demands of each entry.",
+  "stated_read_on": "2026-10-05",
+  "sources": {
+    "love/fs-64017-Department64.mp3": {
+      "title": "kitten22.wav",
+      "author": "Department64",
+      "page": "https://freesound.org/people/Department64/sounds/64017/",
+      "stated": {
+        "type": "Wave (.wav)",
+        "duration": "0:00.643",
+        "size": "110.9 KB",
+        "sample_rate": "44.1 kHz",
+        "bit_depth": "16 bit",
+        "channels": "Stereo"
+      },
+      "licence": "CC0-1.0",
+      "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "checked_on": "2026-10-08",
+      "checked_by": "licence re-check, nm-implementer-light, Haiku 4.5",
+      "original": null,
+      "offset_s": 0.0,
+      "windows": {
+        "greet": [
+          {
+            "start": 0.0,
+            "end": 0.42,
+            "r": 0.9979,
+            "ok": true
+          }
+        ]
+      },
+      "hq_preview": {
+        "file": "64017_861714-hq.mp3",
+        "bytes": 15759,
+        "sha256": "11d9db46c1e15d1f66a90a93a3179f9669f99fcd48ffbe4518a3aa89b7efaad3",
+        "format": "MP3",
+        "sample_rate_hz": 44100,
+        "seconds": 0.643312
+      }
+    },
+    "love/fs-436542-Mafon2.mp3": {
+      "title": "Cat short purr",
+      "author": "Mafon2",
+      "page": "https://freesound.org/people/Mafon2/sounds/436542/",
+      "stated": {
+        "type": "Wave (.wav)",
+        "duration": "0:01.322",
+        "size": "341.8 KB",
+        "sample_rate": "44.1 kHz",
+        "bit_depth": "24 bit",
+        "channels": "Stereo"
+      },
+      "licence": "CC0-1.0",
+      "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "checked_on": "2026-10-08",
+      "checked_by": "licence re-check, nm-implementer-light, Haiku 4.5",
+      "original": null,
+      "offset_s": 0.0,
+      "windows": {
+        "love": [
+          {
+            "start": 0.055,
+            "end": 1.285,
+            "r": 0.9999,
+            "ok": true
+          }
+        ]
+      },
+      "hq_preview": {
+        "file": "436542_1196472-hq.mp3",
+        "bytes": 33084,
+        "sha256": "2fef84fd3079217041707eee7df3c4f67084aabe4ab96114f62791014d8c7367",
+        "format": "MP3",
+        "sample_rate_hz": 44100,
+        "seconds": 1.322521
+      }
+    },
+    "annoyed/fs-64008-Department64.mp3": {
+      "title": "kitten13.wav",
+      "author": "Department64",
+      "page": "https://freesound.org/people/Department64/sounds/64008/",
+      "stated": {
+        "type": "Wave (.wav)",
+        "duration": "0:00.850",
+        "size": "146.5 KB",
+        "sample_rate": "44.1 kHz",
+        "bit_depth": "16 bit",
+        "channels": "Stereo"
+      },
+      "licence": "CC0-1.0",
+      "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "checked_on": "2026-10-08",
+      "checked_by": "licence re-check, nm-implementer-light, Haiku 4.5",
+      "original": null,
+      "offset_s": 0.0,
+      "windows": {
+        "annoyed": [
+          {
+            "start": 0.015,
+            "end": 0.850125,
+            "r": 0.9984,
+            "ok": true
+          }
+        ],
+        "wink": [
+          {
+            "start": 0.45,
+            "end": 0.8,
+            "r": 0.9989,
+            "ok": true
+          }
+        ]
+      },
+      "hq_preview": {
+        "file": "64008_861714-hq.mp3",
+        "bytes": 20924,
+        "sha256": "ab4074a794fcd50cc1749c870cecf6291fd3357a84e0851436e0534f5e94ec38",
+        "format": "MP3",
+        "sample_rate_hz": 44100,
+        "seconds": 0.850104
+      }
+    },
+    "dizzy/fs-64007-Department64.mp3": {
+      "title": "kitten12.wav",
+      "author": "Department64",
+      "page": "https://freesound.org/people/Department64/sounds/64007/",
+      "stated": {
+        "type": "Wave (.wav)",
+        "duration": "0:00.670",
+        "size": "115.5 KB",
+        "sample_rate": "44.1 kHz",
+        "bit_depth": "16 bit",
+        "channels": "Stereo"
+      },
+      "licence": "CC0-1.0",
+      "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "checked_on": "2026-10-08",
+      "checked_by": "licence re-check, nm-implementer-light, Haiku 4.5",
+      "original": null,
+      "offset_s": 0.0,
+      "windows": {
+        "dizzy": [
+          {
+            "start": 0.0,
+            "end": 0.670458,
+            "r": 0.9976,
+            "ok": true
+          }
+        ],
+        "slap": [
+          {
+            "start": 0.0,
+            "end": 0.3,
+            "r": 0.9959,
+            "ok": true
+          }
+        ]
+      },
+      "hq_preview": {
+        "file": "64007_861714-hq.mp3",
+        "bytes": 16333,
+        "sha256": "256ddf5c1d79f8e32c56fc47cbecce0ea25795d0863935fc71f572c2807d99bd",
+        "format": "MP3",
+        "sample_rate_hz": 44100,
+        "seconds": 0.670458
+      }
+    },
+    "finish/fs-415107-steffcaffrey.mp3": {
+      "title": "catwhirr.wav",
+      "author": "steffcaffrey",
+      "page": "https://freesound.org/people/steffcaffrey/sounds/415107/",
+      "stated": {
+        "type": "Wave (.wav)",
+        "duration": "0:00.840",
+        "size": "145.5 KB",
+        "sample_rate": "44.1 kHz",
+        "bit_depth": "16 bit",
+        "channels": "Stereo"
+      },
+      "licence": "CC0-1.0",
+      "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "checked_on": "2026-10-08",
+      "checked_by": "licence re-check, nm-implementer-light, Haiku 4.5",
+      "original": null,
+      "offset_s": 0.0,
+      "windows": {
+        "finish": [
+          {
+            "start": 0.025,
+            "end": 0.840167,
+            "r": 0.9899,
+            "ok": true
+          }
+        ]
+      },
+      "hq_preview": {
+        "file": "415107_1844073-hq.mp3",
+        "bytes": 22441,
+        "sha256": "daa787739da52e4fe9c4b51cf11b340520db835fcc2f814c62ed8c88bfa2a1ee",
+        "format": "MP3",
+        "sample_rate_hz": 44100,
+        "seconds": 0.840187
+      }
+    },
+    "error/fs-448084-Breviceps.mp3": {
+      "title": "Cute Kitten Meow",
+      "author": "Breviceps",
+      "page": "https://freesound.org/people/Breviceps/sounds/448084/",
+      "stated": {
+        "type": "Wave (.wav)",
+        "duration": "0:00.604",
+        "size": "104.2 KB",
+        "sample_rate": "44.1 kHz",
+        "bit_depth": "16 bit",
+        "channels": "Stereo"
+      },
+      "licence": "CC0-1.0",
+      "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "checked_on": "2026-10-08",
+      "checked_by": "licence re-check, nm-implementer-light, Haiku 4.5",
+      "original": null,
+      "offset_s": 0.0,
+      "windows": {
+        "error": [
+          {
+            "start": 0.0,
+            "end": 0.585,
+            "r": 0.9976,
+            "ok": true
+          }
+        ]
+      },
+      "hq_preview": {
+        "file": "448084_9159316-hq.mp3",
+        "bytes": 16490,
+        "sha256": "78eaf5b601a30543905418c53a61df5e53dd93c3dfee5f7c06ae1db11876e844",
+        "format": "MP3",
+        "sample_rate_hz": 44100,
+        "seconds": 0.604375
+      }
+    },
+    "approval/fs-64005-Department64.mp3": {
+      "title": "kitten10.wav",
+      "author": "Department64",
+      "page": "https://freesound.org/people/Department64/sounds/64005/",
+      "stated": {
+        "type": "Wave (.wav)",
+        "duration": "0:00.648",
+        "size": "111.7 KB",
+        "sample_rate": "44.1 kHz",
+        "bit_depth": "16 bit",
+        "channels": "Stereo"
+      },
+      "licence": "CC0-1.0",
+      "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "checked_on": "2026-10-08",
+      "checked_by": "licence re-check, nm-implementer-light, Haiku 4.5",
+      "original": null,
+      "offset_s": 0.0,
+      "windows": {
+        "approval": [
+          {
+            "start": 0.025,
+            "end": 0.525,
+            "r": 0.9987,
+            "ok": true
+          }
+        ]
+      },
+      "hq_preview": {
+        "file": "64005_861714-hq.mp3",
+        "bytes": 16123,
+        "sha256": "2eed98b189726600a5eb1bae783366cc2a3fa0aba586802baeed8d3a60a13c76",
+        "format": "MP3",
+        "sample_rate_hz": 44100,
+        "seconds": 0.648396
+      }
+    },
+    "error/fs-64015-Department64.mp3": {
+      "title": "kitten20.wav",
+      "author": "Department64",
+      "page": "https://freesound.org/people/Department64/sounds/64015/",
+      "stated": {
+        "type": "Wave (.wav)",
+        "duration": "0:00.880",
+        "size": "151.7 KB",
+        "sample_rate": "44.1 kHz",
+        "bit_depth": "16 bit",
+        "channels": "Stereo"
+      },
+      "licence": "CC0-1.0",
+      "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "checked_on": "2026-10-08",
+      "checked_by": "licence re-check, nm-implementer-light, Haiku 4.5",
+      "original": null,
+      "offset_s": 0.0,
+      "windows": {
+        "question": [
+          {
+            "start": 0.1,
+            "end": 0.6,
+            "r": 0.9997,
+            "ok": true
+          }
+        ]
+      },
+      "hq_preview": {
+        "file": "64015_861714-hq.mp3",
+        "bytes": 21026,
+        "sha256": "254408cf4a3906a9f878c605d864698f2f04222f54f67659bd2c01179cae93b6",
+        "format": "MP3",
+        "sample_rate_hz": 44100,
+        "seconds": 0.880083
+      }
+    },
+    "proud/fs-451250-dreamstobecome.mp3": {
+      "title": "cat chirp.wav",
+      "author": "dreamstobecome",
+      "page": "https://freesound.org/people/dreamstobecome/sounds/451250/",
+      "stated": {
+        "type": "Wave (.wav)",
+        "duration": "0:07.815",
+        "size": "1.4 MB",
+        "sample_rate": "48 kHz",
+        "bit_depth": "16 bit",
+        "channels": "Stereo"
+      },
+      "licence": "CC0-1.0",
+      "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "checked_on": "2026-10-08",
+      "checked_by": "licence re-check, nm-implementer-light, Haiku 4.5",
+      "original": null,
+      "offset_s": 0.0,
+      "windows": {
+        "proud": [
+          {
+            "start": 2.5,
+            "end": 3.0,
+            "r": 0.9924,
+            "ok": true
+          }
+        ]
+      },
+      "hq_preview": {
+        "file": "451250_7758073-hq.mp3",
+        "bytes": 184416,
+        "sha256": "be493a43c91b5078eeaf8d08010382e7dec64e2d96197132bf2c26af048c6ab4",
+        "format": "MP3",
+        "sample_rate_hz": 48000,
+        "seconds": 7.81575
+      }
+    },
+    "sleep/fs-260881-Trautwein.mp3": {
+      "title": "Cat purr.wav",
+      "author": "Trautwein",
+      "page": "https://freesound.org/people/Trautwein/sounds/260881/",
+      "stated": {
+        "type": "Wave (.wav)",
+        "duration": "1:00.103",
+        "size": "8.3 MB",
+        "sample_rate": "48 kHz",
+        "bit_depth": "24 bit",
+        "channels": "Mono"
+      },
+      "licence": "CC0-1.0",
+      "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "checked_on": "2026-10-08",
+      "checked_by": "licence re-check, nm-implementer-light, Haiku 4.5",
+      "original": null,
+      "offset_s": 0.0,
+      "windows": {
+        "sleep": [
+          {
+            "start": 4.0,
+            "end": 6.8,
+            "r": 0.9995,
+            "ok": true
+          }
+        ]
+      },
+      "hq_preview": {
+        "file": "260881_525245-hq.mp3",
+        "bytes": 1432800,
+        "sha256": "2dcd7ecf0e11d15016189d14c98250b6894c82d7ccd8e85e198bf79bd14ac7e0",
+        "format": "MP3",
+        "sample_rate_hz": 48000,
+        "seconds": 60.103396
+      }
+    },
+    "gulp/fs-730097-Sadiquecat.mp3": {
+      "title": "Cat licking her paw",
+      "author": "Sadiquecat",
+      "page": "https://freesound.org/people/Sadiquecat/sounds/730097/",
+      "stated": {
+        "type": "Wave (.wav)",
+        "duration": "0:13.375",
+        "size": "1.8 MB",
+        "sample_rate": "48 kHz",
+        "bit_depth": "24 bit",
+        "channels": "Mono"
+      },
+      "licence": "CC0-1.0",
+      "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "checked_on": "2026-10-08",
+      "checked_by": "licence re-check, nm-implementer-light, Haiku 4.5",
+      "original": null,
+      "offset_s": 0.0,
+      "windows": {
+        "gulp": [
+          {
+            "start": 0.0,
+            "end": 0.9,
+            "r": 0.9999,
+            "ok": true
+          }
+        ]
+      },
+      "hq_preview": {
+        "file": "730097_5287430-hq.mp3",
+        "bytes": 315792,
+        "sha256": "a696d3f3e30e25e48e948d9afd9fdfd98b1fd27fb92544ffa726ae20fa062fb2",
+        "format": "MP3",
+        "sample_rate_hz": 48000,
+        "seconds": 13.375333
+      }
+    },
+    "dizzy/fs-730102-Sadiquecat.mp3": {
+      "title": "Cat MmRrm noise",
+      "author": "Sadiquecat",
+      "page": "https://freesound.org/people/Sadiquecat/sounds/730102/",
+      "stated": {
+        "type": "Wave (.wav)",
+        "duration": "0:01.817",
+        "size": "255.9 KB",
+        "sample_rate": "48 kHz",
+        "bit_depth": "24 bit",
+        "channels": "Mono"
+      },
+      "licence": "CC0-1.0",
+      "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "checked_on": "2026-10-08",
+      "checked_by": "licence re-check, nm-implementer-light, Haiku 4.5",
+      "original": null,
+      "offset_s": 0.0,
+      "windows": {
+        "think": [
+          {
+            "start": 0.3,
+            "end": 1.2,
+            "r": 0.9997,
+            "ok": true
+          }
+        ]
+      },
+      "hq_preview": {
+        "file": "730102_5287430-hq.mp3",
+        "bytes": 43008,
+        "sha256": "2cc73d1222d57da9bd7d8c52d1bb007a1239c524fecca94a0dae16c4853a42b3",
+        "format": "MP3",
+        "sample_rate_hz": 48000,
+        "seconds": 1.817021
+      }
+    },
+    "search/fs-499362-16H_Panska_Rudenko_Angelika.mp3": {
+      "title": "Cat_Hunting.wav",
+      "author": "16H_Panska_Rudenko_Angelika",
+      "page": "https://freesound.org/people/16H_Panska_Rudenko_Angelika/sounds/499362/",
+      "stated": {
+        "type": "Wave (.wav)",
+        "duration": "1:06.775",
+        "size": "18.4 MB",
+        "sample_rate": "48 kHz",
+        "bit_depth": "24 bit",
+        "channels": "Stereo"
+      },
+      "licence": "CC0-1.0",
+      "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "checked_on": "2026-10-08",
+      "checked_by": "licence re-check, nm-implementer-light, Haiku 4.5",
+      "original": null,
+      "offset_s": 0.0,
+      "windows": {
+        "search": [
+          {
+            "start": 12.85,
+            "end": 13.75,
+            "r": 0.9954,
+            "ok": true
+          }
+        ]
+      },
+      "hq_preview": {
+        "file": "499362_10822430-hq.mp3",
+        "bytes": 1503840,
+        "sha256": "84c5f8f1ee0199a68927e2cf1fc1ed91c7175555f9e13d0953d54b90e869f6c9",
+        "format": "MP3",
+        "sample_rate_hz": 48000,
+        "seconds": 66.7755
+      }
+    },
+    "rate/fs-64012-Department64.mp3": {
+      "title": "kitten17.wav",
+      "author": "Department64",
+      "page": "https://freesound.org/people/Department64/sounds/64012/",
+      "stated": {
+        "type": "Wave (.wav)",
+        "duration": "0:00.950",
+        "size": "163.8 KB",
+        "sample_rate": "44.1 kHz",
+        "bit_depth": "16 bit",
+        "channels": "Stereo"
+      },
+      "licence": "CC0-1.0",
+      "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "checked_on": "2026-10-08",
+      "checked_by": "licence re-check, nm-implementer-light, Haiku 4.5",
+      "original": null,
+      "offset_s": 0.0,
+      "windows": {
+        "rate": [
+          {
+            "start": 0.005,
+            "end": 0.835,
+            "r": 0.9955,
+            "ok": true
+          }
+        ]
+      },
+      "hq_preview": {
+        "file": "64012_861714-hq.mp3",
+        "bytes": 22752,
+        "sha256": "126fc5df076b18cc82655d741dfdd13d12249cdd51d04d97903d0645f7defcbd",
+        "format": "MP3",
+        "sample_rate_hz": 44100,
+        "seconds": 0.950667
+      }
+    },
+    "hairball/fs-561726-har2h.mp3": {
+      "title": "Cat Coughing.wav",
+      "author": "har2h",
+      "page": "https://freesound.org/people/har2h/sounds/561726/",
+      "stated": {
+        "type": "Wave (.wav)",
+        "duration": "0:20.995",
+        "size": "3.9 MB",
+        "sample_rate": "48 kHz",
+        "bit_depth": "16 bit",
+        "channels": "Stereo"
+      },
+      "licence": "CC0-1.0",
+      "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "checked_on": "2026-10-08",
+      "checked_by": "licence re-check, nm-implementer-light, Haiku 4.5",
+      "original": null,
+      "offset_s": 0.0,
+      "windows": {
+        "hairball": [
+          {
+            "start": 2.143,
+            "end": 2.558,
+            "r": 1.0,
+            "ok": true
+          },
+          {
+            "start": 4.196,
+            "end": 4.576,
+            "r": 1.0,
+            "ok": true
+          },
+          {
+            "start": 7.278,
+            "end": 7.658,
+            "r": 1.0,
+            "ok": true
+          }
+        ]
+      },
+      "hq_preview": {
+        "file": "561726_8384492-hq.mp3",
+        "bytes": 503328,
+        "sha256": "89fc33c6b1e4708aedfa3c82731307219d7ef806698e3fea6af910cf7c74c0be",
+        "format": "MP3",
+        "sample_rate_hz": 48000,
+        "seconds": 20.995667
+      }
+    },
+    "approve/fs-487999-BenDrain.mp3": {
+      "title": "Cardboard_Small Impact_06.wav",
+      "author": "BenDrain",
+      "page": "https://freesound.org/people/BenDrain/sounds/487999/",
+      "stated": {
+        "type": "Wave (.wav)",
+        "duration": "0:00.416",
+        "size": "132.2 KB",
+        "sample_rate": "48 kHz",
+        "bit_depth": "24 bit",
+        "channels": "Stereo"
+      },
+      "licence": "CC0-1.0",
+      "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "checked_on": "2026-10-08",
+      "checked_by": "licence re-check, nm-implementer-light, Haiku 4.5",
+      "original": null,
+      "offset_s": 0.0,
+      "windows": {
+        "approve": [
+          {
+            "start": 0.005,
+            "end": 0.255,
+            "r": 0.9999,
+            "ok": true
+          }
+        ]
+      },
+      "hq_preview": {
+        "file": "487999_4763661-hq.mp3",
+        "bytes": 11136,
+        "sha256": "d40edba190c3521605701e40def23bcddf32462361809b4887bccb964c872bea",
+        "format": "MP3",
+        "sample_rate_hz": 48000,
+        "seconds": 0.416667
+      }
+    },
+    "peek/fs-541360-JoshuaPomeroy.mp3": {
+      "title": "Sleigh Bell Short 01.wav",
+      "author": "JoshuaPomeroy",
+      "page": "https://freesound.org/people/JoshuaPomeroy/sounds/541360/",
+      "stated": {
+        "type": "Wave (.wav)",
+        "duration": "0:00.214",
+        "size": "18.5 KB",
+        "sample_rate": "44.1 kHz",
+        "bit_depth": "16 bit",
+        "channels": "Mono"
+      },
+      "licence": "CC0-1.0",
+      "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "checked_on": "2026-10-08",
+      "checked_by": "licence re-check, nm-implementer-light, Haiku 4.5",
+      "original": null,
+      "offset_s": 0.0,
+      "windows": {
+        "peek": [
+          {
+            "start": 0.0,
+            "end": 0.205,
+            "r": 0.9824,
+            "ok": true
+          }
+        ]
+      },
+      "hq_preview": {
+        "file": "541360_473017-hq.mp3",
+        "bytes": 7620,
+        "sha256": "cabba81c4461904db36b2d5e138f5674cc5ca0a0d5a0528e65c203821b1decbb",
+        "format": "MP3",
+        "sample_rate_hz": 44100,
+        "seconds": 0.214188
+      }
+    },
+    "open/fs-364740-newagesoup.mp3": {
+      "title": "open-cardboard-box-compartment.wav",
+      "author": "newagesoup",
+      "page": "https://freesound.org/people/newagesoup/sounds/364740/",
+      "stated": {
+        "type": "Wave (.wav)",
+        "duration": "0:01.000",
+        "size": "282.0 KB",
+        "sample_rate": "48 kHz",
+        "bit_depth": "24 bit",
+        "channels": "Stereo"
+      },
+      "licence": "CC0-1.0",
+      "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "checked_on": "2026-10-08",
+      "checked_by": "licence re-check, nm-implementer-light, Haiku 4.5",
+      "original": null,
+      "offset_s": 0.0,
+      "windows": {
+        "open": [
+          {
+            "start": 0.22,
+            "end": 0.62,
+            "r": 0.9988,
+            "ok": true
+          }
+        ]
+      },
+      "hq_preview": {
+        "file": "364740_4067257-hq.mp3",
+        "bytes": 20880,
+        "sha256": "f7ee56b36e21a80a3420db8c11330b86c0cf0b350d5f94ec0e1e85d15920b201",
+        "format": "MP3",
+        "sample_rate_hz": 48000,
+        "seconds": 1.0
+      }
+    },
+    "close/fs-320847-Mafon2.mp3": {
+      "title": "Item placed",
+      "author": "Mafon2",
+      "page": "https://freesound.org/people/Mafon2/sounds/320847/",
+      "stated": {
+        "type": "Wave (.wav)",
+        "duration": "0:00.560",
+        "size": "114.9 KB",
+        "sample_rate": "48 kHz",
+        "bit_depth": "16 bit",
+        "channels": "Stereo"
+      },
+      "licence": "CC0-1.0",
+      "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "checked_on": "2026-10-08",
+      "checked_by": "licence re-check, nm-implementer-light, Haiku 4.5",
+      "original": null,
+      "offset_s": 0.0,
+      "windows": {
+        "close": [
+          {
+            "start": 0.2,
+            "end": 0.56,
+            "r": 0.9955,
+            "ok": true
+          }
+        ]
+      },
+      "hq_preview": {
+        "file": "320847_1196472-hq.mp3",
+        "bytes": 16512,
+        "sha256": "ff29084756bd74c8d2105c1775bd8fe84aa430fed3746a05bacfe61b29dfb12c",
+        "format": "MP3",
+        "sample_rate_hz": 48000,
+        "seconds": 0.56
+      }
+    },
+    "hover/fs-371274-Mafon2.mp3": {
+      "title": "Water Click",
+      "author": "Mafon2",
+      "page": "https://freesound.org/people/Mafon2/sounds/371274/",
+      "stated": {
+        "type": "Wave (.wav)",
+        "duration": "0:00.108",
+        "size": "61.4 KB",
+        "sample_rate": "96 kHz",
+        "bit_depth": "24 bit",
+        "channels": "Stereo"
+      },
+      "licence": "CC0-1.0",
+      "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "checked_on": "2026-10-08",
+      "checked_by": "licence re-check, nm-implementer-light, Haiku 4.5",
+      "original": null,
+      "offset_s": 0.0,
+      "windows": {
+        "hover": [
+          {
+            "start": 0.0,
+            "end": 0.108958,
+            "r": 0.998,
+            "ok": true
+          }
+        ]
+      },
+      "hq_preview": {
+        "file": "371274_1196472-hq.mp3",
+        "bytes": 5376,
+        "sha256": "558b3f1546f904ca0741ea521ba3931373b50eb649356d1a449e17e1e63963a2",
+        "format": "MP3",
+        "sample_rate_hz": 48000,
+        "seconds": 0.108938
+      }
+    },
+    "tick/fs-371278-Mafon2.mp3": {
+      "title": "Сeramic Сlick",
+      "author": "Mafon2",
+      "page": "https://freesound.org/people/Mafon2/sounds/371278/",
+      "stated": {
+        "type": "Wave (.wav)",
+        "duration": "0:00.153",
+        "size": "86.5 KB",
+        "sample_rate": "96 kHz",
+        "bit_depth": "24 bit",
+        "channels": "Stereo"
+      },
+      "licence": "CC0-1.0",
+      "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "checked_on": "2026-10-08",
+      "checked_by": "licence re-check, nm-implementer-light, Haiku 4.5",
+      "original": null,
+      "offset_s": 0.0,
+      "windows": {
+        "tick": [
+          {
+            "start": 0.005,
+            "end": 0.125,
+            "r": 0.995,
+            "ok": true
+          }
+        ]
+      },
+      "hq_preview": {
+        "file": "371278_1196472-hq.mp3",
+        "bytes": 6960,
+        "sha256": "bfaa9e5826c0a369808d4541b36c44829c69b85eb9560231b47e8c0bcf73de27",
+        "format": "MP3",
+        "sample_rate_hz": 48000,
+        "seconds": 0.153625
+      }
+    },
+    "send/fs-402453-jimmyfisher.mp3": {
+      "title": "pouring cat food",
+      "author": "jimmyfisher",
+      "page": "https://freesound.org/people/jimmyfisher/sounds/402453/",
+      "stated": {
+        "type": "Wave (.wav)",
+        "duration": "0:00.205",
+        "size": "38.6 KB",
+        "sample_rate": "48 kHz",
+        "bit_depth": "32 bit",
+        "channels": "Mono"
+      },
+      "licence": "CC0-1.0",
+      "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "checked_on": "2026-10-08",
+      "checked_by": "licence re-check, nm-implementer-light, Haiku 4.5",
+      "original": null,
+      "offset_s": 0.0,
+      "windows": {
+        "send": [
+          {
+            "start": 0.0,
+            "end": 0.205479,
+            "r": 0.9983,
+            "ok": true
+          }
+        ]
+      },
+      "hq_preview": {
+        "file": "402453_6502466-hq.mp3",
+        "bytes": 8304,
+        "sha256": "e309e2851ff1a66fcf22f2b50acf61639ab6ea0df297a3d8a796c7569780b59a",
+        "format": "MP3",
+        "sample_rate_hz": 48000,
+        "seconds": 0.205479
+      }
+    },
+    "pop/fs-258269-jcallison.mp3": {
+      "title": "Mouth pop",
+      "author": "jcallison",
+      "page": "https://freesound.org/people/jcallison/sounds/258269/",
+      "stated": {
+        "type": "Ogg Vorbis (.ogg)",
+        "duration": "0:00.323",
+        "size": "9.2 KB",
+        "sample_rate": "44.1 kHz",
+        "bitrate": "232 kbps",
+        "channels": "Stereo"
+      },
+      "licence": "CC0-1.0",
+      "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "checked_on": "2026-10-08",
+      "checked_by": "licence re-check, nm-implementer-light, Haiku 4.5",
+      "original": null,
+      "offset_s": 0.0,
+      "windows": {
+        "pop": [
+          {
+            "start": 0.0,
+            "end": 0.215,
+            "r": 0.9998,
+            "ok": true
+          }
+        ]
+      },
+      "hq_preview": {
+        "file": "258269_4824549-hq.mp3",
+        "bytes": 9915,
+        "sha256": "7d8a262c747a1733da0b6af232a6c3e2a00a63c353d81e6eca82eef398eaf737",
+        "format": "MP3",
+        "sample_rate_hz": 44100,
+        "seconds": 0.323125
+      }
+    }
+  }
+}

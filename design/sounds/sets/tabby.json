@@ -1,0 +1,22 @@
+{
+  "set": "tabby",
+  "title": "Tabby",
+  "pitch_st": 0.0,
+  "entries": [
+    {"slot": "greet", "source": "greet/fs-512586-foxboyprower.mp3", "start": 0.29, "end": 0.67, "mood": "happy", "signature": true, "note": "mew07, a friendly arched mew, 0.29 to 0.67 s (the mew proper; verified from the audio). Quiet at the source, so the build lifts it."},
+    {"slot": "love", "source": "love/fs-512625-foxboyprower.mp3", "start": 0.1, "end": 0.6, "mood": "happy", "signature": true, "note": "mew22, a soft mew with a purr-like rumble just before it, 0.10 to 0.60 s. The nearest Tabby has to a purr-meow: her real purrs sit below the 100 Hz high-pass."},
+    {"slot": "annoyed", "source": "annoyed/fs-512620-foxboyprower.mp3", "start": 0.12, "end": 0.38, "mood": "upset", "signature": false, "note": "exhale5, a short low half-growl, 0.12 to 0.38 s: her rar exhale, not a hiss."},
+    {"slot": "dizzy", "source": "dizzy/fs-512605-foxboyprower.mp3", "start": 0.12, "end": 0.46, "effects": [{"type": "wobble", "rate_hz": 5.0, "depth_st": 1.0}], "mood": "upset", "signature": false, "note": "squeak13, a steady flat squeak, with the 5 Hz wobble."},
+    {"slot": "slap", "source": "slap/fs-512585-foxboyprower.mp3", "start": 0.41, "end": 0.8, "mood": "calm", "signature": false, "note": "squeak03, the squeak she made when poked while resting, 0.41 to 0.80 s."},
+    {"slot": "finish", "source": "finish/fs-512623-foxboyprower.mp3", "start": 0.06, "end": 0.37, "mood": "happy", "signature": true, "note": "squeak17, a strong squeak that rises at the start: one of her best-recorded clips."},
+    {"slot": "error", "source": "error/fs-512572-foxboyprower.mp3", "start": 0.13, "end": 0.38, "effects": [{"type": "glide", "from_st": 0.0, "to_st": -4.0}], "mood": "upset", "signature": true, "note": "mew06, a mew that already glides down, with the falling pitch ramp (0 to -4 semitones). Faint at the source."},
+    {"slot": "approval", "source": "approval/fs-512616-foxboyprower.mp3", "start": 0.07, "end": 0.48, "mood": "attention", "signature": true, "note": "mew18, her clearest plain old-cat meow, flat then a slight lift, 0.07 to 0.48 s."},
+    {"slot": "question", "source": "question/fs-512624-foxboyprower.mp3", "start": 0.0, "end": 0.29, "effects": [{"type": "glide", "from_st": 0.0, "to_st": 3.0}], "mood": "attention", "signature": true, "note": "mew21, the clip the uploader labelled with a question mark, with a rising pitch ramp (0 to +3 semitones). Starts on the first sample; the build's 3 ms fade-in covers it."},
+    {"slot": "proud", "source": "proud/fs-512618-foxboyprower.mp3", "start": 0.035, "end": 0.38, "mood": "happy", "signature": false, "note": "squeak15, a chesty squeak with some body under it, 0.035 to 0.38 s."},
+    {"slot": "wink", "source": "wink/fs-512608-foxboyprower.mp3", "start": 0.11, "end": 0.41, "mood": "happy", "signature": false, "note": "squeak14, a tiny croaking squeak, clean, 0.11 to 0.41 s."},
+    {"slot": "sleep", "source": "sleep/fs-196255-lolamadeus.mp3", "start": 7.65, "end": 8.64, "mood": "calm", "signature": false, "note": "Borrowed from lolamadeus: one whole snore (7.65 to 8.64 s) with silence either side; Tabby has no snore of her own."},
+    {"slot": "think", "source": "think/fs-512564-foxboyprower.mp3", "start": 0.065, "end": 0.41, "pitch_st": -2.0, "mood": "attention", "signature": false, "note": "mew04, a steady rough-edged mew down two semitones: a questioning 'hm'."},
+    {"slot": "search", "source": "search/fs-200336-jsbarrett.mp3", "start": 9.84, "end": 10.21, "mood": "attention", "signature": false, "note": "Borrowed from jsbarrett: the loudest of the eight trills in the file, whole (9.84 to 10.21 s). A real trill, kept on purpose instead of the made-in-code 12 Hz chatter the other sets use, so there is a recorded alternative to hear."},
+    {"slot": "rate", "source": "rate/fs-512596-foxboyprower.mp3", "start": 0.1, "end": 0.47, "effects": [{"type": "thump"}], "mood": "upset", "signature": false, "note": "mew09, an impatient grumbly mew with a low rar, then the tail thump."}
+  ]
+}

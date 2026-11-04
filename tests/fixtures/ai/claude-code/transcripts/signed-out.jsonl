@@ -1,0 +1,2 @@
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":"Not logged in · Please run /login"}]},"error":"authentication_failed","session_id":"__SESSION_ID__"}
+{"type":"result","subtype":"success","is_error":true,"result":"Not logged in · Please run /login","session_id":"__SESSION_ID__","total_cost_usd":0,"usage":{"input_tokens":0,"output_tokens":0},"num_turns":1,"permission_denials":[],"terminal_reason":"error"}

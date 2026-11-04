@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "verified": true,
+  "note": "The version is the first x.y.z in the output of `codex --version`. The minimum is the version the recording ran (recorded/v.txt: codex-cli 0.165.0, the flags in expected-args.json were run on it). Older versions are not checked, so the minimum is the lowest version proved, not a judgment about older ones. A null version or a null minimum is unknown: unknown is allowed to run, and an unreadable transcript then says so.",
+  "minimum": [0, 165, 0],
+  "parse": [
+    {"text": "codex-cli 0.165.0", "expect": [0, 165, 0]},
+    {"text": "codex-cli 0.165.0\n", "expect": [0, 165, 0]},
+    {"text": "codex-cli 0.98.0", "expect": [0, 98, 0]},
+    {"text": "nonsense", "expect": null},
+    {"text": "", "expect": null}
+  ],
+  "check": [
+    {"version": [0, 165, 0], "expect": "ok"},
+    {"version": [0, 164, 9], "expect": "old"},
+    {"version": [0, 98, 0], "expect": "old"},
+    {"version": [1, 0, 0], "expect": "ok"},
+    {"version": null, "expect": "unknown"},
+    {"version": [1, 0, 0], "minimum": null, "expect": "unknown"}
+  ]
+}

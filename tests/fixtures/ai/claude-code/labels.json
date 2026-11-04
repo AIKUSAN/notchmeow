@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "note": "Words on the two chips. The model chip says who pays: init's apiKeySource wins once a turn has run, the status's authMethod before that. The level chip names the folder by its last part.",
+  "modelChip": [
+    {"name": "not run yet, signed in with a plan", "authMethod": "claude.ai", "paidBy": null, "expect": "Claude · your plan"},
+    {"name": "an OAuth token is a plan too", "authMethod": "oauth_token", "paidBy": null, "expect": "Claude · your plan"},
+    {"name": "init says plan", "authMethod": "claude.ai", "paidBy": "plan", "expect": "Claude · your plan"},
+    {"name": "init says API key even though the status said plan (an apiKeyHelper)", "authMethod": "claude.ai", "paidBy": "api_key", "expect": "Claude · API key"},
+    {"name": "an API key, not run yet", "authMethod": "api_key", "paidBy": null, "expect": "Claude · API key"},
+    {"name": "an API key helper, not run yet", "authMethod": "api_key_helper", "paidBy": null, "expect": "Claude · API key"},
+    {"name": "a cloud account is neither", "authMethod": "third_party", "paidBy": "plan", "expect": "Claude"},
+    {"name": "nothing known", "authMethod": null, "paidBy": null, "expect": "Claude"},
+    {"name": "init without a source and no status", "authMethod": null, "paidBy": "unknown", "expect": "Claude"},
+    {"name": "init says plan and the status is unknown", "authMethod": null, "paidBy": "plan", "expect": "Claude · your plan"}
+  ],
+  "levelChip": [
+    {"level": "chat", "folder": null, "expect": "Chat only"},
+    {"level": "read", "folder": "/Users/zoe/Projects/notchmeow", "expect": "Read-only · notchmeow"},
+    {"level": "read", "folder": "/Users/Zoé/Mes projets/ünï côde/", "expect": "Read-only · ünï côde"},
+    {"level": "agent", "folder": "C:\\Users\\José\\Mis Proyectos", "expect": "Agent · Mis Proyectos"},
+    {"level": "agent", "folder": "C:\\Users\\José\\Mis Proyectos\\", "expect": "Agent · Mis Proyectos"},
+    {"level": "agent", "folder": "/", "expect": "Agent · /"},
+    {"level": "agent", "folder": "C:\\", "expect": "Agent · C:"},
+    {"level": "none", "folder": null, "expect": "No tools"},
+    {"level": "read", "folder": null, "expect": "Read-only"}
+  ]
+}

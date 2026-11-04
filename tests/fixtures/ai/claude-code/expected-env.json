@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "note": "What a claude run keeps of the caller's environment. Names listed or starting with a listed prefix are dropped, whatever their value; they outrank the user's plan login. On Windows names compare without regard to case.",
+  "stripped": ["ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN", "CLAUDE_CODE_OAUTH_TOKEN", "ANTHROPIC_PROFILE"],
+  "strippedPrefixes": ["CLAUDE_CODE_USE_"],
+  "cases": [
+    {"name": "the variables that outrank the plan login are dropped", "platform": "mac", "base": {"PATH": "/usr/bin:/bin", "HOME": "/Users/zoe", "ANTHROPIC_API_KEY": "sk-ant-FAKE", "ANTHROPIC_AUTH_TOKEN": "tok-FAKE", "CLAUDE_CODE_OAUTH_TOKEN": "oauth-FAKE", "ANTHROPIC_PROFILE": "work"}, "expect": {"PATH": "/usr/bin:/bin", "HOME": "/Users/zoe"}},
+    {"name": "every CLAUDE_CODE_USE_ variable goes", "platform": "linux", "base": {"PATH": "/usr/bin", "CLAUDE_CODE_USE_BEDROCK": "1", "CLAUDE_CODE_USE_VERTEX": "1", "CLAUDE_CODE_USE_FOUNDRY": "1", "CLAUDE_CODE_USE_ANYTHING_NEW": "1"}, "expect": {"PATH": "/usr/bin"}},
+    {"name": "similar names stay", "platform": "mac", "base": {"MY_ANTHROPIC_API_KEY": "x", "ANTHROPIC_BASE_URL": "https://proxy.example", "CLAUDE_CODE_GIT_BASH_PATH": "C:\\Git\\bin\\bash.exe", "CLAUDE_CONFIG_DIR": "/c", "CLAUDE_CODE_USER": "1"}, "expect": {"MY_ANTHROPIC_API_KEY": "x", "ANTHROPIC_BASE_URL": "https://proxy.example", "CLAUDE_CODE_GIT_BASH_PATH": "C:\\Git\\bin\\bash.exe", "CLAUDE_CONFIG_DIR": "/c", "CLAUDE_CODE_USER": "1"}},
+    {"name": "an empty value is dropped too", "platform": "mac", "base": {"ANTHROPIC_API_KEY": "", "HOME": "/Users/zoe"}, "expect": {"HOME": "/Users/zoe"}},
+    {"name": "names are case-sensitive on macOS and Linux", "platform": "mac", "base": {"anthropic_api_key": "x", "claude_code_use_bedrock": "1"}, "expect": {"anthropic_api_key": "x", "claude_code_use_bedrock": "1"}},
+    {"name": "names are case-insensitive on Windows", "platform": "windows", "base": {"Anthropic_Api_Key": "x", "claude_code_use_bedrock": "1", "Path": "C:\\Windows", "SystemRoot": "C:\\Windows"}, "expect": {"Path": "C:\\Windows", "SystemRoot": "C:\\Windows"}},
+    {"name": "nothing to drop", "platform": "linux", "base": {}, "expect": {}}
+  ]
+}

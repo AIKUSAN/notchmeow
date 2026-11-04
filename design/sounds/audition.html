@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<title>NotchMeow sound sets</title>
+<!--
+  Audition and picking page for the sound sets (sub-project C, stages 1, 1b and 1c). Static: no scripts from
+  anywhere, no network. It plays the WAVs that tools/sounds/build_pack.py wrote to .claude/sounds/build/,
+  which is not in git, so build them first:  python3 tools/sounds/build_pack.py --all --report
+  Works from file://. Colours, type and cards follow design/sounds/listen.html.
+
+  Picking. Choose a version of each of the 15 cat moments (a set, or None of these), then Lock in. The
+  summary shows the exact text of design/sounds/sets/mine.json in the element #mine-json: save it there
+  (the main session reads it from this page) and run  python3 tools/sounds/build_pack.py --check-recipes.
+  A moment left at None of these gets a second round: alternatives are listed in
+  design/sounds/sets/round2.json and built with  python3 tools/sounds/build_pack.py --round2  into
+  .claude/sounds/build/round2/<moment>-<n>.wav. A static page cannot list a folder, so this one probes
+  those three file names for every row that is set to None of these (or already holds a round-two pick)
+  and shows an Alt cell for each file that exists. Build round two, reload the page: nothing to keep in
+  step by hand. Picks are remembered in this browser only (a convenience; mine.json is the record).
+
+  The slot table and the list of pickable moments in the JSON block below are checked against
+  tools/sounds/recipe.py by tests/test_sound_build.py, so they cannot drift from the build.
+-->
+<style>
+:root{--bg:#0f1012;--card:#17181b;--sub:#131417;--line:#2a2c31;--line2:#43464e;--ink:#ececee;--dim:#9a9ca3;--acc:#5EEAD4;--btn:#202227;--warn:#f2c46d;--bar:rgba(23,24,27,.94);color-scheme:dark}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f3f3f5;--card:#ffffff;--sub:#f8f8fa;--line:#dcdde2;--line2:#b4b7bf;--ink:#17181b;--dim:#5b5e66;--acc:#0b7f71;--btn:#f0f1f3;--warn:#8a5a00;--bar:rgba(255,255,255,.94);color-scheme:light}}
+:root[data-theme="light"]{--bg:#f3f3f5;--card:#ffffff;--sub:#f8f8fa;--line:#dcdde2;--line2:#b4b7bf;--ink:#17181b;--dim:#5b5e66;--acc:#0b7f71;--btn:#f0f1f3;--warn:#8a5a00;--bar:rgba(255,255,255,.94);color-scheme:light}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;background:var(--sub);border:1px solid var(--line);border-radius:6px;padding:0 5px}
+.wrap{max-width:1280px;margin:0 auto;padding:24px 16px 40px}
+.top{display:flex;gap:12px;align-items:flex-start;justify-content:space-between}
+h1{font-size:22px;font-weight:600;margin:0 0 4px}
+h2{font-size:17px;font-weight:600;margin:0 0 6px}
+.sub{color:var(--dim);margin:0 0 14px}
+button{font:inherit;font-size:12px;color:var(--ink);background:var(--btn);border:1px solid var(--line);border-radius:8px;padding:4px 10px;cursor:pointer;line-height:1.5}
+button:hover:not(:disabled){border-color:var(--line2)}
+button:disabled{cursor:default;opacity:.5}
+button.on{border-color:var(--acc);color:var(--acc)}
+button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+input[type=radio]{accent-color:var(--acc);width:16px;height:16px;margin:0;flex:none;cursor:pointer}
+input[type=radio]:disabled{cursor:default}
+input[type=radio]:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:0 0 16px}
+.panel p{margin:0}.panel p+p{margin-top:6px;color:var(--dim);font-size:13px}
+.warn{border-color:var(--warn)}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:16px;background:var(--card)}
+table{border-collapse:collapse;width:100%}
+#grid{min-width:980px}
+th,td{padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
+thead th{position:sticky;top:0;background:var(--card);z-index:2;border-bottom:1px solid var(--line2)}
+tbody tr:last-child td{border-bottom:0}
+tbody th{font-weight:400}
+th.slot{width:22%}
+.set-h{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.set-h b{font-size:15px;font-weight:600}
+.set-h span{color:var(--dim);font-size:12px;font-weight:400}
+tr.group th{background:var(--sub);font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:.04em}
+.name{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:600}
+.when{color:var(--dim);font-size:13px}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.chip{font-size:11px;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:0 8px}
+.chip.sig{border-color:var(--acc);color:var(--acc)}
+.cell{display:flex;flex-wrap:wrap;align-items:center;gap:8px;min-height:30px}
+.cell .len{color:var(--dim);font-size:12px}
+.cell.missing .len{color:var(--warn)}
+.cell.now button{border-color:var(--acc);color:var(--acc);background:var(--sub)}
+td.picked{box-shadow:inset 0 0 0 2px var(--acc);background:var(--sub)}
+.none-pick{display:flex;align-items:center;gap:8px;min-height:30px;cursor:pointer}
+.same{color:var(--dim);font-size:13px;min-height:30px}
+.plain{width:auto}
+.plain th,.plain td{padding:4px 24px 4px 0}
+pre{margin:6px 0 0;padding:12px;background:var(--sub);border:1px solid var(--line);border-radius:10px;font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;overflow-x:auto;user-select:all}
+.bar{position:sticky;bottom:0;z-index:5;background:var(--bar);border-top:1px solid var(--line);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.bar-in{max-width:1280px;margin:0 auto;padding:10px 16px;font-size:13px;color:var(--dim);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px}
+.mix-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+#counter{color:var(--ink);font-weight:600}
+</style></head><body>
+<div class="wrap">
+<div class="top">
+<div>
+<h1>NotchMeow sound sets</h1>
+<p class="sub">Five complete sets of the 29 sounds. They differ only in the cat's voice; the ticks, yawn, work, gulp and hairball are the same in all five (search is made in code in three sets, a recorded chatter in Best of and a recorded trill in Tabby). Listen, then pick a version for each cat moment: your picks ship as Your mix.</p>
+</div>
+<button id="theme" type="button" aria-label="Switch colour theme">Light</button>
+</div>
+
+<div class="panel" id="missing" hidden role="alert">
+<p><b id="missing-n"></b> sound files are missing. Build the sets, then reload this page:</p>
+<p><code>python3 tools/sounds/build_pack.py --all --report</code></p>
+</div>
+
+<div class="panel" role="note">
+<p>Each cat moment is the cat sound plus a short <b>touch</b> in its mood, and some also get the <b>signature</b> (collar-bell sparkle). Ticks get neither, and neither does the hairball, which is real coughs plus a retch and plop made in code. The per-cat voice (pitch offset) and the chattiness volume are applied in the app at play time, so they are not in these files; the hairball plays at normal speed for every cat, so its retch stays on the beat.</p>
+<p>Pick a version for each of the 15 cat moments with the dot beside its Play button, or <b>None of these</b> if nothing fits: it gets a second round, and Alt columns appear on that row once the alternatives are built. <b>Use this set for all</b> fills every row from one set. The other 14 rows are the same in every set, so there is nothing to pick. At 15 of 15, <b>Lock in</b> shows your mix. "Play the whole set" and "Play my mix" run through all the sounds with a short gap. Sounds play from <code>.claude/sounds/build/</code>, which is not in git.</p>
+</div>
+
+<div class="panel" id="summary" hidden>
+<h2>Your mix is locked in</h2>
+<p id="summary-note"></p>
+<table class="plain"><tbody id="summary-body"></tbody></table>
+<p>The exact text of <code>design/sounds/sets/mine.json</code>:</p>
+<pre id="mine-json"></pre>
+</div>
+
+<div class="scroll">
+<table id="grid">
+<thead><tr id="head"><th class="slot" scope="col">Slot</th></tr></thead>
+</table>
+</div>
+</div>
+
+<footer class="bar"><div class="bar-in">
+<div id="status" role="status" aria-live="polite">Looking for the built files…</div>
+<div class="mix-ctl">
+<b id="counter">0 of 15 picked</b>
+<button id="play-mix" type="button">Play my mix</button>
+<button id="lock" type="button" disabled>Lock in</button>
+<button id="unlock" type="button" hidden>Change picks</button>
+</div>
+</div></footer>
+
+<script type="application/json" id="data">
+{"pickable":["greet","love","annoyed","dizzy","slap","finish","error","approval","question","proud","wink","sleep","think","search","rate"],
+"sets":[
+{"id":"studio","title":"Studio","voice":"BigSoundBank's cat Emi, with MBPL's soft trills and Trautwein's purr for sleep"},
+{"id":"steff","title":"Steff's cat","voice":"steffcaffrey's cat; gaps from MBPL and Sadiquecat"},
+{"id":"kitten","title":"Kitten","voice":"Department64's Oscar (kitten files, Buddha Purr), up 1.5 semitones"},
+{"id":"bestof","title":"Best of","voice":"The strongest clip per slot, one shared pitch shift (down 1 semitone)"},
+{"id":"tabby","title":"Tabby","voice":"foxboyprower's old tabby; sleep from lolamadeus, search from jsbarrett"}],
+"slots":[
+{"slot":"greet","kind":"cat","mood":"happy","signature":true,"dark":false,"touch":true,"when":"the greeting"},
+{"slot":"love","kind":"cat","mood":"happy","signature":true,"dark":false,"touch":true,"when":"love emote, hover on the cat, a file drag starts"},
+{"slot":"annoyed","kind":"cat","mood":"upset","signature":false,"dark":false,"touch":true,"when":"poked too often"},
+{"slot":"dizzy","kind":"cat","mood":"upset","signature":false,"dark":false,"touch":true,"when":"dizzy after slaps"},
+{"slot":"slap","kind":"cat","mood":"calm","signature":false,"dark":false,"touch":true,"when":"poked"},
+{"slot":"finish","kind":"cat","mood":"happy","signature":true,"dark":false,"touch":true,"when":"agent finished"},
+{"slot":"error","kind":"cat","mood":"upset","signature":true,"dark":true,"touch":true,"when":"agent error"},
+{"slot":"approval","kind":"cat","mood":"attention","signature":true,"dark":false,"touch":true,"when":"an agent needs your approval"},
+{"slot":"question","kind":"cat","mood":"attention","signature":true,"dark":false,"touch":true,"when":"an agent asks a question"},
+{"slot":"proud","kind":"cat","mood":"happy","signature":false,"dark":false,"touch":true,"when":"proud emote"},
+{"slot":"wink","kind":"cat","mood":"happy","signature":false,"dark":false,"touch":true,"when":"wink emote"},
+{"slot":"yawn","kind":"cat","mood":"calm","signature":false,"dark":false,"touch":true,"when":"yawn emote"},
+{"slot":"sleep","kind":"cat","mood":"calm","signature":false,"dark":false,"touch":true,"when":"falling asleep (one soft snore)"},
+{"slot":"gulp","kind":"cat","mood":"happy","signature":false,"dark":false,"touch":true,"when":"catching a file"},
+{"slot":"think","kind":"cat","mood":"attention","signature":false,"dark":false,"touch":true,"when":"a prompt is sent"},
+{"slot":"search","kind":"cat","mood":"attention","signature":false,"dark":false,"touch":true,"when":"searching"},
+{"slot":"work","kind":"cat","mood":"calm","signature":false,"dark":false,"touch":true,"when":"working (kneading pats)"},
+{"slot":"rate","kind":"cat","mood":"upset","signature":false,"dark":false,"touch":true,"when":"rate-limited"},
+{"slot":"hairball","kind":"cat","mood":"upset","signature":false,"dark":false,"touch":false,"when":"the engine's hairball note: a refused file, Playful's error, the emote"},
+{"slot":"approve","kind":"tick","mood":"none","signature":false,"dark":false,"touch":false,"when":"you approved an agent's request"},
+{"slot":"peek","kind":"tick","mood":"none","signature":false,"dark":false,"touch":false,"when":"the island peeks"},
+{"slot":"open","kind":"tick","mood":"none","signature":false,"dark":false,"touch":false,"when":"the island opens"},
+{"slot":"close","kind":"tick","mood":"none","signature":false,"dark":false,"touch":false,"when":"the island closes"},
+{"slot":"hover","kind":"tick","mood":"none","signature":false,"dark":false,"touch":false,"when":"hover"},
+{"slot":"blip","kind":"tick","mood":"none","signature":false,"dark":false,"touch":false,"when":"small UI blip"},
+{"slot":"tick","kind":"tick","mood":"none","signature":false,"dark":false,"touch":false,"when":"ticker tick"},
+{"slot":"send","kind":"tick","mood":"none","signature":false,"dark":false,"touch":false,"when":"sending a chat message"},
+{"slot":"attach","kind":"tick","mood":"none","signature":false,"dark":false,"touch":false,"when":"attaching a file"},
+{"slot":"pop","kind":"tick","mood":"none","signature":false,"dark":false,"touch":false,"when":"popover pop"}]}
+</script>
+
+<script>
+"use strict";
+(function () {
+  var BASE = "../../.claude/sounds/build/";
+  var ROUND2 = BASE + "round2/";
+  var GAP_MS = 450;
+  var TITLE = "Your mix";
+  var NONE = "none";
+  var ROUND2_PREFIX = "round2:";
+  var ALT_COUNT = 3;
+  var PICKS_KEY = "notchmeow.audition.picks";
+  var THEME_KEY = "notchmeow.audition.theme";
+  var DATA = JSON.parse(document.getElementById("data").textContent);
+  var PICKABLE = DATA.pickable;
+  var GROUPS = [["cat", "Cat moments"], ["tick", "Interface ticks"]];
+  var cells = {};          // "set/slot" -> cell: the five sets' sounds
+  var alts = {};           // "moment-n" -> cell: the round-two alternatives, probed only while a row asks for them
+  var rows = {};           // pickable moment -> {noneTd, noneRadio, altTds}
+  var sharedTds = [];      // the "same in every set" cells of the 14 shared rows
+  var groupHeads = [];
+  var altHeads = [];
+  var allBtns = [];
+  var titleOf = {};
+  var current = null;      // the cell playing now
+  var run = null;          // the running pass: {btn, label}
+  var timer = null;
+  var state = { picks: {}, locked: false };
+  var statusEl = document.getElementById("status");
+  var counterEl = document.getElementById("counter");
+  var lockBtn = document.getElementById("lock");
+  var unlockBtn = document.getElementById("unlock");
+  var mixBtn = document.getElementById("play-mix");
+  var summaryEl = document.getElementById("summary");
+  DATA.sets.forEach(function (s) { titleOf[s.id] = s.title; });
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  function key(set, slot) { return set + "/" + slot; }
+  function readStore(k) { try { return window.localStorage.getItem(k); } catch (e) { return null; } }
+  function writeStore(k, v) { try { window.localStorage.setItem(k, v); } catch (e) { /* storage unavailable */ } }
+
+  // --- the picks: one value per pickable moment: a set id, "none", or "round2:<moment>-<n>" ---
+  function isAlt(v) { return typeof v === "string" && v.indexOf(ROUND2_PREFIX) === 0; }
+  function altNumber(moment, v) {
+    var head = ROUND2_PREFIX + moment + "-";
+    if (!isAlt(v) || v.indexOf(head) !== 0) return 0;
+    var n = v.slice(head.length);
+    return /^[1-9]$/.test(n) && Number(n) <= ALT_COUNT ? Number(n) : 0;
+  }
+  function validPick(moment, v) {
+    return typeof v === "string" && (v === NONE || titleOf.hasOwnProperty(v) || altNumber(moment, v) > 0);
+  }
+  function loadState() {
+    var saved = null, picks = {};
+    try { saved = JSON.parse(readStore(PICKS_KEY)); } catch (e) { saved = null; }
+    if (saved && typeof saved === "object" && saved.picks && typeof saved.picks === "object") {
+      PICKABLE.forEach(function (m) {
+        if (Object.prototype.hasOwnProperty.call(saved.picks, m) && validPick(m, saved.picks[m])) picks[m] = saved.picks[m];
+      });
+    }
+    // a locked page only comes back locked while every moment still has a valid pick
+    return { picks: picks, locked: !!(saved && saved.locked) && Object.keys(picks).length === PICKABLE.length };
+  }
+  function save() { writeStore(PICKS_KEY, JSON.stringify({ picks: state.picks, locked: state.locked })); }
+  function change() { save(); render(); }
+  function pickLabel(v) {
+    if (v === NONE) return "none: gets a second round";
+    if (isAlt(v)) return "Alt " + v.slice(v.lastIndexOf("-") + 1) + " (round two)";
+    return titleOf[v];
+  }
+  // the exact text of design/sounds/sets/mine.json
+  function mineText() {
+    var picks = {};
+    PICKABLE.forEach(function (m) { picks[m] = state.picks[m]; });
+    return JSON.stringify({ title: TITLE, picks: picks }, null, 2) + "\n";
+  }
+
+  // --- playback ---
+  function stopNow() {
+    if (timer) { clearTimeout(timer); timer = null; }
+    if (current) {
+      current.audio.pause();
+      try { current.audio.currentTime = 0; } catch (e) { /* not seekable yet */ }
+      current.box.classList.remove("now");
+      current = null;
+    }
+  }
+  function playCell(c, onEnd) {
+    stopNow();
+    current = c;
+    c.box.classList.add("now");
+    c.audio.onended = function () {
+      c.box.classList.remove("now");
+      if (current === c) current = null;
+      if (onEnd) onEnd();
+    };
+    var p = c.audio.play();
+    if (p && p.catch) p.catch(function () { if (current !== c) return; c.box.classList.remove("now"); current = null; if (onEnd) onEnd(); });
+  }
+  function endRun() {
+    if (run) {
+      run.btn.textContent = run.label;
+      run.btn.classList.remove("on");
+      run = null;
+    }
+  }
+  // one run-through for a set and for the mix: play the queue in order with a short gap
+  function runQueue(btn, label, queue, name) {
+    var wasThis = run && run.btn === btn;
+    endRun();
+    stopNow();
+    if (wasThis) { setStatus(); return; }
+    var mine = { btn: btn, label: label };
+    run = mine;
+    btn.textContent = "Stop";
+    btn.classList.add("on");
+    (function next(i) {
+      if (run !== mine) return;
+      if (i >= queue.length) { endRun(); setStatus(); return; }
+      statusEl.textContent = "Playing " + name + ": " + queue[i].slot + " (" + (i + 1) + " of " + queue.length + ")";
+      playCell(queue[i], function () {
+        timer = setTimeout(function () { next(i + 1); }, GAP_MS);
+      });
+    })(0);
+  }
+  function runSet(set, btn) {
+    var queue = [];
+    DATA.slots.forEach(function (s) { var c = cells[key(set, s.slot)]; if (c.found) queue.push(c); });
+    runQueue(btn, "Play the whole set", queue, set);
+  }
+  // the 29 sounds in slot order: a pick from its set's (or round two's) file, a shared sound from the
+  // first set whose file exists; anything none, unpicked or not playable is skipped and named
+  function mixQueue() {
+    var queue = [], skipped = [];
+    DATA.slots.forEach(function (s) {
+      var c = null, v = state.picks[s.slot];
+      if (PICKABLE.indexOf(s.slot) >= 0) {
+        if (isAlt(v)) c = alts[v.slice(ROUND2_PREFIX.length)];
+        else if (v && v !== NONE) c = cells[key(v, s.slot)];
+      } else {
+        for (var i = 0; i < DATA.sets.length && !(c && c.found); i++) c = cells[key(DATA.sets[i].id, s.slot)];
+      }
+      if (c && c.found) queue.push(c); else skipped.push(s.slot);
+    });
+    return { queue: queue, skipped: skipped };
+  }
+
+  function setStatus() {
+    var total = 0, found = 0, missing = 0;
+    Object.keys(cells).forEach(function (k) {
+      total++;
+      if (cells[k].found) found++;
+      if (cells[k].missing) missing++;
+    });
+    var box = document.getElementById("missing");
+    box.hidden = missing === 0;
+    document.getElementById("missing-n").textContent = missing + " of " + total;
+    statusEl.textContent = found + " of " + total + " files found" +
+      (found + missing < total ? ", still looking…" : (missing ? "; run build_pack.py --all for the rest." : "."));
+  }
+
+  // --- one cell: an optional select dot, a Play button and the length once the file is known ---
+  function newCell(slot, label, radioName, radioValue) {
+    var box = el("div", "cell");
+    var c = { slot: slot, audio: new Audio(), box: box, td: null, radio: null, found: false, missing: false, started: false, retried: false };
+    if (radioName) {
+      c.radio = el("input");
+      c.radio.type = "radio"; c.radio.name = radioName; c.radio.value = radioValue;
+      c.radio.setAttribute("aria-label", "Pick " + label + " for " + slot);
+      box.appendChild(c.radio);
+    }
+    c.btn = el("button", "", "▶ Play"); c.btn.type = "button";
+    c.btn.setAttribute("aria-label", "Play " + slot + ", " + label);
+    c.btn.addEventListener("click", function () { endRun(); setStatus(); playCell(c); });
+    c.len = el("span", "len", "…");
+    box.appendChild(c.btn); box.appendChild(c.len);
+    c.audio.preload = "metadata";
+    return c;
+  }
+  function startCell(c, url, onChange) {
+    if (c.started) return;
+    c.started = true;
+    c.audio.addEventListener("loadedmetadata", function () {
+      c.found = true; c.len.textContent = c.audio.duration.toFixed(2) + " s"; onChange();
+    });
+    c.audio.addEventListener("error", function () {
+      if (c.found) return;
+      // 145 files are asked for at once, and a simple local web server can drop some of them on a cold
+      // load: look once more before calling a file missing
+      if (!c.retried) { c.retried = true; setTimeout(function () { c.audio.src = url; }, 400); return; }
+      c.missing = true; c.btn.disabled = true; c.box.classList.add("missing"); c.len.textContent = "missing"; onChange();
+    });
+    c.audio.src = url;
+  }
+  function startAlt(slot, n) {
+    var c = alts[slot + "-" + n];
+    startCell(c, ROUND2 + slot + "-" + n + ".wav", function () {
+      // a round-two pick whose file is gone is no pick
+      if (c.missing && state.picks[slot] === ROUND2_PREFIX + slot + "-" + n) { delete state.picks[slot]; save(); }
+      render();
+    });
+  }
+
+  // --- drawing the state: dots, highlights, Alt columns, counter, buttons, summary ---
+  function render() {
+    var count = Object.keys(state.picks).length;
+    if (state.locked && count < PICKABLE.length) { state.locked = false; save(); }   // never locked below 15 of 15
+    var altShown = [false, false, false];
+    PICKABLE.forEach(function (m) {
+      var row = rows[m], v = state.picks[m];
+      var wantsAlts = v === NONE || isAlt(v);
+      DATA.sets.forEach(function (set) {
+        var c = cells[key(set.id, m)];
+        c.radio.checked = v === set.id;
+        c.radio.disabled = state.locked || c.missing;
+        c.td.classList.toggle("picked", v === set.id);
+      });
+      row.noneRadio.checked = v === NONE;
+      row.noneRadio.disabled = state.locked;
+      row.noneTd.classList.toggle("picked", v === NONE);
+      for (var n = 1; n <= ALT_COUNT; n++) {
+        var alt = alts[m + "-" + n];
+        if (wantsAlts) startAlt(m, n);
+        var show = wantsAlts && alt.found;
+        alt.box.hidden = !show;
+        alt.radio.checked = v === ROUND2_PREFIX + m + "-" + n;
+        alt.radio.disabled = state.locked;
+        alt.td.classList.toggle("picked", alt.radio.checked);
+        if (show) altShown[n - 1] = true;
+      }
+    });
+    altShown.forEach(function (shown, i) {
+      altHeads[i].hidden = !shown;
+      PICKABLE.forEach(function (m) { rows[m].altTds[i].hidden = !shown; });
+    });
+    var extra = altShown.filter(Boolean).length;
+    sharedTds.forEach(function (td) { td.colSpan = 1 + extra; });
+    groupHeads.forEach(function (th) { th.colSpan = DATA.sets.length + 2 + extra; });
+    counterEl.textContent = count + " of " + PICKABLE.length + " picked";
+    lockBtn.disabled = count < PICKABLE.length;
+    lockBtn.hidden = state.locked;
+    unlockBtn.hidden = !state.locked;
+    allBtns.forEach(function (b) { b.disabled = state.locked; });
+    summaryEl.hidden = !state.locked;
+    if (state.locked) fillSummary();
+  }
+  function fillSummary() {
+    var body = document.getElementById("summary-body"), nones = [];
+    body.textContent = "";
+    PICKABLE.forEach(function (m) {
+      var tr = el("tr"), th = el("th", "", m);
+      th.scope = "row";
+      tr.appendChild(th);
+      tr.appendChild(el("td", "", pickLabel(state.picks[m])));
+      body.appendChild(tr);
+      if (state.picks[m] === NONE) nones.push(m);
+    });
+    document.getElementById("summary-note").textContent = nones.length
+      ? nones.length + " moment" + (nones.length === 1 ? "" : "s") + " set to none: " + nones.join(", ") +
+        ". They get a second round; then pick and lock in again."
+      : "Every moment has a version. This is the mix that ships.";
+    document.getElementById("mine-json").textContent = mineText();
+  }
+
+  function pickHandler(moment, value) {
+    return function () { if (state.locked) return; state.picks[moment] = value; change(); };
+  }
+  function useForAll(set) {
+    if (state.locked) return;
+    PICKABLE.forEach(function (m) { state.picks[m] = set; });
+    change();
+  }
+
+  // --- header: one column per set (run-through, use for all), then None of these and Alt 1 to 3 ---
+  var head = document.getElementById("head");
+  DATA.sets.forEach(function (s) {
+    var th = el("th"); th.scope = "col";
+    var box = el("div", "set-h");
+    box.appendChild(el("b", "", s.title));
+    box.appendChild(el("span", "", s.voice));
+    var runBtn = el("button", "", "Play the whole set");
+    runBtn.type = "button"; runBtn.id = "run-" + s.id;
+    runBtn.addEventListener("click", function () { runSet(s.id, runBtn); });
+    var allBtn = el("button", "", "Use this set for all");
+    allBtn.type = "button"; allBtn.id = "all-" + s.id;
+    allBtn.addEventListener("click", function () { useForAll(s.id); });
+    allBtns.push(allBtn);
+    box.appendChild(runBtn); box.appendChild(allBtn);
+    th.appendChild(box); head.appendChild(th);
+  });
+  (function () {
+    var th = el("th"); th.scope = "col";
+    var box = el("div", "set-h");
+    box.appendChild(el("b", "", "None of these"));
+    box.appendChild(el("span", "", "nothing fits: gets a second round"));
+    th.appendChild(box); head.appendChild(th);
+    for (var n = 1; n <= ALT_COUNT; n++) {
+      var alt = el("th"); alt.scope = "col"; alt.hidden = true;
+      var abox = el("div", "set-h");
+      abox.appendChild(el("b", "", "Alt " + n));
+      abox.appendChild(el("span", "", "round two"));
+      alt.appendChild(abox); head.appendChild(alt); altHeads.push(alt);
+    }
+  })();
+
+  // --- body: a group heading, then one row per slot ---
+  function makeAlt(slot, n, tr) {
+    var td = el("td", "alt"), c = newCell(slot, "Alt " + n, "pick-" + slot, ROUND2_PREFIX + slot + "-" + n);
+    c.td = td; c.box.hidden = true; td.hidden = true;
+    c.radio.addEventListener("change", pickHandler(slot, ROUND2_PREFIX + slot + "-" + n));
+    alts[slot + "-" + n] = c;
+    td.appendChild(c.box); tr.appendChild(td);
+    return td;
+  }
+  var table = document.getElementById("grid");
+  GROUPS.forEach(function (g) {
+    var tbody = el("tbody");
+    var gr = el("tr", "group"), gh = el("th", "", g[1]);
+    groupHeads.push(gh); gr.appendChild(gh); tbody.appendChild(gr);
+    DATA.slots.filter(function (s) { return s.kind === g[0]; }).forEach(function (s) {
+      var pickable = PICKABLE.indexOf(s.slot) >= 0;
+      var tr = el("tr");
+      var th = el("th"); th.scope = "row";
+      th.appendChild(el("div", "name", s.slot));
+      th.appendChild(el("div", "when", s.when));
+      var chips = el("div", "chips");
+      if (!s.touch) {
+        chips.appendChild(el("span", "chip", "no layers"));
+      } else {
+        chips.appendChild(el("span", "chip", "touch: " + s.mood));
+        if (s.signature) chips.appendChild(el("span", "chip sig", s.dark ? "signature, dark" : "signature"));
+      }
+      th.appendChild(chips); tr.appendChild(th);
+      DATA.sets.forEach(function (set) {
+        var td = el("td");
+        var c = newCell(s.slot, set.title, pickable ? "pick-" + s.slot : null, set.id);
+        c.td = td;
+        cells[key(set.id, s.slot)] = c;
+        if (pickable) c.radio.addEventListener("change", pickHandler(s.slot, set.id));
+        startCell(c, BASE + set.id + "/" + s.slot + ".wav", function () { setStatus(); render(); });
+        td.appendChild(c.box); tr.appendChild(td);
+      });
+      if (pickable) {
+        var noneTd = el("td"), label = el("label", "none-pick"), radio = el("input");
+        radio.type = "radio"; radio.name = "pick-" + s.slot; radio.value = NONE;
+        radio.setAttribute("aria-label", "None of these for " + s.slot);
+        radio.addEventListener("change", pickHandler(s.slot, NONE));
+        label.appendChild(radio); label.appendChild(el("span", "", "None of these"));
+        noneTd.appendChild(label); tr.appendChild(noneTd);
+        var altTds = [];
+        for (var n = 1; n <= ALT_COUNT; n++) altTds.push(makeAlt(s.slot, n, tr));
+        rows[s.slot] = { noneTd: noneTd, noneRadio: radio, altTds: altTds };
+      } else {
+        var same = el("td", "same", "same in every set");
+        sharedTds.push(same); tr.appendChild(same);
+      }
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+  });
+
+  lockBtn.addEventListener("click", function () {
+    if (Object.keys(state.picks).length < PICKABLE.length) return;
+    state.locked = true;
+    change();
+    if (summaryEl.scrollIntoView) summaryEl.scrollIntoView();
+  });
+  unlockBtn.addEventListener("click", function () { state.locked = false; change(); });
+  mixBtn.addEventListener("click", function () {
+    var q = mixQueue();
+    runQueue(mixBtn, "Play my mix", q.queue,
+             "my mix" + (q.skipped.length ? " (no sound yet for " + q.skipped.join(", ") + ")" : ""));
+  });
+
+  state = loadState();
+  setStatus();
+  render();
+
+  // colour theme, remembered in this browser only
+  var themeBtn = document.getElementById("theme");
+  function applyTheme(t) {
+    document.documentElement.setAttribute("data-theme", t);
+    themeBtn.textContent = t === "dark" ? "Light" : "Dark";
+  }
+  var savedTheme = readStore(THEME_KEY);
+  if (savedTheme === "dark" || savedTheme === "light") applyTheme(savedTheme);
+  else applyTheme(window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+  themeBtn.addEventListener("click", function () {
+    var next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    writeStore(THEME_KEY, next); applyTheme(next);
+  });
+})();
+</script>
+</body></html>

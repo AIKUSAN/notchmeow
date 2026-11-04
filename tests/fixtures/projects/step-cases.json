@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "note": "cleanStep(text) -> the step the notch shows: invisible characters become spaces, a word that holds a / or \\ keeps its last part (… when none), at most 80 code points (cut with …). views: projectsView(registry, at, {steps}) with the steps map read as own keys only; `expect` types the project step and each row as label:step.",
+  "steps": [
+    {"name":"a Unix path inside a word keeps its last part","text":"open(/a/b/c.txt)","expect":"c.txt)"},
+    {"name":"a Windows path inside a word keeps its last part","text":"C:\\Users\\sam\\b.ts","expect":"b.ts"},
+    {"name":"a trailing slash: a/ shows a","text":"a/","expect":"a"},
+    {"name":"a lone slash shows the ellipsis","text":"/","expect":"…"},
+    {"name":"C:\\ shows C:","text":"C:\\","expect":"C:"},
+    {"name":"exactly 80 code points are kept","text":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx","expect":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"},
+    {"name":"81 code points are cut to 79 and …","text":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx","expect":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx…"},
+    {"name":"an astral character at the cut: 79 characters, then …","text":"😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀","expect":"😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀…"},
+    {"name":"invisible and bidi characters become spaces","text":"a‮b​c","expect":"a b c"},
+    {"name":"a word of invisible characters only is nothing","text":"‮​","expect":""},
+    {"name":"words are joined by one space","text":"  Run   tests  ","expect":"Run tests"},
+    {"name":"text that is not text is nothing","text":null,"expect":""},
+    {"name":"a number is nothing","text":42,"expect":""}
+  ],
+  "views": [
+    {"name":"opts.steps with __proto__ and constructor keys","home":"/Users/sam","payloads":[{"at":1760000000000,"payload":{"hook_event_name":"UserPromptSubmit","session_id":"s1","cwd":"/Users/sam/Code/notchmeow"}},{"at":1760000000100,"payload":{"hook_event_name":"UserPromptSubmit","session_id":"__proto__","cwd":"/Users/sam/Code/notchmeow"}},{"at":1760000000200,"payload":{"hook_event_name":"UserPromptSubmit","session_id":"constructor","cwd":"/Users/sam/Code/notchmeow"}}],"at":1760000000200,"opts":{"steps":{"__proto__":"Editing a.ts","constructor":"Reading b.ts"}},"view":{"projects":[{"id":"p-39f5156f","name":"notchmeow","catKey":"notchmeow","cat":"leo","state":"working","dim":false,"waiting":0,"sessionCount":3,"lastAt":1760000000200,"agoMin":0,"step":"Reading b.ts","host":"terminal","sessions":[{"id":"s1","role":"main","label":"main","state":"working","dim":false,"waitingInApp":false,"note":"","step":"","host":"terminal","lastAt":1760000000000,"agoMin":0,"subagents":[]},{"id":"__proto__","role":"main","label":"main · 2","state":"working","dim":false,"waitingInApp":false,"note":"","step":"Editing a.ts","host":"terminal","lastAt":1760000000100,"agoMin":0,"subagents":[]},{"id":"constructor","role":"main","label":"main · 3","state":"working","dim":false,"waitingInApp":false,"note":"","step":"Reading b.ts","host":"terminal","lastAt":1760000000200,"agoMin":0,"subagents":[]}]}],"waiting":0,"sessionCount":3,"otherAgentSeen":false},"expect":{"step":"Reading b.ts","rows":["main:","main · 2:Editing a.ts","main · 3:Reading b.ts"]}}
+  ]
+}

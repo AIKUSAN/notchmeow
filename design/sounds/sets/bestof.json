@@ -1,0 +1,22 @@
+{
+  "set": "bestof",
+  "title": "Best of",
+  "pitch_st": -1.0,
+  "entries": [
+    {"slot": "greet", "source": "greet/fs-262306-steffcaffrey.mp3", "pitch_st": 3.0, "mood": "happy", "signature": true, "note": "Cat_Twit1, rated 5.0; up three semitones (relative to the set's shift) to sit with the other voices (about 450 Hz)."},
+    {"slot": "love", "source": "love/fs-436542-Mafon2.mp3", "mood": "happy", "signature": true, "note": "Cat short purr, rated 4.9."},
+    {"slot": "annoyed", "source": "annoyed/fs-64008-Department64.mp3", "mood": "upset", "signature": false, "note": "kitten13: grumbly, not scary."},
+    {"slot": "dizzy", "source": "dizzy/fs-668822-MBPL.mp3", "effects": [{"type": "wobble", "rate_hz": 5.0, "depth_st": 1.0}], "mood": "upset", "signature": false, "note": "MBPL trill 1 with the 5 Hz, +-1 semitone wobble."},
+    {"slot": "slap", "source": "slap/fs-262309-steffcaffrey.mp3", "pitch_st": 3.0, "mood": "calm", "signature": false, "note": "Cat Purr/Twit4, rated 4.9; up three semitones (relative to the set's shift)."},
+    {"slot": "finish", "source": "finish/fs-415107-steffcaffrey.mp3", "mood": "happy", "signature": true, "note": "catwhirr, a happy whirr at food: the closest this cat has to a pleased, done sound."},
+    {"slot": "error", "source": "error/fs-448084-Breviceps.mp3", "pitch_st": -3.0, "effects": [{"type": "glide", "from_st": 0.0, "to_st": -3.0}], "mood": "upset", "signature": true, "note": "Cute Kitten Meow, rated 4.8; down three semitones (relative to the set's shift), with a falling pitch ramp (0 to -3 semitones (relative to the set's shift))."},
+    {"slot": "approval", "source": "approval/bsb-s1472.mp3", "mood": "attention", "signature": true, "note": "Emi little meow 2, a studio recording."},
+    {"slot": "question", "source": "question/fs-686775-nathan-osman.mp3", "pitch_st": -3.0, "effects": [{"type": "glide", "from_st": -1.0, "to_st": 4.0}], "mood": "attention", "signature": true, "note": "meow-1, rated 4.9; down three semitones (relative to the set's shift), with a rising pitch ramp (-1 to +4 semitones (relative to the set's shift))."},
+    {"slot": "proud", "source": "proud/fs-451250-dreamstobecome.mp3", "start": 2.5, "end": 3.0, "mood": "happy", "signature": false, "note": "One contented chirp cut from the 7.8 s clip: the chirp rises at 2.6 s and ends by 3.0 s (the next ones are at 4.9 and 6.4 s)."},
+    {"slot": "wink", "source": "wink/fs-436541-Mafon2.mp3", "pitch_st": -3.0, "mood": "happy", "signature": false, "note": "Cat Meow, rated 4.7; down three semitones."},
+    {"slot": "sleep", "source": "sleep/fs-752418-Sadiquecat.mp3", "start": 1.2, "end": 2.6, "mood": "calm", "signature": false, "note": "Pearl's snore: one burst at 1.55 to 1.95 s, with its breath before and after."},
+    {"slot": "think", "source": "dizzy/fs-730102-Sadiquecat.mp3", "start": 0.3, "end": 1.2, "mood": "attention", "signature": false, "note": "Cat MmRrm noise, the steady middle: it reads as 'hmm'."},
+    {"slot": "search", "source": "search/fs-499362-16H_Panska_Rudenko_Angelika.mp3", "start": 12.85, "end": 13.75, "hp_hz": 900, "mood": "attention", "signature": false, "note": "Cat_Hunting, three chatter bursts (at 12.95, 13.35 and 13.65 s). High-passed at 900 Hz: the clip is mostly low rumble."},
+    {"slot": "rate", "source": "rate/fs-64012-Department64.mp3", "effects": [{"type": "thump"}], "mood": "upset", "signature": false, "note": "kitten17, getting frustrated, then the tail thump."}
+  ]
+}

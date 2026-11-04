@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "note": "dailyRecapStep(state, {type: back|open, day}, {quiet, muted}); dailyRecapText({memory, waiting, today}) -> text | null; acceptPolish(line, template); recapDismiss(count), recapMuted(count) (2 dismissals mute).",
+  "step": [
+    {"name":"a wake on a new day arms it","state":{"lastRecapDay":"2026-10-16","pendingDay":""},"event":{"type":"back","day":"2026-10-17"},"ctx":{"quiet":false,"muted":false},"expect":{"state":{"lastRecapDay":"2026-10-16","pendingDay":"2026-10-17"},"show":false}},
+    {"name":"the next open shows it, once","state":{"lastRecapDay":"2026-10-16","pendingDay":"2026-10-17"},"event":{"type":"open","day":"2026-10-17"},"ctx":{"quiet":false,"muted":false},"expect":{"state":{"lastRecapDay":"2026-10-17","pendingDay":""},"show":true}},
+    {"name":"a second open the same day shows nothing","state":{"lastRecapDay":"2026-10-17","pendingDay":""},"event":{"type":"open","day":"2026-10-17"},"ctx":{"quiet":false,"muted":false},"expect":{"state":{"lastRecapDay":"2026-10-17","pendingDay":""},"show":false}},
+    {"name":"a wake on a day already recapped arms nothing","state":{"lastRecapDay":"2026-10-17","pendingDay":""},"event":{"type":"back","day":"2026-10-17"},"ctx":{"quiet":false,"muted":false},"expect":{"state":{"lastRecapDay":"2026-10-17","pendingDay":""},"show":false}},
+    {"name":"an open with nothing armed shows nothing","state":{"lastRecapDay":"2026-10-16","pendingDay":""},"event":{"type":"open","day":"2026-10-17"},"ctx":{"quiet":false,"muted":false},"expect":{"state":{"lastRecapDay":"2026-10-16","pendingDay":""},"show":false}},
+    {"name":"quiet keeps it for a later open","state":{"lastRecapDay":"2026-10-16","pendingDay":"2026-10-17"},"event":{"type":"open","day":"2026-10-17"},"ctx":{"quiet":true,"muted":false},"expect":{"state":{"lastRecapDay":"2026-10-16","pendingDay":"2026-10-17"},"show":false}},
+    {"name":"muted never shows, and spends the day","state":{"lastRecapDay":"2026-10-16","pendingDay":"2026-10-17"},"event":{"type":"open","day":"2026-10-17"},"ctx":{"quiet":false,"muted":true},"expect":{"state":{"lastRecapDay":"2026-10-17","pendingDay":""},"show":false}},
+    {"name":"armed yesterday, opened today: nothing","state":{"lastRecapDay":"2026-10-15","pendingDay":"2026-10-16"},"event":{"type":"open","day":"2026-10-17"},"ctx":{"quiet":false,"muted":false},"expect":{"state":{"lastRecapDay":"2026-10-15","pendingDay":"2026-10-16"},"show":false}},
+    {"name":"a day that is not a day changes nothing","state":{"lastRecapDay":"2026-10-16","pendingDay":""},"event":{"type":"back","day":"today"},"ctx":{"quiet":false,"muted":false},"expect":{"state":{"lastRecapDay":"2026-10-16","pendingDay":""},"show":false}}
+  ],
+  "text": [
+    {"name":"the last day worked, a thread and a wait","input":{"memory":{"notes":[{"section":"Open threads","text":"Finish the F3a plan.","day":"","source":"you edited"}],"dayLog":[{"day":"2026-10-17","projects":[{"name":"today","sessions":1}]},{"day":"2026-10-16","projects":[{"name":"notchmeow","sessions":2},{"name":"gracegrip","sessions":1}]}]},"waiting":1,"today":"2026-10-17"},"expect":"On 2026-10-16 you worked on notchmeow (2 sessions) and gracegrip (1 session). Still open: Finish the F3a plan. 1 session is waiting for you now."},
+    {"name":"more than four projects","input":{"memory":{"notes":[],"dayLog":[{"day":"2026-10-14","projects":[{"name":"p1","sessions":1},{"name":"p2","sessions":1},{"name":"p3","sessions":1},{"name":"p4","sessions":1},{"name":"p5","sessions":1},{"name":"p6","sessions":1}]}]},"waiting":0,"today":"2026-10-17"},"expect":"On 2026-10-14 you worked on p1 (1 session), p2 (1 session), p3 (1 session), p4 (1 session) and 2 more."},
+    {"name":"threads only, at most three, each ending with a stop","input":{"memory":{"notes":[{"section":"Open threads","text":"A","day":"","source":"you edited"},{"section":"Open threads","text":"B!","day":"","source":"you edited"},{"section":"Open threads","text":"C","day":"","source":"you edited"},{"section":"Open threads","text":"D","day":"","source":"you edited"}],"dayLog":[]},"waiting":0,"today":"2026-10-17"},"expect":"Still open: A. B! C."},
+    {"name":"two sessions waiting","input":{"memory":{"notes":[],"dayLog":[]},"waiting":2,"today":"2026-10-17"},"expect":"2 sessions are waiting for you now."},
+    {"name":"nothing to say is no recap","input":{"memory":{"notes":[],"dayLog":[{"day":"2026-10-17","projects":[{"name":"x","sessions":1}]}]},"waiting":0,"today":"2026-10-17"},"expect":null}
+  ],
+  "polish": [
+    {"name":"a friendlier sentence with the same numbers","line":"Yesterday, 2026-10-16, you spent 2 sessions on notchmeow and 1 on gracegrip.","template":"On 2026-10-16 you worked on notchmeow (2 sessions) and gracegrip (1 session).","expect":true},
+    {"name":"leading zeros do not count: 002 is 2","line":"notchmeow 002 sessions on 2026-10-16","template":"On 2026-10-16 you worked on notchmeow (2 sessions) and gracegrip (1 session).","expect":true},
+    {"name":"a zero the template lacks is refused","line":"notchmeow 2 sessions, 0 errors","template":"On 2026-10-16 you worked on notchmeow (2 sessions) and gracegrip (1 session).","expect":false},
+    {"name":"a bare domain is refused","line":"notchmeow 2 sessions on evil.com","template":"On 2026-10-16 you worked on notchmeow (2 sessions) and gracegrip (1 session).","expect":false},
+    {"name":"javascript: is refused","line":"notchmeow 2 sessions, javascript:alert","template":"On 2026-10-16 you worked on notchmeow (2 sessions) and gracegrip (1 session).","expect":false},
+    {"name":"a number that is not in the template","line":"You worked 3 sessions on notchmeow on 2026-10-16.","template":"On 2026-10-16 you worked on notchmeow (2 sessions) and gracegrip (1 session).","expect":false},
+    {"name":"a link","line":"See https://x.com for notchmeow 2 1 2026 10 16.","template":"On 2026-10-16 you worked on notchmeow (2 sessions) and gracegrip (1 session).","expect":false},
+    {"name":"two lines","line":"Hi.\nnotchmeow 2","template":"On 2026-10-16 you worked on notchmeow (2 sessions) and gracegrip (1 session).","expect":false},
+    {"name":"markdown","line":"**notchmeow** 2 sessions","template":"On 2026-10-16 you worked on notchmeow (2 sessions) and gracegrip (1 session).","expect":false},
+    {"name":"a path","line":"notchmeow in /Users/sam 2","template":"On 2026-10-16 you worked on notchmeow (2 sessions) and gracegrip (1 session).","expect":false},
+    {"name":"too long","line":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","template":"On 2026-10-16 you worked on notchmeow (2 sessions) and gracegrip (1 session).","expect":false},
+    {"name":"empty","line":"  ","template":"On 2026-10-16 you worked on notchmeow (2 sessions) and gracegrip (1 session).","expect":false},
+    {"name":"a password word is refused","line":"notchmeow 2 sessions, password is swordfish","template":"On 2026-10-16 you worked on notchmeow (2 sessions) and gracegrip (1 session).","expect":false},
+    {"name":"a key shape is refused","line":"notchmeow 2 sessions, key sk-abcdefghijklmnopqrstuvwxyz","template":"On 2026-10-16 you worked on notchmeow (2 sessions) and gracegrip (1 session).","expect":false},
+    {"name":"a bidi override inside is refused","line":"notchmeow 2 sessions\u202eok","template":"On 2026-10-16 you worked on notchmeow (2 sessions) and gracegrip (1 session).","expect":false},
+    {"name":"a zero-width space inside is refused","line":"notchmeow\u200b 2 sessions","template":"On 2026-10-16 you worked on notchmeow (2 sessions) and gracegrip (1 session).","expect":false},
+    {"name":"an address is refused","line":"notchmeow 2 sessions, mail sam@example.com","template":"On 2026-10-16 you worked on notchmeow (2 sessions) and gracegrip (1 session).","expect":false}
+  ],
+  "dismiss": [
+    {"name":"dismiss at 0","count":0,"next":1,"muted":false},
+    {"name":"dismiss at 1","count":1,"next":2,"muted":false},
+    {"name":"dismiss at 1e+300","count":1e+300,"next":1,"muted":false},
+    {"name":"dismiss at 2","count":2,"next":2,"muted":true},
+    {"name":"dismiss at x","count":"x","next":1,"muted":false},
+    {"name":"dismiss at 5","count":5,"next":2,"muted":true}
+  ]
+}

@@ -1,0 +1,569 @@
+{
+ "version": 1,
+ "note": "Scripted subagent events for the kittens, in the hooks' own words. scripts/fake-subagent-events.py sends the `event` of each step through the NotchMeow socket (a real app, for the owner's check); tests/CatKittenHooksTests.swift replays what a local socket received through CatKittenHooks and CatKittens and checks `kittens` (the list after the step, in list order) and, where there is a `view`, what is drawn `viewAt` ms later; scripts/render-cats.sh --island --kittens draws the island after each step. `at` is the step's time in ms on the app's clock; `wait_ms` is how long the sender waits after it; `internal` is what the app does by itself (an approval answered, the sleep timer's sweep).",
+ "common": {
+  "term_program": "vscode",
+  "cwd": "/tmp/notchmeow-demo",
+  "session_id": "S1"
+ },
+ "scenarios": {
+  "life": {
+   "about": "A subagent's whole life: two start, one searches, one waits on an approval, the answer, a farewell, a late event that must not bring it back, and the parent's stop with a stop that never came.",
+   "steps": [
+    {
+     "say": "the Claude Code pill appears",
+     "at": 0,
+     "wait_ms": 800,
+     "event": {
+      "hook_event_name": "SessionStart"
+     },
+     "kittens": []
+    },
+    {
+     "say": "an Explore subagent starts: a kitten, working",
+     "at": 1000,
+     "wait_ms": 900,
+     "event": {
+      "hook_event_name": "SubagentStart",
+      "agent_id": "a1",
+      "agent_type": "Explore"
+     },
+     "kittens": [
+      "a1:working"
+     ]
+    },
+    {
+     "say": "a second subagent starts",
+     "at": 2000,
+     "wait_ms": 900,
+     "event": {
+      "hook_event_name": "SubagentStart",
+      "agent_id": "a2",
+      "agent_type": "general-purpose"
+     },
+     "kittens": [
+      "a1:working",
+      "a2:working"
+     ]
+    },
+    {
+     "say": "the first one searches (Grep, with its agent_id)",
+     "at": 3000,
+     "wait_ms": 1200,
+     "event": {
+      "hook_event_name": "PreToolUse",
+      "agent_id": "a1",
+      "agent_type": "Explore",
+      "tool_name": "Grep",
+      "tool_input": {
+       "pattern": "kitten"
+      }
+     },
+     "kittens": [
+      "a1:searching",
+      "a2:working"
+     ]
+    },
+    {
+     "say": "a tool event without an agent_id is the parent's: no kitten changes",
+     "at": 4000,
+     "wait_ms": 900,
+     "event": {
+      "hook_event_name": "PreToolUse",
+      "tool_name": "Edit",
+      "tool_input": {
+       "file_path": "/tmp/notchmeow-demo/a.swift"
+      }
+     },
+     "kittens": [
+      "a1:searching",
+      "a2:working"
+     ]
+    },
+    {
+     "say": "the first one reads (Read): back to working",
+     "at": 5000,
+     "wait_ms": 900,
+     "event": {
+      "hook_event_name": "PreToolUse",
+      "agent_id": "a1",
+      "tool_name": "Read",
+      "tool_input": {
+       "file_path": "/tmp/notchmeow-demo/a.swift"
+      }
+     },
+     "kittens": [
+      "a1:working",
+      "a2:working"
+     ]
+    },
+    {
+     "say": "the second one asks to run a command: its kitten waits on the approval (answer the card in the island)",
+     "at": 6000,
+     "wait_ms": 1500,
+     "event": {
+      "hook_event_name": "PermissionRequest",
+      "agent_id": "a2",
+      "tool_name": "Bash",
+      "tool_input": {
+       "command": "echo kittens"
+      }
+     },
+     "kittens": [
+      "a1:working",
+      "a2:approval"
+     ]
+    },
+    {
+     "say": "the approval is answered: the kitten is back to work",
+     "at": 9000,
+     "wait_ms": 900,
+     "internal": {
+      "type": "resolved",
+      "id": "a2"
+     },
+     "kittens": [
+      "a1:working",
+      "a2:working"
+     ]
+    },
+    {
+     "say": "the first one stops: a happy blink, then it leaves",
+     "at": 10000,
+     "wait_ms": 1000,
+     "event": {
+      "hook_event_name": "SubagentStop",
+      "agent_id": "a1",
+      "agent_type": "Explore"
+     },
+     "kittens": [
+      "a1:leaving",
+      "a2:working"
+     ],
+     "viewAt": 700,
+     "view": [
+      "a2:working"
+     ]
+    },
+    {
+     "say": "a late tool event from the first one brings nothing back",
+     "at": 11000,
+     "wait_ms": 900,
+     "event": {
+      "hook_event_name": "PostToolUse",
+      "agent_id": "a1",
+      "tool_name": "Read",
+      "tool_input": {
+       "file_path": "/tmp/notchmeow-demo/a.swift"
+      }
+     },
+     "kittens": [
+      "a2:working"
+     ]
+    },
+    {
+     "say": "the parent stops: the second one's stop never came, and it goes too",
+     "at": 12000,
+     "wait_ms": 1200,
+     "event": {
+      "hook_event_name": "Stop",
+      "last_assistant_message": "Done."
+     },
+     "kittens": []
+    }
+   ]
+  },
+  "fallback": {
+   "about": "A Claude Code that sends no agent_id on tool events: the kitten still appears at the start and leaves at the stop, in the working pose.",
+   "steps": [
+    {
+     "say": "the pill appears",
+     "at": 0,
+     "wait_ms": 800,
+     "event": {
+      "hook_event_name": "SessionStart"
+     },
+     "kittens": []
+    },
+    {
+     "say": "a subagent starts",
+     "at": 1000,
+     "wait_ms": 900,
+     "event": {
+      "hook_event_name": "SubagentStart",
+      "agent_id": "a1",
+      "agent_type": "Explore"
+     },
+     "kittens": [
+      "a1:working"
+     ]
+    },
+    {
+     "say": "its searches arrive without an agent_id: the kitten stays working",
+     "at": 2000,
+     "wait_ms": 900,
+     "event": {
+      "hook_event_name": "PreToolUse",
+      "tool_name": "Grep",
+      "tool_input": {
+       "pattern": "x"
+      }
+     },
+     "kittens": [
+      "a1:working"
+     ]
+    },
+    {
+     "say": "and so do its edits",
+     "at": 3000,
+     "wait_ms": 900,
+     "event": {
+      "hook_event_name": "PreToolUse",
+      "tool_name": "Edit",
+      "tool_input": {
+       "file_path": "/tmp/notchmeow-demo/a.swift"
+      }
+     },
+     "kittens": [
+      "a1:working"
+     ]
+    },
+    {
+     "say": "it stops and leaves",
+     "at": 4000,
+     "wait_ms": 1000,
+     "event": {
+      "hook_event_name": "SubagentStop",
+      "agent_id": "a1",
+      "agent_type": "Explore"
+     },
+     "kittens": [
+      "a1:leaving"
+     ],
+     "viewAt": 700,
+     "view": []
+    },
+    {
+     "say": "the parent stops",
+     "at": 5000,
+     "wait_ms": 800,
+     "event": {
+      "hook_event_name": "Stop"
+     },
+     "kittens": []
+    }
+   ]
+  },
+  "lost-stop": {
+   "about": "A stop that never comes: the kitten stays until the cat's ten-minute sleep timer sweeps it (nothing runs by itself).",
+   "steps": [
+    {
+     "say": "the pill appears",
+     "at": 0,
+     "wait_ms": 800,
+     "event": {
+      "hook_event_name": "SessionStart"
+     },
+     "kittens": []
+    },
+    {
+     "say": "two subagents start",
+     "at": 1000,
+     "wait_ms": 600,
+     "event": {
+      "hook_event_name": "SubagentStart",
+      "agent_id": "a1",
+      "agent_type": "Explore"
+     },
+     "kittens": [
+      "a1:working"
+     ]
+    },
+    {
+     "say": "the second",
+     "at": 2000,
+     "wait_ms": 600,
+     "event": {
+      "hook_event_name": "SubagentStart",
+      "agent_id": "a2",
+      "agent_type": "Plan"
+     },
+     "kittens": [
+      "a1:working",
+      "a2:working"
+     ]
+    },
+    {
+     "say": "the first stops; the second's stop is lost",
+     "at": 3000,
+     "wait_ms": 900,
+     "event": {
+      "hook_event_name": "SubagentStop",
+      "agent_id": "a1",
+      "agent_type": "Explore"
+     },
+     "kittens": [
+      "a1:leaving",
+      "a2:working"
+     ],
+     "viewAt": 700,
+     "view": [
+      "a2:working"
+     ]
+    },
+    {
+     "say": "nothing happens for 5 minutes: the kitten is still there",
+     "at": 303000,
+     "wait_ms": 600,
+     "internal": {
+      "type": "tick"
+     },
+     "kittens": [
+      "a2:working"
+     ]
+    },
+    {
+     "say": "the cat falls asleep, ten minutes after the last event: the sweep takes the kitten",
+     "at": 700000,
+     "wait_ms": 600,
+     "internal": {
+      "type": "sweep"
+     },
+     "kittens": []
+    }
+   ]
+  },
+  "crowd": {
+   "about": "Nine subagents start: at most eight are kept, and the oldest is dropped first.",
+   "steps": [
+    {
+     "say": "the pill appears",
+     "at": 0,
+     "wait_ms": 600,
+     "event": {
+      "hook_event_name": "SessionStart"
+     },
+     "kittens": []
+    },
+    {
+     "say": "subagent 1 starts",
+     "at": 1000,
+     "wait_ms": 500,
+     "event": {
+      "hook_event_name": "SubagentStart",
+      "agent_id": "a1",
+      "agent_type": "Explore"
+     },
+     "kittens": [
+      "a1:working"
+     ]
+    },
+    {
+     "say": "subagent 2 starts",
+     "at": 2000,
+     "wait_ms": 500,
+     "event": {
+      "hook_event_name": "SubagentStart",
+      "agent_id": "a2",
+      "agent_type": "Explore"
+     },
+     "kittens": [
+      "a1:working",
+      "a2:working"
+     ]
+    },
+    {
+     "say": "subagent 3 starts",
+     "at": 3000,
+     "wait_ms": 500,
+     "event": {
+      "hook_event_name": "SubagentStart",
+      "agent_id": "a3",
+      "agent_type": "Explore"
+     },
+     "kittens": [
+      "a1:working",
+      "a2:working",
+      "a3:working"
+     ]
+    },
+    {
+     "say": "subagent 4 starts",
+     "at": 4000,
+     "wait_ms": 500,
+     "event": {
+      "hook_event_name": "SubagentStart",
+      "agent_id": "a4",
+      "agent_type": "Explore"
+     },
+     "kittens": [
+      "a1:working",
+      "a2:working",
+      "a3:working",
+      "a4:working"
+     ]
+    },
+    {
+     "say": "subagent 5 starts",
+     "at": 5000,
+     "wait_ms": 500,
+     "event": {
+      "hook_event_name": "SubagentStart",
+      "agent_id": "a5",
+      "agent_type": "Explore"
+     },
+     "kittens": [
+      "a1:working",
+      "a2:working",
+      "a3:working",
+      "a4:working",
+      "a5:working"
+     ]
+    },
+    {
+     "say": "subagent 6 starts",
+     "at": 6000,
+     "wait_ms": 500,
+     "event": {
+      "hook_event_name": "SubagentStart",
+      "agent_id": "a6",
+      "agent_type": "Explore"
+     },
+     "kittens": [
+      "a1:working",
+      "a2:working",
+      "a3:working",
+      "a4:working",
+      "a5:working",
+      "a6:working"
+     ]
+    },
+    {
+     "say": "subagent 7 starts",
+     "at": 7000,
+     "wait_ms": 500,
+     "event": {
+      "hook_event_name": "SubagentStart",
+      "agent_id": "a7",
+      "agent_type": "Explore"
+     },
+     "kittens": [
+      "a1:working",
+      "a2:working",
+      "a3:working",
+      "a4:working",
+      "a5:working",
+      "a6:working",
+      "a7:working"
+     ]
+    },
+    {
+     "say": "subagent 8 starts",
+     "at": 8000,
+     "wait_ms": 500,
+     "event": {
+      "hook_event_name": "SubagentStart",
+      "agent_id": "a8",
+      "agent_type": "Explore"
+     },
+     "kittens": [
+      "a1:working",
+      "a2:working",
+      "a3:working",
+      "a4:working",
+      "a5:working",
+      "a6:working",
+      "a7:working",
+      "a8:working"
+     ]
+    },
+    {
+     "say": "subagent 9 starts",
+     "at": 9000,
+     "wait_ms": 500,
+     "event": {
+      "hook_event_name": "SubagentStart",
+      "agent_id": "a9",
+      "agent_type": "Explore"
+     },
+     "kittens": [
+      "a2:working",
+      "a3:working",
+      "a4:working",
+      "a5:working",
+      "a6:working",
+      "a7:working",
+      "a8:working",
+      "a9:working"
+     ]
+    }
+   ]
+  },
+  "two-sessions": {
+   "about": "Two sessions of one agent share a pill: one session's Stop takes its own kittens and leaves the other's.",
+   "steps": [
+    {
+     "say": "the pill appears",
+     "at": 0,
+     "wait_ms": 600,
+     "event": {
+      "hook_event_name": "SessionStart",
+      "session_id": "A"
+     },
+     "kittens": []
+    },
+    {
+     "say": "a subagent of session A",
+     "at": 1000,
+     "wait_ms": 600,
+     "event": {
+      "hook_event_name": "SubagentStart",
+      "agent_id": "a1",
+      "agent_type": "Explore",
+      "session_id": "A"
+     },
+     "kittens": [
+      "a1:working"
+     ]
+    },
+    {
+     "say": "a subagent of session B",
+     "at": 2000,
+     "wait_ms": 600,
+     "event": {
+      "hook_event_name": "SubagentStart",
+      "agent_id": "b1",
+      "agent_type": "Explore",
+      "session_id": "B"
+     },
+     "kittens": [
+      "a1:working",
+      "b1:working"
+     ]
+    },
+    {
+     "say": "session B stops",
+     "at": 3000,
+     "wait_ms": 800,
+     "event": {
+      "hook_event_name": "Stop",
+      "session_id": "B"
+     },
+     "kittens": [
+      "a1:working"
+     ]
+    },
+    {
+     "say": "session A stops",
+     "at": 4000,
+     "wait_ms": 800,
+     "event": {
+      "hook_event_name": "Stop",
+      "session_id": "A"
+     },
+     "kittens": []
+    }
+   ]
+  }
+ }
+}

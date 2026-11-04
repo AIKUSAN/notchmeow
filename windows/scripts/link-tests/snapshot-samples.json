@@ -1,0 +1,34 @@
+[
+  {
+    "name": "off, nothing paired",
+    "snapshot": { "visible": false, "name": "Desk PC", "listening": false, "problem": null, "note": null, "rows": [], "card": null, "sendStatus": null, "sending": false, "folder": "C:\\Users\\Sam\\Downloads\\NotchMeow" }
+  },
+  {
+    "name": "on, three machines, a note",
+    "snapshot": {
+      "visible": true, "name": "Desk PC", "listening": true, "problem": null, "note": "Wait 30 seconds before trying again.",
+      "rows": [
+        { "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", "name": "Sam's MacBook Pro", "state": "pairedOnline" },
+        { "id": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2", "name": "Old netbook", "state": "pairedOffline" },
+        { "id": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3", "name": "Studio laptop", "state": "available" }
+      ],
+      "card": null, "sendStatus": "Sending report.pdf to Sam's MacBook Pro, 45 %", "sending": true, "folder": "/home/sam/Downloads/NotchMeow"
+    }
+  },
+  {
+    "name": "a pairing code, not answered",
+    "snapshot": { "visible": true, "name": "Desk PC", "listening": true, "problem": "This computer could not announce itself on the network.", "note": null, "rows": [], "card": { "kind": "pair", "key": "483291|Sam's MacBook Pro", "code": "483291", "peer": "Sam's MacBook Pro", "answered": false }, "sendStatus": null, "sending": false, "folder": "" }
+  },
+  {
+    "name": "an offer",
+    "snapshot": { "visible": true, "name": "Desk PC", "listening": true, "problem": null, "note": null, "rows": [], "card": { "kind": "offer", "key": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1|0102", "name": "Quarterly report.pdf", "size": 2400000, "peer": "Sam's MacBook Pro" }, "sendStatus": null, "sending": false, "folder": "" }
+  },
+  {
+    "name": "a file coming in",
+    "snapshot": { "visible": true, "name": "Desk PC", "listening": true, "problem": null, "note": null, "rows": [], "card": { "kind": "receiving", "key": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1|0102", "name": "Quarterly report.pdf", "size": 2400000, "received": 1080000, "peer": "Sam's MacBook Pro" }, "sendStatus": null, "sending": false, "folder": "" }
+  },
+  {
+    "name": "a result with a saved file",
+    "snapshot": { "visible": true, "name": "Desk PC", "listening": true, "problem": null, "note": null, "rows": [], "card": { "kind": "result", "key": "Received|Saved as Quarterly report.pdf in Downloads/NotchMeow.", "title": "Received", "detail": "Saved as Quarterly report.pdf in Downloads/NotchMeow.", "canReveal": true }, "sendStatus": null, "sending": false, "folder": "" }
+  }
+]

@@ -1,0 +1,678 @@
+/* Settings window — same palette as the island, laid out as a normal window. */
+
+:root {
+  /* Makes Windows render the native dropdown and scrollbars dark, and the light
+     ones light, so the page follows the system's appearance. Without the dark
+     scheme the <select> popup is white text on white. */
+  color-scheme: dark light;
+
+  --font: system-ui, "Segoe UI Variable Text", "Segoe UI", sans-serif;
+  --mono: "Cascadia Mono", "Consolas", ui-monospace, monospace;
+
+  /* Dark: today's literals, except --dim-2 (#6b7079 was 3.67:1 over --card). */
+  --ink: #f5f6f8;
+  --dim: #9398a1;
+  --dim-2: #8d929b;
+  --bg: #0b0c0e;
+  --card: #141518;
+  --hairline: rgba(255, 255, 255, 0.07);
+  --green: #22c55e;
+  --red: #f4505e;
+  --amber: #f5a524;
+  --btn: rgba(255, 255, 255, 0.09);
+  --btn-hover: rgba(255, 255, 255, 0.15);
+  --primary-ink: #0b0c0e;
+  --primary-hover: #fff;
+  --danger-bg: rgba(244, 80, 94, 0.16);
+  --danger-ink: #ff8d97;
+  --switch-off: rgba(255, 255, 255, 0.15);
+  --knob: #fff;
+  --track: rgba(255, 255, 255, 0.2);
+  --field: rgba(255, 255, 255, 0.07);
+  --field-line: rgba(255, 255, 255, 0.28);
+  --option-bg: #1a1c20;
+  --diff-bg: #08090b;
+  --add-ink: #86efac;
+  --del-ink: #ff8d97;
+  --ok-bg: rgba(34, 197, 94, 0.12);
+  --ok-ink: #86efac;
+  --err-bg: rgba(244, 80, 94, 0.14);
+  --err-ink: #ff8d97;
+  --warn-bg: rgba(245, 165, 36, 0.13);
+  --warn-ink: #fbc06a;
+  --cell-hover: rgba(255, 255, 255, 0.09);
+  --cell-on: rgba(255, 255, 255, 0.1);
+  --cell-on-line: rgba(255, 255, 255, 0.55);
+  --soft: rgba(255, 255, 255, 0.05);
+}
+
+/* Light: the Mac's Settings in light (window #ECECEC, white cards, dark text), the
+   translucent inks written as solid colours where they sit on a card. The guard keeps
+   a page forced to dark (data-theme="dark") dark whatever the system says. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --bg: #ececec;
+    --card: #ffffff;
+    --hairline: rgba(0, 0, 0, 0.1);
+    --ink: #262626;
+    --dim: #5c5c5c;
+    --dim-2: #666666;
+    --green: #116b34;
+    --red: #b42318;
+    --amber: #8a5200;
+    --btn: rgba(0, 0, 0, 0.06);
+    --btn-hover: rgba(0, 0, 0, 0.1);
+    --primary-ink: #ffffff;
+    --primary-hover: #000000;
+    --danger-bg: rgba(244, 80, 94, 0.12);
+    --danger-ink: #b42318;
+    --switch-off: rgba(0, 0, 0, 0.15);
+    --knob: #ffffff;
+    --track: rgba(0, 0, 0, 0.2);
+    --field: rgba(0, 0, 0, 0.04);
+    --field-line: rgba(0, 0, 0, 0.35);
+    --option-bg: #ffffff;
+    --diff-bg: #f5f5f5;
+    --add-ink: #116b34;
+    --del-ink: #b42318;
+    --ok-bg: rgba(34, 197, 94, 0.12);
+    --ok-ink: #116b34;
+    --err-bg: rgba(244, 80, 94, 0.12);
+    --err-ink: #b42318;
+    --warn-bg: rgba(245, 165, 36, 0.16);
+    --warn-ink: #8a5200;
+    --cell-hover: rgba(0, 0, 0, 0.06);
+    --cell-on: rgba(0, 0, 0, 0.06);
+    --cell-on-line: rgba(0, 0, 0, 0.45);
+    --soft: rgba(0, 0, 0, 0.04);
+  }
+}
+
+/* The same light palette, forced by the dev server's &theme=light (and by the page's data-theme). */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #ececec;
+  --card: #ffffff;
+  --hairline: rgba(0, 0, 0, 0.1);
+  --ink: #262626;
+  --dim: #5c5c5c;
+  --dim-2: #666666;
+  --green: #116b34;
+  --red: #b42318;
+  --amber: #8a5200;
+  --btn: rgba(0, 0, 0, 0.06);
+  --btn-hover: rgba(0, 0, 0, 0.1);
+  --primary-ink: #ffffff;
+  --primary-hover: #000000;
+  --danger-bg: rgba(244, 80, 94, 0.12);
+  --danger-ink: #b42318;
+  --switch-off: rgba(0, 0, 0, 0.15);
+  --knob: #ffffff;
+  --track: rgba(0, 0, 0, 0.2);
+  --field: rgba(0, 0, 0, 0.04);
+  --field-line: rgba(0, 0, 0, 0.35);
+  --option-bg: #ffffff;
+  --diff-bg: #f5f5f5;
+  --add-ink: #116b34;
+  --del-ink: #b42318;
+  --ok-bg: rgba(34, 197, 94, 0.12);
+  --ok-ink: #116b34;
+  --err-bg: rgba(244, 80, 94, 0.12);
+  --err-ink: #b42318;
+  --warn-bg: rgba(245, 165, 36, 0.16);
+  --warn-ink: #8a5200;
+  --cell-hover: rgba(0, 0, 0, 0.06);
+  --cell-on: rgba(0, 0, 0, 0.06);
+  --cell-on-line: rgba(0, 0, 0, 0.45);
+  --soft: rgba(0, 0, 0, 0.04);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body.settings-window {
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 13px/1.45 var(--font);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+#settings-root {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+}
+
+h1 {
+  font: 600 17px var(--font);
+  letter-spacing: -0.01em;
+}
+
+section {
+  background: var(--card);
+  border: 1px solid var(--hairline);
+  border-radius: 14px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+section > h2 {
+  font: 600 13px var(--font);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hint {
+  font: 400 12px var(--font);
+  color: var(--dim);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.row > label {
+  min-width: 132px;
+  color: var(--dim);
+  font-size: 12.5px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex: 0 0 auto;
+}
+
+button {
+  font: 500 12.5px var(--font);
+  padding: 7px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--btn);
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.14s, transform 0.08s;
+}
+
+button:hover:not(:disabled) {
+  background: var(--btn-hover);
+}
+
+button:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+button.primary {
+  background: var(--ink);
+  color: var(--primary-ink);
+}
+
+button.primary:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+button.danger {
+  background: var(--danger-bg);
+  color: var(--danger-ink);
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+code {
+  font: 400 11.5px var(--mono);
+  color: var(--dim);
+  word-break: break-all;
+  user-select: text;
+}
+
+.switch {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  border-radius: 10px;
+  background: var(--switch-off);
+  flex: 0 0 36px;
+  padding: 0;
+}
+
+.switch.on {
+  background: var(--green);
+}
+
+.switch::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--knob);
+  box-shadow: 0 0 0 1px var(--field-line);
+  transition: transform 0.18s;
+}
+
+.switch.on::after {
+  transform: translateX(16px);
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--track);
+  width: 140px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--knob);
+  box-shadow: 0 0 0 1px var(--field-line);
+}
+
+input[type="number"],
+input[type="text"],
+input[type="password"],
+select {
+  font: 400 12.5px var(--font);
+  background: var(--field);
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  color: var(--ink);
+  padding: 5px 8px;
+}
+
+input::placeholder {
+  color: var(--dim-2);
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: var(--field-line);
+}
+
+/* The popup is drawn by the OS: give it an explicit pair of colours rather than
+   inheriting white on white. */
+select option {
+  background-color: var(--option-bg);
+  color: var(--ink);
+}
+
+.diff {
+  font: 400 11.5px/1.5 var(--mono);
+  background: var(--diff-bg);
+  border: 1px solid var(--hairline);
+  border-radius: 10px;
+  padding: 10px 12px;
+  max-height: 260px;
+  overflow: auto;
+  white-space: pre;
+  user-select: text;
+}
+
+.diff .add {
+  color: var(--add-ink);
+}
+
+.diff .del {
+  color: var(--del-ink);
+}
+
+.diff .ctx {
+  color: var(--dim-2);
+}
+
+.notice {
+  font: 400 12px var(--font);
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+
+.notice.ok {
+  background: var(--ok-bg);
+  color: var(--ok-ink);
+}
+
+.notice.err {
+  background: var(--err-bg);
+  color: var(--err-ink);
+}
+
+.notice.warn {
+  background: var(--warn-bg);
+  color: var(--warn-ink);
+}
+
+
+.check {
+  font: 500 12px var(--font);
+  color: var(--dim);
+}
+
+.check.ok {
+  color: var(--green);
+}
+
+.check.bad {
+  color: var(--red);
+}
+
+.hint.warn {
+  color: var(--amber);
+}
+
+/* ── Cat section: the character picker and its live preview ────────────── */
+
+.cat-top {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 56px);
+  flex: 1 1 260px;
+  gap: 6px;
+}
+
+.cat-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 0 5px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: var(--soft);
+  font: 400 10.5px var(--font);
+  color: var(--dim);
+}
+
+.cat-cell:hover:not(:disabled) {
+  background: var(--cell-hover);
+}
+
+.cat-cell[aria-pressed="true"] {
+  border-color: var(--cell-on-line);
+  background: var(--cell-on);
+  color: var(--ink);
+}
+
+.cat-cell canvas {
+  display: block;
+  width: 48px;
+  height: 48px;
+}
+
+.cat-preview {
+  width: 140px;
+  height: 150px;
+  flex: 0 0 auto;
+  border-radius: 14px;
+  background: #000;
+}
+
+.cat-preview canvas {
+  display: block;
+}
+
+/* Display (sub-project B): the compact island's preview, the pair's pickers, the agents' list. */
+.cat-notch {
+  width: 432px;
+  max-width: 100%;
+  border-radius: 0 0 21px 21px;
+  background: #000;
+  overflow: hidden;
+}
+
+.cat-notch canvas {
+  display: block;
+}
+
+.cat-agents-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.cat-agents {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-self: stretch;
+}
+
+.cat-agent {
+  gap: 10px;
+  flex-wrap: nowrap;
+}
+
+.cat-agent > label {
+  min-width: 96px;
+}
+
+.cat-agent-cv {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  border-radius: 12px;
+  background: #000;
+}
+
+.cat-agent-cv canvas {
+  display: block;
+}
+
+.dice {
+  padding: 4px 9px;
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* The two ends of a trait slider: fixed widths, so the six sliders line up. */
+.cat-low {
+  min-width: 84px;
+  text-align: right;
+}
+
+.cat-high {
+  min-width: 84px;
+}
+
+/* The six personality sliders stay on one line from the window's 560 px down to its 460 px minimum (about 440 px of room once a scrollbar is there), instead of wrapping the
+   high end under the slider. The row is a grid, so its four columns give way together and the six sliders still line up: the label's and the slider's give first. */
+.row.cat-trait {
+  display: grid;
+  grid-template-columns: minmax(72px, 132px) minmax(76px, 84px) minmax(56px, 140px) minmax(76px, 84px);
+}
+
+.row.cat-trait > label,
+.cat-trait .cat-low,
+.cat-trait .cat-high {
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.cat-trait input[type="range"] {
+  width: 100%;
+}
+
+/* Settings restyle (the kit and the shell): new class names only, colours from :root. The collapsed sidebar's breakpoint is layout.ts's BREAKPOINT (600 pt). */
+
+.st-app [hidden] { display: none !important; }
+
+.st-shell { display: grid; grid-template-columns: 200px 1fr; height: 100vh; }
+.st-side { display: flex; flex-direction: column; gap: 4px; padding: 16px 10px; border-right: 1px solid var(--hairline); min-height: 0; overflow: hidden; }
+.st-head { display: flex; flex-direction: column; gap: 2px; padding: 0 10px 12px; }
+.st-appname { font: 600 14px var(--font); }
+.st-version { font: 400 12px var(--font); color: var(--dim-2); }
+.st-nav { display: flex; align-items: center; gap: 10px; width: 100%; padding: 6px 8px; border-radius: 8px; background: transparent; color: var(--dim); font: 500 13px var(--font); text-align: left; }
+.st-nav:hover:not(:disabled) { background: var(--hairline); color: var(--ink); }
+.st-nav[aria-current="page"] { background: var(--card); color: var(--ink); }
+.st-tile { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 22px; width: 22px; height: 22px; border-radius: 6px; color: var(--ink); }
+.st-navlabel { white-space: nowrap; overflow: hidden; }
+
+.st-detail { display: flex; flex-direction: column; min-width: 0; min-height: 0; padding: 20px 20px 0; }
+.st-top { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 640px; margin: 0 auto; }
+.st-title { font: 600 17px var(--font); letter-spacing: -0.01em; }
+.st-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; padding: 14px 0 32px; }
+.st-column { max-width: 640px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 18px; }
+
+.st-card { width: 100%; min-width: 0; }
+.st-cardhead { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.st-cardtitle { font: 600 13px var(--font); margin-right: auto; }
+.st-chip { display: inline-flex; align-items: center; gap: 6px; font: 500 11.5px var(--font); color: var(--dim); white-space: nowrap; }
+.st-chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; flex: 0 0 7px; background: var(--dim); }
+.st-chip.st-ok::before { background: var(--green); }
+.st-chip.st-warn::before { background: var(--amber); }
+.st-chip.st-error::before { background: var(--red); }
+.st-chipslot { display: inline-flex; align-items: center; }
+.st-chipslot:empty { display: none; }
+/* A machine's name with its status dot: the first line is 16 px, and the dot (8 px) starts 4 px down, so its centre is the first line's centre, whatever the name's length. */
+.st-dotlabel { display: inline-flex; align-items: flex-start; gap: 6px; line-height: 16px; }
+.st-dotlabel > .dot { margin-top: 4px; }
+
+.st-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+/* A row of one short control (a switch, a chip, a button, a range, a number field, a unit's word) is a grid. The label takes the room beside its control and wraps only when it does
+   not fit; the control keeps its own width. The lines under the label (the cap chip, the help line) span both columns and are contained to the row's width, so a line's own width never
+   sets the label column's minimum, and the control stays on the label's line. */
+.st-row.st-short { display: grid; grid-template-columns: minmax(min(9em, 100%), 1fr) auto; align-items: center; gap: 2px 14px; }
+/* The label column has a floor of 9em (about 117 px at 13 px): beside a wide control the label keeps a readable width, wraps by word, and a word wider than the column breaks inside
+   it. The label's text may break anywhere (below), so the label's min-content is one letter: the floor, not the min-content, sets the column. */
+.st-row.st-short > .st-under { grid-column: 1 / -1; min-width: 0; contain: inline-size; }
+/* A help line after the control of a row that is not short: a line of its own, full width, so the label's width is its text only. */
+.st-row > .st-under { flex: 0 0 100%; min-width: 0; }
+/* A label's text wraps by word, and a word wider than its column breaks inside it (anywhere: a stacked row's label, which has no floor, takes its column this way too). Switch, short and stacked rows alike. */
+.st-labeltext { overflow-wrap: anywhere; }
+.st-label { flex: 0 1 auto; min-width: min-content; font: 500 13px var(--font); display: flex; flex-direction: column; gap: 2px; }
+.st-control { flex: 1 1 200px; min-width: 0; max-width: 100%; display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; }
+.st-disabled { opacity: 0.45; }
+.st-keyfield { width: 100%; max-width: 420px; min-width: 0; }
+.st-card input[type="number"] { width: 64px; }
+/* A pop-up menu is as wide as its longest option, at most 180 px (the Mac's pop-ups are content-sized too): a row stacks it only when its label and it do not fit beside each other. */
+.st-control select { min-width: 0; max-width: 180px; }
+.st-control.st-picker { flex: 1 1 auto; }
+.st-wrap { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; }
+.st-wrapbtn { white-space: normal; overflow-wrap: normal; max-width: 100%; text-align: left; }
+/* A pill's name on the General page: a text button that reads as a link, the same height as a button. */
+.st-linkbtn { background: transparent; color: var(--ink); padding: 2px 6px; text-decoration: underline; text-underline-offset: 3px; }
+.st-linkbtn:hover:not(:disabled) { background: var(--hairline); }
+button, .st-chip, .st-tabs button { white-space: nowrap; }
+
+.st-pathbox { display: flex; flex-direction: column; gap: 8px; }
+.st-paths { display: flex; flex-direction: column; gap: 8px; }
+.st-pathline { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.st-pathlabel { font: 500 12px var(--font); color: var(--dim); }
+.st-path { font: 400 11.5px var(--mono); color: var(--dim); user-select: text; overflow-wrap: anywhere; min-width: 0; flex: 1 1 200px; }
+.st-details > summary { cursor: pointer; font: 500 12.5px var(--font); color: var(--dim); }
+
+.st-tabbar { position: relative; min-width: 0; height: 28px; }
+.st-tabs { display: flex; gap: 4px; height: 28px; overflow: hidden; width: 100%; white-space: nowrap; }
+.st-tabs button { flex: 0 0 auto; height: 28px; padding: 0 8px; border-radius: 0; background: transparent; color: var(--dim); font: 500 12.5px var(--font); }
+.st-tabs button:hover:not(:disabled) { background: transparent; color: var(--ink); }
+.st-tabs button[aria-selected="true"] { color: var(--ink); box-shadow: inset 0 -2px 0 var(--ink); }
+.st-tabbar.narrow > .st-tabs { position: absolute; left: 0; right: 0; top: 0; visibility: hidden; }
+.st-tabmenu { display: none; width: 240px; max-width: 100%; }
+.st-tabbar.narrow > .st-tabmenu { display: block; }
+
+@media (max-width: 599.98px) {
+  .st-shell { grid-template-columns: 56px 1fr; }
+  .st-side { padding: 16px 6px; }
+  .st-head, .st-navlabel { display: none; }
+  .st-nav { justify-content: center; padding: 6px 0; }
+  .st-detail { padding: 16px 16px 0; }
+}
+
+/* Task 10: the Sidekick tab's example boxes and words' radios, and the Cat tabs' narrow widths. New class names, colours from :root. */
+.st-example {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--soft);
+}
+.st-example-head { font: 500 12px var(--font); color: var(--dim); }
+.st-example-line { font: 400 12.5px var(--font); }
+/* The Companion's "What the AI saw last" box (Task 12): read-only, selectable, scrolls inside the card. */
+.st-saw { display: block; width: 100%; max-height: 240px; overflow: auto; margin: 0; padding: 8px 10px; border-radius: 10px; background: var(--soft); font: 400 11px/1.45 ui-monospace, Menlo, Consolas, monospace; white-space: pre-wrap; overflow-wrap: anywhere; user-select: text; }
+.st-radio { display: flex; align-items: center; gap: 8px; font: 400 13px var(--font); }
+
+.cat-notch canvas { max-width: 100%; height: auto; }
+
+/* Under 600 px wide the six sliders stack: the name above, the slider, then the two ends below (one line does not fit there). */
+@media (max-width: 599.98px) {
+  .row.cat-trait { grid-template-columns: 1fr 1fr; grid-template-areas: "label label" "slider slider" "low high"; }
+  .row.cat-trait > label { grid-area: label; }
+  .row.cat-trait > input[type="range"] { grid-area: slider; }
+  .row.cat-trait > .cat-low { grid-area: low; text-align: left; }
+  .row.cat-trait > .cat-high { grid-area: high; justify-self: end; }
+  /* A row of an agent at the narrow width: the name and the cat's picker give room, so the dice stays inside the card. */
+  .cat-agent > label { min-width: 0; flex: 1 1 0; }
+  .cat-agent > select { min-width: 0; }
+}
+
+/* Settings polish (Task 2): the page strip above the column is hidden until a page has something to say; a refused save's note sits at the top of its card. */
+.st-strip { width: 100%; max-width: 640px; margin: 0 auto 12px; display: flex; flex-direction: column; gap: 8px; }
+.st-strip[hidden] { display: none; }
+.st-cardnote { margin: 0 0 10px; }
+
+/* Wardrobe (sub-project I): the tiles reuse .cat-cell. Task 10 gives the grid a 104 px minimum tile (1fr columns: two across in the card at 415, four at 720) and drops the fixed 64 px width, so
+   the longest label, Peach-blossom clip, sits whole on one line (the button's nowrap is kept). The rules below are the wardrobe's own. */
+.wardrobe-tiles {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1 1 344px;
+  min-width: 0;
+}
+
+.wardrobe-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 6px;
+}
+
+.wardrobe-cell {
+  width: auto;
+  text-align: center;
+}
+
+.wardrobe-cell.wide {
+  grid-column: span 2;
+  width: auto;
+}
+
+.wardrobe-cell span {
+  padding: 0 3px;
+  line-height: 1.15;
+}

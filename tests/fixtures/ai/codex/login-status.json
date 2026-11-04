@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "verified": true,
+  "note": "The sign-in state from the login-status command, which exits 0 when signed in and 1 when not (recorded/FINDINGS.md step 2: login-in.txt is `Logged in using ChatGPT` with exit 0, login-out.txt is `Not logged in` with exit 1). Only the exit code decides the state; a null exit means the program could not run and is unknown. The mode is read from the text, stdout then stderr joined, by fixed case-insensitive substrings only (`chatgpt`, `api key`), and only when signed in; nothing else of the text is kept, not even an e-mail address. Which stream the recorded rows came from is not noted in the recording, so their stdout is kept as recorded. The probe of codex-cli 0.165.0 on 2026-10-29 (an empty signed-out CODEX_HOME, no credentials) found `Not logged in` on STDERR with stdout empty and exit 1. The signed-in line on stderr (the stderr rows with exit 0) is expected from the same CLI but is NOT probed yet: no signed-in run was made. The null-exit rows and the API-key wording are rules, not recordings.",
+  "cases": [
+    {"name": "signed in with ChatGPT (recorded)", "exit": 0, "stdout": "Logged in using ChatGPT\n", "expect": {"state": "signedIn", "mode": "chatgpt"}},
+    {"name": "signed out (recorded)", "exit": 1, "stdout": "Not logged in\n", "expect": {"state": "signedOut", "mode": null}},
+    {"name": "signed out with another non-zero exit", "exit": 2, "stdout": "", "expect": {"state": "signedOut", "mode": null}},
+    {"name": "signed out: stdout names ChatGPT but the exit is not 0, so no mode", "exit": 1, "stdout": "Logged in using ChatGPT\n", "expect": {"state": "signedOut", "mode": null}},
+    {"name": "an API key login", "exit": 0, "stdout": "Logged in using an API key\n", "expect": {"state": "signedIn", "mode": "api_key"}},
+    {"name": "signed in, mode not recognised", "exit": 0, "stdout": "Logged in\n", "expect": {"state": "signedIn", "mode": "unknown"}},
+    {"name": "could not run: exit null and nothing on stdout", "exit": null, "stdout": "", "expect": {"state": "unknown", "mode": null}},
+    {"name": "could not run: exit null even with text", "exit": null, "stdout": "Logged in using ChatGPT\n", "expect": {"state": "unknown", "mode": null}},
+    {"name": "an e-mail on stdout is never kept", "exit": 0, "stdout": "Logged in as __EMAIL__ using ChatGPT\n", "expect": {"state": "signedIn", "mode": "chatgpt"}},
+    {"name": "signed in with ChatGPT, the line on stderr only", "exit": 0, "stdout": "", "stderr": "Logged in using ChatGPT\n", "expect": {"state": "signedIn", "mode": "chatgpt"}},
+    {"name": "signed out, the line on stderr only (probe 2026-10-29)", "exit": 1, "stdout": "", "stderr": "Not logged in\n", "expect": {"state": "signedOut", "mode": null}},
+    {"name": "an API key login, the line on stderr only", "exit": 0, "stdout": "", "stderr": "Logged in using an API key\n", "expect": {"state": "signedIn", "mode": "api_key"}},
+    {"name": "stderr names ChatGPT but the exit is 1: signed out, no mode", "exit": 1, "stdout": "", "stderr": "Logged in using ChatGPT\n", "expect": {"state": "signedOut", "mode": null}},
+    {"name": "the words split across the two streams: the mode is read from both", "exit": 0, "stdout": "Logged in\n", "stderr": "using ChatGPT\n", "expect": {"state": "signedIn", "mode": "chatgpt"}},
+    {"name": "could not run, with text on stderr: unknown", "exit": null, "stdout": "", "stderr": "Logged in using ChatGPT\n", "expect": {"state": "unknown", "mode": null}},
+    {"name": "an e-mail on stderr is never kept", "exit": 0, "stdout": "", "stderr": "Logged in as __EMAIL__ using ChatGPT\n", "expect": {"state": "signedIn", "mode": "chatgpt"}}
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "cases": [
+    {"name": "local 4K cuts at whole lines", "placement": "local", "contextTokens": 4096, "lineLength": 10, "lineCount": 1000,
+     "expect": {"keptChars": 7160, "keptLines": 716, "notice": "I read the first 716 lines."}},
+    {"name": "local 8K keeps everything", "placement": "local", "contextTokens": 8192, "lineLength": 10, "lineCount": 1000,
+     "expect": {"keptChars": 10000, "keptLines": 1000, "notice": null}},
+    {"name": "local unknown context counts as 4K", "placement": "local", "contextTokens": null, "lineLength": 10, "lineCount": 1000,
+     "expect": {"keptChars": 7160, "keptLines": 716, "notice": "I read the first 716 lines."}},
+    {"name": "cloud unknown context is capped at 204800", "placement": "cloud", "contextTokens": null, "lineLength": 100, "lineCount": 3000,
+     "expect": {"keptChars": 204800, "keptLines": 2048, "notice": "I read the first 2048 lines."}},
+    {"name": "cloud huge context still capped", "placement": "cloud", "contextTokens": 1050000, "lineLength": 100, "lineCount": 3000,
+     "expect": {"keptChars": 204800, "keptLines": 2048, "notice": "I read the first 2048 lines."}},
+    {"name": "first line longer than budget", "placement": "local", "contextTokens": 4096, "lineLength": 10000, "lineCount": 1,
+     "expect": {"keptChars": 7168, "keptLines": 0, "notice": "I read the first part of this file."}},
+    {"name": "odd context floors, never rounds up", "placement": "local", "contextTokens": 4097, "lineLength": 10000, "lineCount": 1,
+     "expect": {"keptChars": 7169, "keptLines": 0, "notice": "I read the first part of this file."}},
+    {"name": "a lone CR is not a line end", "placement": "local", "contextTokens": 4096, "lineLength": 10, "lineCount": 1000, "fill": "\r",
+     "expect": {"keptChars": 7160, "keptLines": 716, "notice": "I read the first 716 lines."}},
+    {"name": "only one line fits", "placement": "local", "contextTokens": 4096, "lineLength": 7000, "lineCount": 3,
+     "expect": {"keptChars": 7000, "keptLines": 1, "notice": "I read the first line."}},
+    {"name": "exact fit is not truncated", "placement": "local", "contextTokens": 4096, "lineLength": 7168, "lineCount": 1,
+     "expect": {"keptChars": 7168, "keptLines": 1, "notice": null}},
+    {"name": "empty text", "placement": "local", "contextTokens": 4096, "lineLength": 10, "lineCount": 0,
+     "expect": {"keptChars": 0, "keptLines": 0, "notice": null}},
+    {"name": "network placement uses local rules", "placement": "network", "contextTokens": 4096, "lineLength": 10, "lineCount": 1000,
+     "expect": {"keptChars": 7160, "keptLines": 716, "notice": "I read the first 716 lines."}},
+    {"name": "emoji-scalars", "placement": "local", "contextTokens": 4096, "lineLength": 10, "lineCount": 1000, "fill": "🐱",
+     "expect": {"keptChars": 7160, "keptLines": 716, "notice": "I read the first 716 lines."}}
+  ]
+}

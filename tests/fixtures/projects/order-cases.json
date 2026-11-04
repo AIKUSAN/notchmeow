@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "note": "projectOrder(projects) -> pill order (ids here); bigCardOf(projects, pinned, clicked) -> {project, pinned, clicked}; waitingCount(projects) -> sessions in approval or question.",
+  "order": [
+    {"name":"a waiting project first, then the most recent","projects":[{"id":"p-a","state":"working","lastAt":100},{"id":"p-b","state":"idle","lastAt":300},{"id":"p-c","state":"question","lastAt":50}],"expect":["p-c","p-b","p-a"]},
+    {"name":"waiting projects among themselves by most recent","projects":[{"id":"p-a","state":"approval","lastAt":10},{"id":"p-b","state":"question","lastAt":20},{"id":"p-c","state":"working","lastAt":30}],"expect":["p-b","p-a","p-c"]},
+    {"name":"the same time: by id","projects":[{"id":"p-z","state":"idle","lastAt":5},{"id":"p-y","state":"idle","lastAt":5}],"expect":["p-y","p-z"]},
+    {"name":"nothing","projects":[],"expect":[]}
+  ],
+  "bigCard": [
+    {"name":"no pin, no click: the most recently active","projects":[{"id":"p-a","lastAt":100},{"id":"p-b","lastAt":300},{"id":"p-c","lastAt":200}],"pinned":null,"clicked":null,"expect":{"project":"p-b","pinned":null,"clicked":null}},
+    {"name":"the last clicked","projects":[{"id":"p-a","lastAt":100},{"id":"p-b","lastAt":300},{"id":"p-c","lastAt":200}],"pinned":null,"clicked":"p-a","expect":{"project":"p-a","pinned":null,"clicked":"p-a"}},
+    {"name":"a pin beats the last click","projects":[{"id":"p-a","lastAt":100},{"id":"p-b","lastAt":300},{"id":"p-c","lastAt":200}],"pinned":"p-c","clicked":"p-a","expect":{"project":"p-c","pinned":"p-c","clicked":"p-a"}},
+    {"name":"a pin goes with its project","projects":[{"id":"p-a","lastAt":100},{"id":"p-b","lastAt":300},{"id":"p-c","lastAt":200}],"pinned":"p-gone","clicked":"p-a","expect":{"project":"p-a","pinned":null,"clicked":"p-a"}},
+    {"name":"a click on a project that left is forgotten","projects":[{"id":"p-a","lastAt":100},{"id":"p-b","lastAt":300},{"id":"p-c","lastAt":200}],"pinned":"p-gone","clicked":"p-gone2","expect":{"project":"p-b","pinned":null,"clicked":null}},
+    {"name":"a waiting project does not take the card by itself","projects":[{"id":"p-a","state":"approval","lastAt":500},{"id":"p-b","lastAt":300},{"id":"p-c","lastAt":200}],"pinned":null,"clicked":"p-c","expect":{"project":"p-c","pinned":null,"clicked":"p-c"}},
+    {"name":"the same time: the first in the list","projects":[{"id":"p-x","lastAt":5},{"id":"p-y","lastAt":5}],"pinned":null,"clicked":null,"expect":{"project":"p-x","pinned":null,"clicked":null}},
+    {"name":"no project","projects":[],"pinned":"p-a","clicked":"p-b","expect":{"project":null,"pinned":null,"clicked":null}}
+  ],
+  "waiting": [
+    {"name":"the sum over projects","projects":[{"waiting":1},{"waiting":0},{"waiting":2}],"expect":3},
+    {"name":"nothing waits","projects":[],"expect":0},
+    {"name":"a count that is not a whole number is nothing","projects":[{"waiting":"x"},{"waiting":1.5},{"waiting":-1},{"waiting":2}],"expect":2}
+  ]
+}

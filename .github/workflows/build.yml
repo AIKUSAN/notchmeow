@@ -1,0 +1,506 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate project
+        run: cd NotchBuddy && xcodegen
+
+      - name: Test scripts keep out of the real log
+        run: bash scripts/check-test-logs.sh
+
+      - name: Test screen geometry
+        run: bash scripts/test-screen-geometry.sh
+
+      - name: Test link filter
+        run: bash scripts/test-safe-links.sh
+
+      - name: AI contract (fixtures + fake server)
+        run: bash scripts/test-ai-contract.sh
+
+      - name: Codex plan contract (fake codex, shared fixtures)
+        run: bash scripts/test-codex-contract.sh
+
+      - name: Sound build tests
+        run: bash scripts/test-sound-build.sh
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Cat contract (cat-core.js self-checks, fixtures, determinism)
+        run: bash scripts/test-cat-contract.sh
+
+      - name: Sidekick contract (sidekick-core.js tests, fixtures, determinism)
+        run: bash scripts/test-sidekick-contract.sh
+
+      - name: Projects contract (projects-core.js tests, fixtures, determinism)
+        run: bash scripts/test-projects-contract.sh
+
+      - name: Companion contract (companion-core.js tests, fixtures, determinism)
+        run: bash scripts/test-companion-contract.sh
+
+      - name: Projects rules on the Mac (the ports, replayed against the fixtures)
+        run: bash scripts/test-projects-rules.sh
+
+      - name: Projects registry (sessions, states, the 64 cap, the view)
+        run: bash scripts/test-projects-registry.sh
+
+      - name: Projects layout (cells, the peek frame, the badge place and words)
+        run: bash scripts/test-projects-layout.sh
+
+      - name: Projects cats (the stored cat per folder, the 256 cap)
+        run: bash scripts/test-projects-cats.sh
+
+      - name: Projects model (the feed, the one tick, the pin and the peek)
+        run: bash scripts/test-projects-model.sh
+
+      - name: Projects leak test (a marker never reaches a log, a file or a picture)
+        run: bash scripts/test-projects-leak.sh
+
+      - name: Projects wiring (source pins of the app files)
+        run: bash scripts/test-projects-wiring.sh
+
+      - name: Fake Projects session (the owner's script, sent to a test socket)
+        run: bash scripts/test-fake-projects-events.sh
+
+      - name: Projects pictures never carry a path, a prompt or a command
+        run: bash scripts/check-projects-render-private.sh
+
+      - name: Projects scenarios replayed through projects-core.js (the hand-typed expectations hold in the core)
+        run: bash scripts/test-projects-scenarios-core.sh
+
+      - name: Shelf contract (zone and shelf rules, fixtures, no drift)
+        run: bash scripts/test-shelf-contract.sh
+
+      - name: Link contract (Noise vectors, pairing code, frames, flow, file names, fixtures, no drift)
+        run: bash scripts/test-link-contract.sh
+
+      - name: Link Noise layer on CryptoKit (the vectors and the damaged-message cases)
+        run: bash scripts/test-link-noise.sh
+
+      - name: Link wire shapes (records, preamble, hello, advert, frames)
+        run: bash scripts/test-link-frames.sh
+
+      - name: Link file names (the sanitizer and the collision rule)
+        run: bash scripts/test-link-name.sh
+
+      - name: Link pairing machines, code and clocks
+        run: bash scripts/test-link-pairing.sh
+
+      - name: Link transfer machines
+        run: bash scripts/test-link-flow.sh
+
+      - name: Link settings and device list
+        run: bash scripts/test-link-settings.sh
+
+      - name: Link files (the sink and the source)
+        run: bash scripts/test-link-files.sh
+
+      - name: Link conversations (pairing and transfer between two in-memory ends)
+        run: bash scripts/test-link-session.sh
+
+      - name: Link network (real TCP on 127.0.0.1)
+        run: bash scripts/test-link-network.sh
+
+      - name: Link island card rules (one card at a time, the click settle time)
+        run: bash scripts/test-link-service.sh
+
+      - name: Link restarts (a failed listener or browser comes back after a bounded wait)
+        run: bash scripts/test-link-restart.sh
+
+      - name: "Link wiring (source pins: off until visible, no polling, nothing accepts for the user)"
+        run: bash scripts/test-link-wiring.sh
+
+      - name: Link pictures never carry a real name (the render tool and the link sources)
+        run: bash scripts/check-link-render-private.sh
+
+      - name: Link Keychain (memory store; the real Keychain is skipped on the runner)
+        run: bash scripts/test-link-keychain.sh
+        env:
+          NM_SKIP_REAL_KEYCHAIN: "1"
+
+      - name: Shelf rules on the Mac (zoneAt, shelfClean, shelfAdd and the strict JSON reader against the fixtures)
+        run: bash scripts/test-shelf-rules.sh
+
+      - name: Shelf store (links, copies, the cap, a missing file, the backup of an unreadable shelf.json)
+        run: bash scripts/test-shelf-store.sh
+
+      - name: Shelf drop halves, buttons, hold-open rule and compact badge (the pure rules)
+        run: bash scripts/test-shelf-drop.sh
+
+      - name: Shelf wiring (source pins of the drop view, the panel, the island and the buttons)
+        run: bash scripts/test-shelf-wiring.sh
+
+      - name: "Shelf dev panel (the Debug-only panel's model)"
+        run: bash scripts/test-shelf-devpanel.sh
+
+      - name: "Shelf drop layer (the Ask half is untouched, nothing is drawn left of the centre line)"
+        run: bash scripts/render-shelf.sh --ask-check
+
+      - name: Theme tokens (generator self-checks, generated files up to date)
+        run: bash scripts/test-theme.sh
+
+      - name: Cat presets
+        run: bash scripts/test-cat-presets.sh
+
+      - name: Cat geometry and the face warp
+        run: bash scripts/test-cat-geometry.sh
+
+      - name: Cat drawing kit and effects
+        run: bash scripts/test-cat-effects.sh
+
+      - name: Cat renderer
+        run: bash scripts/test-cat-renderer.sh
+
+      - name: Cat personality
+        run: bash scripts/test-cat-personality.sh
+
+      - name: Cat rules (zoomies, sleep, search tools)
+        run: bash scripts/test-cat-rules.sh
+
+      - name: Cat engine (states, emotes, the file catch)
+        run: bash scripts/test-cat-engine.sh
+
+      - name: Cat frame-time meter
+        run: bash scripts/test-cat-frame-meter.sh
+
+      - name: Cat greeting timeline
+        run: bash scripts/test-cat-greeting.sh
+
+      - name: Cat in the drop view (the refusal rule, the catch, a refused file)
+        run: bash scripts/test-cat-upload.sh
+
+      - name: Cat panel model (Debug-only panel)
+        run: bash scripts/test-cat-devpanel.sh
+
+      - name: Cat settings (the clean-up, the UserDefaults keys, Apply to every cat)
+        run: bash scripts/test-cat-settings.sh
+
+      - name: Cat settings in the app (the store, the engines, the character)
+        run: bash scripts/test-cat-settings-store.sh
+
+      - name: Cat fur lines
+        run: bash scripts/test-cat-fur.sh
+
+      - name: Cat sleep timer
+        run: bash scripts/test-cat-sleep.sh
+
+      - name: Cat small eyes (the coloured eyes of the compact detail level)
+        run: bash scripts/test-cat-small-eye.sh
+
+      - name: Cat display settings (mode, pair, agents' coats)
+        run: bash scripts/test-cat-display.sh
+
+      - name: Cat agent coats (a new agent's cat, the dice, Reset to defaults)
+        run: bash scripts/test-cat-agent-cats.sh
+
+      - name: Cat cast (which cat appears where)
+        run: bash scripts/test-cat-cast.sh
+
+      - name: Cat agent list and island layout
+        run: bash scripts/test-cat-agent-list.sh
+
+      - name: Cat kittens (the reducer, the order, the slots)
+        run: bash scripts/test-cat-kittens.sh
+
+      - name: Cat kitten hooks (scripted subagent events through a test socket)
+        run: bash scripts/test-cat-kitten-hooks.sh
+
+      - name: Cat wiring (source pins of the app files)
+        run: bash scripts/test-cat-wiring.sh
+
+      - name: Island right wing steps aside (the rules and the fade's timing)
+        run: bash scripts/test-island-wing.sh
+
+      - name: Hook relay answers (Antigravity PreToolUse is asked, Claude Desktop is tagged)
+        run: bash scripts/test-hook-relay.sh
+
+      - name: Open on hover (the state machine)
+        run: bash scripts/test-island-hover.sh
+
+      - name: Outside click (the rules)
+        run: bash scripts/test-island-outside-click.sh
+
+      - name: Hover glow (the rules)
+        run: bash scripts/test-island-glow.sh
+
+      - name: Permission card click guard (the rule)
+        run: bash scripts/test-approval-click-guard.sh
+
+      - name: "U1 wiring (source pins: crash fix, hover, guard, question card, outside click, glow, CPU, pills)"
+        run: bash scripts/test-u1-wiring.sh
+
+      - name: Music pill rules (MusicFollow)
+        run: bash scripts/test-music-follow.sh
+
+      - name: Music pill wiring (source pins of the controller, the views and the binary check)
+        run: bash scripts/test-music-wiring.sh
+
+      - name: Fake music events (the owner's script, dry run)
+        run: bash scripts/test-fake-music-events.sh
+
+      - name: Island right wing wiring (source pins of the panel, AppState and the view)
+        run: bash scripts/test-island-wing-wiring.sh
+
+      - name: Hook routing (VS Code and every terminal reach the Claude Code pill)
+        run: bash scripts/test-hook-origin.sh
+
+      - name: Hook routing wiring (source pins of HookServer, ApprovalInfo, AppState and the pill's tap)
+        run: bash scripts/test-hook-origin-wiring.sh
+
+      - name: Focus awareness rules (FocusAware)
+        run: bash scripts/test-focus-aware.sh
+
+      - name: Focus awareness wiring (source pins of HookServer, AppState, the Sidekick and the views)
+        run: bash scripts/test-focus-aware-wiring.sh
+
+      - name: Fake terminal session (the owner's script, sent to a test socket)
+        run: bash scripts/test-fake-terminal-events.sh
+
+      - name: Sidekick risk rules (explain-cases.json)
+        run: bash scripts/test-sidekick-explain.sh
+
+      - name: Sidekick hook adapter and ledger (hook-cases.json)
+        run: bash scripts/test-sidekick-ledger.sh
+
+      - name: Sidekick stuck rules (stuck-cases.json)
+        run: bash scripts/test-sidekick-stuck.sh
+
+      - name: Sidekick recap, status answer and status question (recap-cases.json, status-cases.json)
+        run: bash scripts/test-sidekick-recap.sh
+
+      - name: Sidekick dismissals, settings and store (dismiss-cases.json, settings-cases.json)
+        run: bash scripts/test-sidekick-settings.sh
+
+      - name: Sidekick presence, flags, idle sample and show gate (presence-cases.json, show-cases.json)
+        run: bash scripts/test-sidekick-presence.sh
+
+      - name: Sidekick notes and the one clock
+        run: bash scripts/test-sidekick-notes.sh
+
+      - name: Sidekick local voice (voice-cases.json, fake providers)
+        run: bash scripts/test-sidekick-voice.sh
+
+      - name: Sidekick engine (scripted runs with a clock and a timer by hand)
+        run: bash scripts/test-sidekick-engine.sh
+
+      - name: Sidekick drop on an agent's own cat
+        run: bash scripts/test-sidekick-drop.sh
+
+      - name: Sidekick leak test (a marker never reaches a log or a non-local provider)
+        run: bash scripts/test-sidekick-leak.sh
+
+      - name: Sidekick wiring (source pins of the app files)
+        run: bash scripts/test-sidekick-wiring.sh
+
+      - name: Companion prompt (the system text and its order, replayed against the fixtures)
+        run: bash scripts/test-companion-prompt.sh
+
+      - name: Companion rules (the Swift ports, replayed against the fixtures)
+        run: bash scripts/test-companion-rules.sh
+
+      - name: Companion store (the conversation files, owner-only, atomic, no follow)
+        run: bash scripts/test-companion-store.sh
+
+      - name: Companion brain (the fake server on 127.0.0.1, the brains' requests)
+        run: bash scripts/test-companion-brain.sh
+
+      - name: Companion conversations (the list, the rename, the pin, the cap)
+        run: bash scripts/test-companion-conversations.sh
+
+      - name: Companion quick actions (the Services' fixed prompts and the quick result)
+        run: bash scripts/test-companion-quick.sh
+
+      - name: Companion wiring (source pins of the app files, nothing runs idle, nothing leaks)
+        run: bash scripts/test-companion-wiring.sh
+
+      - name: Companion render is private (no path, no name in the pictures' source)
+        run: bash scripts/check-companion-render-private.sh
+
+      - name: Fake sidekick session (the owner's script, sent to a test socket)
+        run: bash scripts/test-fake-sidekick-events.sh
+
+      - name: Desktop cat settings (screens, spots and the stored block against desktop-cases.json)
+        run: bash scripts/test-cat-desktop-settings.sh
+
+      - name: Desktop cat trip (desktopStep, the flight, the frame rate and the kittens' slots)
+        run: bash scripts/test-cat-desktop-trip.sh
+
+      - name: Desktop cat layout (the window, the side and the body that takes the mouse)
+        run: bash scripts/test-cat-desktop-layout.sh
+
+      - name: Desktop cat input (click, double-click, drag and the menu)
+        run: bash scripts/test-cat-desktop-input.sh
+
+      - name: Desktop cat drop (attach as before, or place the cat)
+        run: bash scripts/test-cat-desktop-drop.sh
+
+      - name: Desktop cat pacer (one timer, re-armed only when the target changes)
+        run: bash scripts/test-cat-desktop-pacer.sh
+
+      - name: Desktop cat wiring (source pins of the app files)
+        run: bash scripts/test-cat-desktop-wiring.sh
+
+      - name: Wardrobe settings (the 18 frozen IDs, the clean-up, the cycle, the menus' items)
+        run: bash scripts/test-wardrobe-settings.sh
+
+      - name: Wardrobe Auto (Easter, the dated rules, the clock and its one timer)
+        run: bash scripts/test-wardrobe-auto.sh
+
+      - name: Wardrobe geometry (anchors and the 16 outfits on the 16 coats)
+        run: bash scripts/test-wardrobe-geometry.sh
+
+      - name: Wardrobe drawing (only the big-cat role wears an outfit)
+        run: bash scripts/test-wardrobe-draw.sh
+
+      - name: Wardrobe wiring (source pins of the app files)
+        run: bash scripts/test-wardrobe-wiring.sh
+
+      - name: "Cat press (Two cats: a press in cat 2's part of the overlap drags nothing)"
+        run: bash scripts/test-cat-press.sh
+
+      - name: Render home guard (the approval-card tool never opens the real agent configs)
+        run: bash scripts/test-render-home-guard.sh
+
+      - name: "Desktop cat dev panel (the Debug-only Desktop section's model: the alert flight on a mock desktop)"
+        run: bash scripts/test-cat-desktop-devpanel.sh
+
+      - name: Cat theme (no hard-coded theme colours in the drawing code)
+        run: bash scripts/test-cat-theme.sh
+
+      - name: No leftovers (no mochi, no BotEngine, no dead cat code)
+        run: bash scripts/check-no-leftovers.sh
+
+      - name: Test chat parsing
+        run: bash scripts/test-chat-parsing.sh
+
+      - name: AI router, catalog and HTTP errors
+        run: bash scripts/test-ai-router.sh
+
+      - name: AI stream parsers
+        run: bash scripts/test-ai-stream.sh
+
+      - name: AI context budget
+        run: bash scripts/test-ai-budget.sh
+
+      - name: AI attachments
+        run: bash scripts/test-ai-attachments.sh
+
+      - name: AI providers (fake server)
+        run: bash scripts/test-ai-providers.sh
+
+      - name: AI chat runner and log leak test
+        run: bash scripts/test-ai-runner.sh
+
+      - name: AI discovery
+        run: bash scripts/test-ai-discovery.sh
+
+      - name: AI platform (macOS 15 floor, weak linking)
+        run: bash scripts/test-ai-platform.sh
+
+      - name: AI settings migration and provider factory
+        run: bash scripts/test-ai-settings.sh
+
+      - name: Claude Code engine (fake claude, shared fixtures)
+        run: bash scripts/test-claude-code.sh
+
+      - name: Codex engine (fake codex, shared fixtures)
+        run: bash scripts/test-codex-plan.sh
+
+      - name: Codex wiring (source pins)
+        run: bash scripts/test-codex-wiring.sh
+
+      - name: Session step rows
+        run: bash scripts/test-session-steps.sh
+
+      - name: Test plan gauge
+        run: bash scripts/test-plan-gauge.sh
+
+      - name: Test ask question
+        run: bash scripts/test-ask-question.sh
+
+      - name: Diff engine tests
+        run: bash scripts/test-diff-engine.sh
+
+      - name: Keyboard shortcut logic
+        run: bash scripts/test-shortcuts.sh
+
+      - name: Config file write (symbolic links, permissions, backups)
+        run: bash scripts/test-config-file-write.sh
+
+      - name: Settings → Agents install notes (what Confirm & write reports)
+        run: bash scripts/test-hook-install-note.sh
+
+      - name: Settings rules (pages, tabs, old tags, widths, drafts, status words, Sidekick tab)
+        run: bash scripts/test-settings-rules.sh
+
+      - name: Settings control map (every stored key has one home and keeps its name)
+        run: bash scripts/test-settings-map.sh
+
+      - name: Settings AI rows and Make main
+        run: bash scripts/test-settings-ai.sh
+
+      - name: Settings help text contrast (4.5:1 in light and dark)
+        run: bash scripts/test-settings-contrast.sh
+
+      - name: Settings wiring (source pins of the kit, the pages and the app side)
+        run: bash scripts/test-settings-wiring.sh
+
+      - name: Island tuck away wiring (source pins)
+        run: bash scripts/test-island-tuck-away-wiring.sh
+
+      - name: Keychain write in place (update first, never delete before add)
+        run: bash scripts/test-keychain-write.sh
+
+      - name: Settings pictures stay private (no real name, path or key)
+        run: bash scripts/check-settings-render-private.sh
+
+      - name: GitHub pulse tests
+        run: bash scripts/test-github-pulse.sh
+
+      - name: GitHub activity tests
+        run: bash scripts/test-github-activity.sh
+
+      - name: Release tools (version fields, tester build checks, permission strings, QA brief)
+        run: bash scripts/test-release-tools.sh
+
+      - name: Build
+        run: |
+          xcodebuild \
+            -project NotchBuddy/NotchBuddy.xcodeproj \
+            -scheme NotchBuddy \
+            -configuration Release \
+            -derivedDataPath NotchBuddy/build \
+            build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: Check app binary (weak FoundationModels, no Debug override, Claude Code and Codex engines in)
+        run: bash scripts/check-app-binary.sh NotchBuddy/build/Build/Products/Release/NotchMeow.app release
+
+      - name: Build the App Store target (Debug)
+        run: |
+          xcodebuild \
+            -project NotchBuddy/NotchBuddy.xcodeproj \
+            -scheme NotchMeowAppStore \
+            -configuration Debug \
+            -derivedDataPath NotchBuddy/build-store \
+            build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: Check the App Store binary (no Claude Code or Codex engine, locator or plan card)
+        run: bash scripts/check-app-binary.sh NotchBuddy/build-store/Build/Products/Debug/NotchMeow.app appstore

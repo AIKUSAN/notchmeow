@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "verified": false,
+  "note": "Words on the two chips and the row. The model chip says who pays, from the sign-in mode (login-status.json). The level chip is E3's: the words of the level, and the folder by its last part where a level has one. The row's own label never says Codex (owner's answer 4, 2026-10-17); the word appears only in the chip's fallback and in notes. The word for the none level's chip, 'No tools', is a controller-chosen label: neither the plan nor the specs name one.",
+  "rowLabel": "Use my OpenAI plan",
+  "modelChip": [
+    {
+      "name": "signed in with a ChatGPT plan",
+      "mode": "chatgpt",
+      "expect": "OpenAI · your plan"
+    },
+    {
+      "name": "signed in with an API key in Codex",
+      "mode": "api_key",
+      "expect": "OpenAI · API key in Codex"
+    },
+    {
+      "name": "signed in, mode not known",
+      "mode": "unknown",
+      "expect": "OpenAI · Codex"
+    },
+    {
+      "name": "no sign-in state",
+      "mode": null,
+      "expect": "OpenAI · Codex"
+    }
+  ],
+  "levelChip": [
+    {
+      "name": "chat has no folder",
+      "level": "chat",
+      "folder": null,
+      "expect": "Chat only"
+    },
+    {
+      "name": "chat ignores a folder",
+      "level": "chat",
+      "folder": "/work/notchmeow",
+      "expect": "Chat only"
+    },
+    {
+      "name": "quick actions",
+      "level": "none",
+      "folder": null,
+      "expect": "No tools"
+    },
+    {
+      "name": "a folder shows its last part",
+      "level": "none",
+      "folder": "/work/notchmeow/",
+      "expect": "No tools · notchmeow"
+    }
+  ]
+}

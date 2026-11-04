@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "note": "The version is the first x.y.z in the output of `claude --version`. The minimum is the version the flags in expected-args.json were verified against (2026-10-06); one number to lower once older versions are checked.",
+  "minimum": [2, 1, 211],
+  "parse": [{"text": "2.1.211 (Claude Code)", "expect": [2, 1, 211]}, {"text": "2.1.211 (Claude Code)\n", "expect": [2, 1, 211]}, {"text": "claude 2.2.5", "expect": [2, 2, 5]}, {"text": "10.0.0 (Claude Code)", "expect": [10, 0, 0]}, {"text": "nonsense", "expect": null}, {"text": "", "expect": null}],
+  "check": [
+    {"version": [2, 1, 211], "expect": "ok"},
+    {"version": [2, 1, 210], "expect": "tooOld"},
+    {"version": [2, 0, 999], "expect": "tooOld"},
+    {"version": [2, 2, 0], "expect": "ok"},
+    {"version": [10, 0, 0], "expect": "ok"},
+    {"version": null, "expect": "unknown"}
+  ]
+}

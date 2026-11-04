@@ -1,0 +1,31 @@
+{
+  "name": "notchmeow-windows",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "check:ai": "node --experimental-strip-types scripts/check-ai-ui.mjs",
+    "check:claude": "node --experimental-strip-types scripts/check-claude-ui.mjs",
+    "check:cat": "node --experimental-strip-types --test --test-reporter=spec scripts/cat-tests/*.test.mjs",
+    "check:link": "node --experimental-strip-types --test --test-reporter=spec scripts/link-tests/*.test.mjs",
+    "check:sidekick": "node --experimental-strip-types --test --test-reporter=spec scripts/sidekick-tests/*.test.mjs",
+    "check:projects": "node --experimental-strip-types --test --test-reporter=spec scripts/projects-tests/*.test.mjs",
+    "check:companion": "node --experimental-strip-types --test --test-reporter=spec scripts/companion-tests/*.test.mjs",
+    "check:settings": "node --experimental-strip-types --test --test-reporter=spec scripts/settings-tests/*.test.mjs",
+    "tauri": "tauri",
+    "predev": "cargo build --release -p notchmeow-hook",
+    "prebuild": "cargo build --release -p notchmeow-hook",
+    "pack": "tauri build && node scripts/pack.mjs"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2",
+    "typescript": "^5.6.0",
+    "vite": "^6"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2"
+  }
+}

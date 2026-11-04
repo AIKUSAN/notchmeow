@@ -1,0 +1,3 @@
+{"type":"thread.started","__ID_1__":"__ID_2__","__ID_3__":"__ID_4__"}
+{"type":"turn.started"}
+{"type":"turn.completed","usage":{"input_tokens":3,"cached_input_tokens":0,"output_tokens":1}}

@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "verified": false,
+  "note": "What the chat says for each Codex failure. The codes are AIError.code on top of the shared error kinds. `resetsAt` is Unix seconds; the time is shown in the viewer's time zone and locale, lower-cased (3:45 pm). `action` is the one button under the note. `match` classifies a failure by a substring of the text it arrived in (`in`: message for a turn.failed or top-level error line, stderr for the process's own error output); a text that matches no entry is nm_codex_crashed, never a guess. `verified` says whether a recording backs the entry.",
+  "cases": [
+    {"code": "nm_codex_missing", "kind": "unreachable", "text": "Codex isn't installed.", "action": "installGuide"},
+    {"code": "nm_codex_signed_out", "kind": "auth", "text": "Codex is signed out.", "action": "signIn", "detail": "Open your terminal and run `codex login`. NotchMeow opens nothing."},
+    {"code": "nm_plan_limit", "kind": "billing", "resetsAt": null, "text": "Your OpenAI plan's limit was reached.", "action": null},
+    {"code": "nm_plan_limit", "kind": "billing", "resetsAt": 1791301500, "timeZone": "UTC", "locale": "en_US", "text": "Your OpenAI plan's limit resets at 3:45 pm.", "action": null},
+    {"code": "nm_plan_limit", "kind": "billing", "resetsAt": 1791301500, "timeZone": "UTC", "locale": "fr_FR", "text": "Your OpenAI plan's limit resets at 15:45.", "action": null},
+    {"code": "nm_codex_old", "kind": "bad_request", "text": "This version of Codex is too old for NotchMeow.", "action": "updateGuide"},
+    {"code": "nm_codex_unreadable", "kind": "bad_request", "text": "NotchMeow can't read this version of the command line tool. Pick another brain.", "action": null},
+    {"code": "nm_codex_crashed", "kind": "interrupted", "text": "Codex stopped unexpectedly.", "action": "retry"},
+    {"code": "nm_codex_bad_model", "kind": "bad_request", "text": "Codex doesn't know that model.", "action": null},
+    {"code": "nm_bad_model", "kind": "bad_request", "text": "That model name can't be used.", "action": null},
+    {"code": "nm_level_exceeded", "kind": "bad_request", "text": "Codex tried to do more than this level allows, so NotchMeow stopped it.", "action": null},
+    {"code": "nm_level_unavailable", "kind": "bad_request", "text": "This level isn't available with your OpenAI plan yet.", "action": null}
+  ],
+  "match": [
+    {"code": "nm_codex_signed_out", "in": "stderr", "contains": ["Not logged in"], "verified": false, "source": "recorded/login-out.txt, the sign-in status command's own words; an exec run's error line was never recorded"},
+    {"code": "nm_plan_limit", "in": "message", "contains": ["usage limit"], "verified": false, "source": "no recording carries a plan limit; the wording is the one transcripts/plan-limit.jsonl uses"},
+    {"code": "nm_codex_bad_model", "in": "message", "contains": ["model is not supported when using Codex"], "verified": true, "source": "recorded/bad-model.jsonl"},
+    {"code": "nm_codex_signed_out", "in": "message", "contains": ["401 Unauthorized"], "verified": true, "source": "recorded/signed-out-exec.jsonl (001dd2a3): the turn.failed of a real signed-out codex exec run"}
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "note": "cleanSidekickSettings(raw) -> {on, local, dismissals}. A bad switch is on, an unknown kind is dropped, a bad count is 0, a count above 2 is 2. Cleaning twice is cleaning once.",
+  "kinds": ["recap","stuck.loop","stuck.errors","stuck.waiting","stuck.silent"],
+  "cases": [
+    {"name":"nothing stored: everything on","raw":null,"clean":{"on":true,"local":true,"dismissals":{"recap":0,"stuck.loop":0,"stuck.errors":0,"stuck.waiting":0,"stuck.silent":0}}},
+    {"name":"an empty object","raw":{},"clean":{"on":true,"local":true,"dismissals":{"recap":0,"stuck.loop":0,"stuck.errors":0,"stuck.waiting":0,"stuck.silent":0}}},
+    {"name":"not an object: text","raw":"on","clean":{"on":true,"local":true,"dismissals":{"recap":0,"stuck.loop":0,"stuck.errors":0,"stuck.waiting":0,"stuck.silent":0}}},
+    {"name":"not an object: a list","raw":[true,false],"clean":{"on":true,"local":true,"dismissals":{"recap":0,"stuck.loop":0,"stuck.errors":0,"stuck.waiting":0,"stuck.silent":0}}},
+    {"name":"not an object: a number","raw":7,"clean":{"on":true,"local":true,"dismissals":{"recap":0,"stuck.loop":0,"stuck.errors":0,"stuck.waiting":0,"stuck.silent":0}}},
+    {"name":"both off","raw":{"on":false,"local":false},"clean":{"on":false,"local":false,"dismissals":{"recap":0,"stuck.loop":0,"stuck.errors":0,"stuck.waiting":0,"stuck.silent":0}}},
+    {"name":"only the recap switch off","raw":{"on":false},"clean":{"on":false,"local":true,"dismissals":{"recap":0,"stuck.loop":0,"stuck.errors":0,"stuck.waiting":0,"stuck.silent":0}}},
+    {"name":"a switch that is not a boolean is on","raw":{"on":"no","local":0},"clean":{"on":true,"local":true,"dismissals":{"recap":0,"stuck.loop":0,"stuck.errors":0,"stuck.waiting":0,"stuck.silent":0}}},
+    {"name":"a switch that is null is on","raw":{"on":null,"local":null},"clean":{"on":true,"local":true,"dismissals":{"recap":0,"stuck.loop":0,"stuck.errors":0,"stuck.waiting":0,"stuck.silent":0}}},
+    {"name":"dismissals are kept","raw":{"dismissals":{"recap":1,"stuck.loop":2}},"clean":{"on":true,"local":true,"dismissals":{"recap":1,"stuck.loop":2,"stuck.errors":0,"stuck.waiting":0,"stuck.silent":0}}},
+    {"name":"a count above two is two","raw":{"dismissals":{"recap":9}},"clean":{"on":true,"local":true,"dismissals":{"recap":2,"stuck.loop":0,"stuck.errors":0,"stuck.waiting":0,"stuck.silent":0}}},
+    {"name":"a bad count is zero: negative, fraction, text, null, a list","raw":{"dismissals":{"recap":-3,"stuck.loop":0.5,"stuck.errors":"2","stuck.waiting":null,"stuck.silent":[1]}},"clean":{"on":true,"local":true,"dismissals":{"recap":0,"stuck.loop":0,"stuck.errors":0,"stuck.waiting":0,"stuck.silent":0}}},
+    {"name":"an unknown kind is dropped","raw":{"dismissals":{"recap":1,"stuck.sleepy":2,"constructor":2}},"clean":{"on":true,"local":true,"dismissals":{"recap":1,"stuck.loop":0,"stuck.errors":0,"stuck.waiting":0,"stuck.silent":0}}},
+    {"name":"dismissals that are not an object","raw":{"dismissals":[1,2]},"clean":{"on":true,"local":true,"dismissals":{"recap":0,"stuck.loop":0,"stuck.errors":0,"stuck.waiting":0,"stuck.silent":0}}},
+    {"name":"unknown fields are dropped and not written back","raw":{"on":false,"theme":"dark","dismissals":{"recap":1},"extra":{"a":1}},"clean":{"on":false,"local":true,"dismissals":{"recap":1,"stuck.loop":0,"stuck.errors":0,"stuck.waiting":0,"stuck.silent":0}}},
+    {"name":"an Object.prototype key is just text","raw":{"__proto__":{"on":false},"dismissals":{"__proto__":2}},"clean":{"on":true,"local":true,"dismissals":{"recap":0,"stuck.loop":0,"stuck.errors":0,"stuck.waiting":0,"stuck.silent":0}}},
+    {"name":"a whole number is 2","raw":{"dismissals":{"recap":2}},"clean":{"on":true,"local":true,"dismissals":{"recap":2,"stuck.loop":0,"stuck.errors":0,"stuck.waiting":0,"stuck.silent":0}}}
+  ]
+}

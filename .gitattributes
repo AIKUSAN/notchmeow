@@ -1,0 +1,7 @@
+docs/** linguist-documentation
+design/** linguist-documentation
+*.sh text eol=lf
+*.awk text eol=lf
+windows/src/** text eol=lf
+docs/assets/*.js text eol=lf
+docs/assets/*.css text eol=lf

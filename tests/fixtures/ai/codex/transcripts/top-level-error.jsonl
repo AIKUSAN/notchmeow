@@ -1,0 +1,3 @@
+{"type":"thread.started","__ID_1__":"__ID_2__"}
+{"type":"turn.started"}
+{"type":"error","message":"The 'nonexistent-model-x' model is not supported when using Codex with a ChatGPT account."}

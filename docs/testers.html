@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Try a NotchMeow tester build: how to install and remove it on macOS, Windows and Linux, what to try, and what to tell the author.">
+<title>Try a tester build · NotchMeow</title>
+<link rel="icon" href="assets/img/icon.png">
+<link rel="stylesheet" href="assets/cats.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to the content</a>
+<div class="wrap">
+<header class="top">
+  <a class="brand" href="./"><img src="assets/img/icon.png" width="128" height="128" alt="NotchMeow's icon"> NotchMeow</a>
+  <nav aria-label="Pages">
+    <a href="./">Home</a>
+    <a href="testers.html" aria-current="page">Tester builds</a>
+    <a href="https://github.com/AIKUSAN/notchmeow">GitHub</a>
+  </nav>
+</header>
+
+<main id="main" class="page">
+<h1>Try a tester build</h1>
+<p class="lead">Thank you for trying NotchMeow. A tester build is a private file, version 0.9.x, that I have checked on my own machines first. It is not signed yet, so your system will ask you once before it opens it. This page says what to click.</p>
+<p class="note"><strong>Nothing is collected.</strong> There is no feedback button and no telemetry: you tell me what you found in the message where we already talk.</p>
+
+<h2 id="install">Install</h2>
+
+<h3>macOS (15 or later)</h3>
+<ol>
+  <li>Open the file you were given. A <code>.zip</code>: unzip it. A <code>.dmg</code>: double-click it. Either way, drag NotchMeow to Applications, then open it. macOS refuses it once, because it isn't notarized yet.</li>
+  <li>Open System Settings, then Privacy &amp; Security, scroll down to the message about NotchMeow and click <strong>Open Anyway</strong>. Confirm.</li>
+  <li><strong>Updating</strong> to a later tester build: replace the app. macOS then asks once whether the new build may read NotchMeow's saved keys, because an unsigned build's identity changes with every build. Answer <strong>Always Allow</strong>.</li>
+</ol>
+
+<h3>Windows (10 or 11)</h3>
+<ol>
+  <li>Put <code>notchmeow.exe</code> and <code>notchmeow-hook.exe</code> side by side in one folder. There is no installer. The two files must stay together, because the Claude Code hooks look for the hook file next to the app.</li>
+  <li>Double-click <code>notchmeow.exe</code>. SmartScreen says "Windows protected your PC": click <strong>More info</strong>, then <strong>Run anyway</strong>.</li>
+  <li>If Windows Defender flags the files, tell me. Windows tester builds may have to wait for signing.</li>
+</ol>
+
+<h3>Linux</h3>
+<ul>
+  <li><strong>AppImage:</strong> make it executable with <code>chmod +x</code>, then run it.</li>
+  <li><strong>Debian and Ubuntu:</strong> <code>sudo apt install ./NotchMeow-….deb</code></li>
+  <li><strong>Fedora:</strong> <code>sudo dnf install ./NotchMeow-….rpm</code></li>
+  <li>On GNOME the island is a plain always-on-top window, not an overlay at the top edge.</li>
+</ul>
+
+<h2 id="uninstall">Uninstall</h2>
+<ol>
+  <li>Remove the Claude Code hooks first: open NotchMeow's Settings, find the Claude Code hooks and click <strong>Uninstall</strong> (<strong>Uninstall hooks…</strong> on Windows and Linux). That takes NotchMeow out of <code>~/.claude/settings.json</code>.</li>
+  <li>Then delete the app: drag it to the Trash on the Mac, delete the two files on Windows, and on Linux delete the AppImage or remove the package with your package manager.</li>
+</ol>
+
+<h2 id="try">What to try</h2>
+<ul>
+  <li>Install the Claude Code hooks from Settings. NotchMeow backs up <code>~/.claude/settings.json</code> and shows you the diff first.</li>
+  <li>Run a Claude Code session and approve a permission from the notch.</li>
+  <li>Answer a question Claude Code asks you.</li>
+  <li>Drop a file on the notch.</li>
+  <li>Pick a coat, a motion style, a personality and a display mode in Settings, then Cat.</li>
+  <li>Start a subagent and watch for its kitten.</li>
+  <li>Leave it idle for ten minutes and watch the cat fall asleep.</li>
+  <li>On the Mac, play some music and watch the cat dance.</li>
+</ul>
+
+<h2 id="tell">What to tell me</h2>
+<ul>
+  <li>Your computer and its system version.</li>
+  <li>NotchMeow's version: the number in the name of the file you were given.</li>
+  <li>What you tried.</li>
+  <li>What happened, and what you expected.</li>
+  <li>A screenshot, if it helps.</li>
+</ul>
+<p>A cat that looks wrong, a sound you don't like and a moment that felt slow are all worth telling me.</p>
+<p><a href="./">Back to the home page</a></p>
+</main>
+
+<footer class="end">© 2026 Lorenz Tazan · The code is free and open source (MIT) · <a href="https://github.com/AIKUSAN/notchmeow">GitHub</a></footer>
+</div>
+</body>
+</html>

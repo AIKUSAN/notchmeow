@@ -1,0 +1,330 @@
+{
+ "version": 1,
+ "note": "Noise_XX_25519_ChaChaPoly_SHA256 pairs two machines and Noise_KK_25519_ChaChaPoly_SHA256 carries a transfer. Each vector is in the format of the published cacophony / snow vectors: the keys, the messages alternate initiator first (transport messages too), and handshake_hash is the hash after the last handshake message. source says where a vector came from. rejectCases damage what is delivered: see noise_run in reference.py for the kinds. failsAt is the index of the message at which a side must refuse. because (the zero-point cases only) is the reference's own reason: a port checks that the zero key is refused as such. The keys in these vectors are plain byte patterns made for tests, never real keys.",
+ "prologue": "6e6f7463686d656f772d6c696e6b2f31",
+ "vectors": [
+  {
+   "id": "xx-link",
+   "name": "XX with the link prologue, a commitment, two hellos with their nonces and four transport messages",
+   "source": "generated",
+   "protocol_name": "Noise_XX_25519_ChaChaPoly_SHA256",
+   "init_prologue": "6e6f7463686d656f772d6c696e6b2f31",
+   "init_static": "1111111111111111111111111111111111111111111111111111111111111111",
+   "init_ephemeral": "2222222222222222222222222222222222222222222222222222222222222222",
+   "resp_prologue": "6e6f7463686d656f772d6c696e6b2f31",
+   "resp_static": "3333333333333333333333333333333333333333333333333333333333333333",
+   "resp_ephemeral": "4444444444444444444444444444444444444444444444444444444444444444",
+   "handshake_hash": "81a05cf7b6a9de07e94817419e10face690a036f2333659f36b40f0170dcc5a6",
+   "messages": [
+    {
+     "payload": "2d9a045c7dff54d2f01937d89c0368f3cf4405c05aa95509487d1d85291222a0",
+     "ciphertext": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f202d9a045c7dff54d2f01937d89c0368f3cf4405c05aa95509487d1d85291222a0"
+    },
+    {
+     "payload": "01b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b10b7465737420646576696365",
+     "ciphertext": "ff2ee45601ec1b67310c7790404585ae697331eee1c1f8cf2419731c1fff3e6b5cda1c2d8029877d73fad62823946ccd0c5da35c129100f43d33a59cf19ea8fc1239fa0de91ca151cc1c1091a1d97365fc2080a06e24a0646a518d620aad6f50cdd1fefbcd0924be407ba42981a6083981cbd98f806ece9d90907bd064b526da14556d1cca11f186638f200c9a6bfd7b19d9ddff3acb900cea084fb4f0"
+    },
+    {
+     "payload": "01a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a10b7465737420646576696365",
+     "ciphertext": "f4e4988e97bdcbf0f799d02dd2242624bda72d200e97e322c4f723213896a31e395e1ab82bc432b763e3ba34b0728004faacf16ffc2f8cac359b5d6e09c3da268f47bf8ab9f19e6e1c04332f75a84856897cdb761f431c14078167debf397674d5bd7725336d547ad1dfde09311ca430b91c7d3340df35ba40625aeb31"
+    },
+    {
+     "payload": "",
+     "ciphertext": "7d22cd25844b12db5ad4038aa7bbaaea"
+    },
+    {
+     "payload": "6e6f7463686d656f77",
+     "ciphertext": "4929ccc3e916b4f8335ae4053d9f642f970460babf2d7c2f4a"
+    },
+    {
+     "payload": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f60616263",
+     "ciphertext": "0c31f02a30ca78d907f0921309ccc813e7c34d24eaa55c3fcfe00b0e0d6282f17a334e59f71c60218425fdd575550f3b45593160f265d701f552a5571cfa8d52df431801f0dc1ce69f20bf843a9fb18c8b6e5679b11072a44cc43042a84d0452e98f1c311dff26600930797e5a49d2d9cdc8abc6"
+    },
+    {
+     "payload": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+     "ciphertext": "743ae703840f50025e3f74db5722cd3fc6b010463d8e1a2d13a5bc0dbdbdd42654bb3c5e065710d0a7751671b5ed309aec"
+    }
+   ]
+  },
+  {
+   "id": "xx-empty",
+   "name": "XX with an empty prologue and empty payloads",
+   "source": "generated",
+   "protocol_name": "Noise_XX_25519_ChaChaPoly_SHA256",
+   "init_prologue": "",
+   "init_static": "0101010101010101010101010101010101010101010101010101010101010101",
+   "init_ephemeral": "0202020202020202020202020202020202020202020202020202020202020202",
+   "resp_prologue": "",
+   "resp_static": "0303030303030303030303030303030303030303030303030303030303030303",
+   "resp_ephemeral": "0404040404040404040404040404040404040404040404040404040404040404",
+   "handshake_hash": "21acd1864c5e1ad3a31a5878ece019767878774200e5cadca6199731b2cf009b",
+   "messages": [
+    {
+     "payload": "",
+     "ciphertext": "ce8d3ad1ccb633ec7b70c17814a5c76ecd029685050d344745ba05870e587d59"
+    },
+    {
+     "payload": "",
+     "ciphertext": "ac01b2209e86354fb853237b5de0f4fab13c7fcbf433a61c019369617fecf10bb719b14d19eaf5ca91c89748c5ce8668e6864f05ee2367682b3e0c2fd086f0b4f64162733f3fe548251c518fe8c03cce5fc0bcf3f8dea9b003f930ab273300e0"
+    },
+    {
+     "payload": "",
+     "ciphertext": "539a5cf3ae8a0a9134b32bfa775a1522db3558a1351ed4101989b8b88aa6a6f020da6d184283343a1d38fad23b3af58bc614f9b447f9aeb2a583c37b06bc4265"
+    },
+    {
+     "payload": "",
+     "ciphertext": "dee08d4fdeb182971f361ce87d782231"
+    },
+    {
+     "payload": "",
+     "ciphertext": "53231e10e978b5f74fb13e6b407c7c55"
+    },
+    {
+     "payload": "78",
+     "ciphertext": "a45b0c2d950faf9d96554a945645c3a566"
+    },
+    {
+     "payload": "",
+     "ciphertext": "a522f2484848db3857d90226afa01077"
+    }
+   ]
+  },
+  {
+   "id": "kk-link",
+   "name": "KK with the link prologue and five transport messages",
+   "source": "generated",
+   "protocol_name": "Noise_KK_25519_ChaChaPoly_SHA256",
+   "init_prologue": "6e6f7463686d656f772d6c696e6b2f31",
+   "init_static": "5555555555555555555555555555555555555555555555555555555555555555",
+   "init_ephemeral": "6666666666666666666666666666666666666666666666666666666666666666",
+   "init_remote_static": "1cf579aba45a10ba1d1ef06d91fca2aa9ed0a1150515653155405d0b18cb9a67",
+   "resp_prologue": "6e6f7463686d656f772d6c696e6b2f31",
+   "resp_static": "7777777777777777777777777777777777777777777777777777777777777777",
+   "resp_ephemeral": "8888888888888888888888888888888888888888888888888888888888888888",
+   "resp_remote_static": "38ab664bd86f77d7e66bdd9ae0792913a94fd8b33a1260027e4b46c1f4884c67",
+   "handshake_hash": "e0a44e29f4dbbcb45ec7d43bb61df80a99866163a508c623677aa0a832e77637",
+   "messages": [
+    {
+     "payload": "",
+     "ciphertext": "219e4d800da968d2a5fcb009c784f4746c7138edb9ee4844b739e830b05cf424f644bdd9ac7fdc94322a0e4cc55ec904"
+    },
+    {
+     "payload": "",
+     "ciphertext": "30d3c865a48fceb3d6118577cf2e5f228d6ff69866264757785b253cb7a4806ab81c01883b4690bb8a5bcc39ab680394"
+    },
+    {
+     "payload": "6f66666572",
+     "ciphertext": "f4e9efe22fbfd63b48aa20d57058608e7b2500cd9d"
+    },
+    {
+     "payload": "616363657074",
+     "ciphertext": "71cdeb478c8a786f907d47e080f87150592cb7c96fdc"
+    },
+    {
+     "payload": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9fa0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0c1c2c3c4c5c6c7",
+     "ciphertext": "afb896d42c92a6042ec5962365edaebff963073551d898cd0ed1908c3eb8502091de4294df4ef31bbb3d48b4e4de78acef481e4e1f39943de24427decea114aede0eaa5bff917ac5e1611880581159abfe0915efe7297d8780f5eb944552831acb401a922493688b610a7733cc8ecd5ee340457709719e0b4d31d43c74fdbee18bdfcc6cd3769ace1e1453e2d028d76de1496800d5919dbe821bd48aa4a6536f1e6b6ca363a59cd7f03d0bfa18204d40e6444bd0b94e7cf1840d2c249d228deb87d74b10d20a3d9164e60e6aab6d7a58a4da68c65d3d90f5"
+    },
+    {
+     "payload": "",
+     "ciphertext": "4cdc64f814c85b9e976298155fb754ca"
+    },
+    {
+     "payload": "646f6e65",
+     "ciphertext": "a9b7b87c3fa791f62c9914d5380cdc3750d07c93"
+    }
+   ]
+  },
+  {
+   "id": "kk-empty",
+   "name": "KK with an empty prologue and empty payloads",
+   "source": "generated",
+   "protocol_name": "Noise_KK_25519_ChaChaPoly_SHA256",
+   "init_prologue": "",
+   "init_static": "0505050505050505050505050505050505050505050505050505050505050505",
+   "init_ephemeral": "0606060606060606060606060606060606060606060606060606060606060606",
+   "init_remote_static": "13be4feaeaf204c7fd3358fc9c00721881d174278128227ec674f37f7fe97b6d",
+   "resp_prologue": "",
+   "resp_static": "0707070707070707070707070707070707070707070707070707070707070707",
+   "resp_ephemeral": "0808080808080808080808080808080808080808080808080808080808080808",
+   "resp_remote_static": "50a61409b1ddd0325e9b16b700e719e9772c07000b1bd7786e907c653d20495d",
+   "handshake_hash": "cd0cb6c55bc49047e3ac8dc35653f2631aaf7cd2bcb66094c5489ce529893be1",
+   "messages": [
+    {
+     "payload": "",
+     "ciphertext": "f5b2d6e60f9477e310c2982daaa6c9136c108a1777c5947e448fa37d68174557710cd6754ad99ee323ac1a1408d8a293"
+    },
+    {
+     "payload": "",
+     "ciphertext": "31d4ab6aceec961137917037936e60716fac573afe94d9da84a8020448dfc1124b3eca92daf7135fa8aa45696abd4318"
+    },
+    {
+     "payload": "",
+     "ciphertext": "1bfa39ea261f6dd93180b68ec07492b3"
+    },
+    {
+     "payload": "",
+     "ciphertext": "a873107e477aa47cd1b96409751d7240"
+    },
+    {
+     "payload": "79",
+     "ciphertext": "eff99e4efa192f4c45eb376602923fcff8"
+    }
+   ]
+  }
+ ],
+ "rejectCases": [
+  {
+   "name": "xx: a flipped bit in the initiator's ephemeral key spoils the reply, which the initiator then cannot open",
+   "vector": "xx-link",
+   "kind": "flip",
+   "message": 0,
+   "offset": 0,
+   "failsAt": 1
+  },
+  {
+   "name": "xx: a flipped bit in the commitment, the payload of the first message, spoils the reply",
+   "vector": "xx-link",
+   "kind": "flip",
+   "message": 0,
+   "offset": 40,
+   "failsAt": 1
+  },
+  {
+   "name": "xx: a flipped bit in the responder's encrypted static key",
+   "vector": "xx-link",
+   "kind": "flip",
+   "message": 1,
+   "offset": 40,
+   "failsAt": 1
+  },
+  {
+   "name": "xx: a flipped bit in the last byte of the reply, which is its tag",
+   "vector": "xx-link",
+   "kind": "flip",
+   "message": 1,
+   "offset": 156,
+   "failsAt": 1
+  },
+  {
+   "name": "xx: a flipped bit in the initiator's encrypted static key",
+   "vector": "xx-link",
+   "kind": "flip",
+   "message": 2,
+   "offset": 0,
+   "failsAt": 2
+  },
+  {
+   "name": "xx: the reply one byte short",
+   "vector": "xx-link",
+   "kind": "truncate",
+   "message": 1,
+   "by": 1,
+   "failsAt": 1
+  },
+  {
+   "name": "xx: the first message cut to 31 bytes, too short to hold a key",
+   "vector": "xx-link",
+   "kind": "truncate",
+   "message": 0,
+   "by": 33,
+   "failsAt": 0
+  },
+  {
+   "name": "xx: a flipped bit in the first transport message",
+   "vector": "xx-link",
+   "kind": "flip",
+   "message": 3,
+   "offset": 0,
+   "failsAt": 3
+  },
+  {
+   "name": "xx: the first transport message delivered twice",
+   "vector": "xx-link",
+   "kind": "replay",
+   "message": 3,
+   "failsAt": 3
+  },
+  {
+   "name": "xx: a transport message arrives without the one before it",
+   "vector": "xx-link",
+   "kind": "skip",
+   "message": 5,
+   "failsAt": 5
+  },
+  {
+   "name": "xx: an ephemeral key that is the zero point (a low-order point)",
+   "vector": "xx-link",
+   "kind": "low-order",
+   "message": 0,
+   "because": "low-order point",
+   "failsAt": 1
+  },
+  {
+   "name": "xx: the initiator has another prologue (another protocol version)",
+   "vector": "xx-link",
+   "kind": "prologue",
+   "prologue": "6e6f7463686d656f772d6c696e6b2f32",
+   "failsAt": 1
+  },
+  {
+   "name": "kk: a flipped bit in the initiator's ephemeral key",
+   "vector": "kk-link",
+   "kind": "flip",
+   "message": 0,
+   "offset": 0,
+   "failsAt": 0
+  },
+  {
+   "name": "kk: a flipped bit in the last byte of the reply",
+   "vector": "kk-link",
+   "kind": "flip",
+   "message": 1,
+   "offset": 47,
+   "failsAt": 1
+  },
+  {
+   "name": "kk: the responder holds another key for the initiator",
+   "vector": "kk-link",
+   "kind": "static",
+   "respRemoteStatic": "0909090909090909090909090909090909090909090909090909090909090909",
+   "failsAt": 0
+  },
+  {
+   "name": "kk: the first transport message delivered twice",
+   "vector": "kk-link",
+   "kind": "replay",
+   "message": 2,
+   "failsAt": 2
+  },
+  {
+   "name": "kk: a transport message arrives without the one before it",
+   "vector": "kk-link",
+   "kind": "skip",
+   "message": 4,
+   "failsAt": 4
+  },
+  {
+   "name": "kk: an ephemeral key that is the zero point",
+   "vector": "kk-link",
+   "kind": "low-order",
+   "message": 0,
+   "because": "low-order point",
+   "failsAt": 0
+  },
+  {
+   "name": "kk: the initiator has another prologue",
+   "vector": "kk-link",
+   "kind": "prologue",
+   "prologue": "6e6f7463686d656f772d6c696e6b2f32",
+   "failsAt": 0
+  },
+  {
+   "name": "kk: a flipped bit in a transport message",
+   "vector": "kk-link",
+   "kind": "flip",
+   "message": 3,
+   "offset": 5,
+   "failsAt": 3
+  }
+ ]
+}

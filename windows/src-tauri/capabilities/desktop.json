@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "desktop",
+  "description": "What the desktop cat's window may do: listen for the island's messages and show its right-click menu. Its own commands (desktop_*) need no permission; it never touches the OS itself, so it gets neither core:default nor autostart.",
+  "windows": ["desktop"],
+  "permissions": ["core:event:default", "core:menu:default"]
+}

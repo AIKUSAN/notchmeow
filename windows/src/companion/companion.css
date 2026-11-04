@@ -1,0 +1,92 @@
+/* The companion's Markdown in a reply: spacing only, with the island's own colours and fonts. */
+.reply p {
+  margin: 0 0 6px;
+}
+
+.reply p:last-child {
+  margin-bottom: 0;
+}
+
+.reply ul,
+.reply ol {
+  margin: 0 0 6px;
+  padding-left: 18px;
+}
+
+.reply li + li {
+  margin-top: 2px;
+}
+
+.reply pre {
+  margin: 4px 0 6px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: var(--card-flat);
+  font: 400 11.5px var(--mono);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  user-select: text;
+}
+
+.reply code {
+  font: 400 11.5px var(--mono);
+}
+
+.reply a {
+  color: #9db4ff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.reply a:hover {
+  text-decoration: underline;
+}
+
+/* The quick card above the field (Fix, Rewrite): spacing only, under the chat body. */
+.chat-body > .cm-quick {
+  margin: 4px 0 6px;
+}
+
+.chat-body > .cm-quick .cm-quick-title {
+  margin: 0 0 4px;
+}
+
+.chat-body > .cm-quick .cm-quick-text {
+  margin: 0 0 4px;
+  user-select: text;
+}
+
+.chat-body > .cm-quick .cm-quick-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+/* The Conversations pane (Task 11 fix): it takes the chat's free height, and its rows scroll inside it, so the footer (Delete all, or its confirm row) stays in view
+   at the bottom. Scoped to the pane's own class; the shipped .model-picker rule (120 px, scrolls as a whole) is not changed. The pane stays a column with the same
+   padding, colour and corners as the picker. */
+.chat-body > .cm-pane {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  overflow: hidden;
+}
+
+.chat-body > .cm-pane > .cm-pane-rows {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.chat-body > .cm-pane > .cm-pane-foot {
+  flex: 0 0 auto;
+}
+
+/* The screenshot chip (Task 11 fix): the file chip and this one share the chip row's slot, so the row's gap does not reach between them. Spacing only: the shipped .chip is not changed. */
+.chat-body > .chip-row .cm-shot {
+  margin-left: 6px;
+}
