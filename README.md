@@ -17,11 +17,6 @@ Watch Claude Code, Codex, Cursor, Gemini CLI and Antigravity work, approve permi
 
 ---
 
-> **Work in progress.** NotchMeow is a fork of [Coucou](https://github.com/louis-cfm/coucou) by Louis Raillé.
-> The engine, the island and the integrations come from Coucou (MIT). The cats, the name, the icons and the
-> sounds are NotchMeow's own. Tester builds (0.9.x) are by invitation; the public release is coming
-> ([the site](https://aikusan.github.io/notchmeow/)).
-
 ## Meet the cats
 
 - **Shrimpy**: a long-haired brown tabby. A full ruff, small tufted ears, green-gold eyes.
@@ -49,7 +44,7 @@ Each state has its own look, and the site lets you try them on a live cat: [How 
 | A | Fork and rebrand, then the Shrimpy and Momo characters on macOS, Windows and Linux | built on macOS, Windows and Linux; real-build checks pending |
 | B | One cat per agent, a single chosen cat, or two together, plus kittens for Claude Code subagents and coloured small eyes | built on macOS, Windows and Linux; real-build checks pending |
 | C | NotchMeow's own sounds | the pack is built and plays on macOS, Windows and Linux; per-cat voices and play rules planned |
-| D | Signed releases and the website | stage 1 (tester builds and the site) in progress; signing is stage 2 |
+| D | Signed releases and the website | 1.0.0 relaunch shipped; Developer ID signing is D2 (shelved) |
 | H | A desktop cat: drag the big cat out of the notch and keep it on the desktop | built on macOS, Windows and Linux; real-build checks pending |
 | I | A wardrobe: 16 outfits for the big cats, or Auto, which follows the calendar | built on macOS (Windows and Linux in progress); real-build checks pending |
 | G1 | A file shelf in the notch: park files, drag them out later, send them to a phone | built on macOS (Windows and Linux follow); real-build checks pending |
@@ -57,7 +52,7 @@ Each state has its own look, and the site lets you try them on a live cat: [How 
 
 The full design lives in [`docs/superpowers/specs/`](docs/superpowers/specs/).
 
-## Features (inherited from Coucou)
+## Features
 
 - **Live agent sessions**: Claude Code, Cursor, Codex, Gemini CLI, Antigravity, and any agent that tags its hook payload with `nm_agent` (see [`docs/AGENTS.md`](docs/AGENTS.md)).
 - **Approve and answer from the notch**: Allow / Deny / Always for Claude Code permission requests, and `AskUserQuestion` choices.
@@ -70,9 +65,13 @@ The full design lives in [`docs/superpowers/specs/`](docs/superpowers/specs/).
 
 ## Install
 
-**macOS 15+:** download `NotchMeow-1.0.0-mac.dmg` (or the `.zip`) from [GitHub Releases](https://github.com/AIKUSAN/notchmeow/releases), then drag NotchMeow to Applications. The app is not notarized by Apple, so macOS refuses it the first time: open System Settings → Privacy & Security, click **Open Anyway** next to the NotchMeow message and confirm. Control-click → Open no longer gets past it on recent macOS.
+**macOS 15+:** download [`NotchMeow-1.0.0-mac.dmg`](https://github.com/AIKUSAN/notchmeow/releases/download/v1.0.0/NotchMeow-1.0.0-mac.dmg) (or the [`.zip`](https://github.com/AIKUSAN/notchmeow/releases/download/v1.0.0/NotchMeow-1.0.0-mac.zip)), then drag NotchMeow to Applications. The app is not notarized by Apple, so macOS refuses it the first time: open System Settings → Privacy & Security, click **Open Anyway** next to the NotchMeow message and confirm. Control-click → Open no longer gets past it on recent macOS. When you update, the Keychain asks once for each key NotchMeow has saved: answer **Always Allow** each time, because ad hoc builds change identity.
 
-Tester builds (0.9.x) are by invitation, and [the site](https://aikusan.github.io/notchmeow/testers.html) says how to install one. Windows and Linux: build from source for now, below.
+**Windows 10/11:** coming soon, in a 1.0 update. The Windows build is still being tested on real PCs, so it is not part of 1.0.0. Until then you can [build it from source](#build-from-source).
+
+**Linux:** download [the AppImage](https://github.com/AIKUSAN/notchmeow/releases/download/v1.0.0/NotchMeow-Linux-1.0.0-x86_64.AppImage) (make it executable with `chmod +x`, then run it) or [the `.deb`](https://github.com/AIKUSAN/notchmeow/releases/download/v1.0.0/NotchMeow-Linux-1.0.0-amd64.deb) (`sudo apt install ./<file>.deb`).
+
+Every file is on the [1.0.0 release page](https://github.com/AIKUSAN/notchmeow/releases/tag/v1.0.0), which lists its SHA-256 checksums. No telemetry, no account.
 
 ### Build from source
 

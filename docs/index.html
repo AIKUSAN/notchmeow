@@ -18,7 +18,7 @@
   <nav aria-label="Pages">
     <a href="#what">What it does</a>
     <a href="#private">Private</a>
-    <a href="#get">Get it</a>
+    <a href="#download">Get it</a>
     <a href="#credits">Credits</a>
     <a href="https://github.com/AIKUSAN/notchmeow">GitHub</a>
   </nav>
@@ -28,7 +28,7 @@
 <section class="hero" aria-labelledby="hero-title">
   <h1 id="hero-title">Two cats that live in your notch</h1>
   <p class="lead">Shrimpy and Momo keep an eye on your AI coding agents from your Mac's notch, or from the top of your screen on Windows and Linux. Watch Claude Code, Codex, Cursor, Gemini CLI and Antigravity work, approve a permission request, drop a file, chat with Claude, all without leaving what you're doing.</p>
-  <p class="cta"><a class="btn" href="testers.html">Try a tester build</a><a class="btn ghost" href="https://github.com/AIKUSAN/notchmeow">View on GitHub</a></p>
+  <p class="cta"><a class="btn" href="#download">Download 1.0.0</a><a class="btn ghost" href="https://github.com/AIKUSAN/notchmeow">View on GitHub</a></p>
   <div class="stage" id="stage">
     <div class="cat" data-cat="0"><button type="button" class="cat-btn" aria-label="Shrimpy: poke to say hello"><canvas aria-hidden="true"></canvas></button><p class="cat-name">Shrimpy</p></div>
     <div class="cat" data-cat="1"><button type="button" class="cat-btn" aria-label="Momo: poke to say hello"><canvas aria-hidden="true"></canvas></button><p class="cat-name">Momo</p></div>
@@ -119,11 +119,15 @@
   <p class="lead" style="margin-top:20px">If NotchMeow isn't running, its hook exits at once, so Claude Code is never blocked. Before it writes to <code>~/.claude/settings.json</code>, it backs the file up and shows you the diff. And this page makes no request to any other site, sets no cookies and has no analytics.</p>
 </section>
 
-<section id="get" aria-labelledby="get-h">
-  <h2 id="get-h">Get it</h2>
+<section id="download" aria-labelledby="download-h">
+  <h2 id="download-h">Download NotchMeow 1.0.0</h2>
+  <p class="lead">The public release. Each link goes to that exact file on the 1.0.0 release page on GitHub. The Mac builds are not notarized by Apple, so macOS asks you once before it opens them. Checksums (SHA-256) for every file are on the <a href="https://github.com/AIKUSAN/notchmeow/releases/tag/v1.0.0">1.0.0 release page</a>. No telemetry, no account.</p>
   <ul class="cards">
-    <li class="card main"><h3>Tester builds by invitation</h3><p>Version 0.9.x for macOS, Windows and Linux, checked on the author's own machines first and handed out as private files. <a href="testers.html">How to install one, and what to try.</a></p></li>
-    <li class="card"><h3>The public release</h3><p>Coming: 1.0.0 on a release page on GitHub, a Mac disk image that is not notarized by Apple (open it once with Open Anyway in System Settings → Privacy &amp; Security).</p></li>
+    <li class="card main"><h3>macOS 15 or later</h3><p><a href="https://github.com/AIKUSAN/notchmeow/releases/download/v1.0.0/NotchMeow-1.0.0-mac.dmg">NotchMeow-1.0.0-mac.dmg</a>, or <a href="https://github.com/AIKUSAN/notchmeow/releases/download/v1.0.0/NotchMeow-1.0.0-mac.zip">NotchMeow-1.0.0-mac.zip</a>. Open the disk image, drag NotchMeow to Applications, then open System Settings → Privacy &amp; Security and click <strong>Open Anyway</strong> next to the NotchMeow message.</p><p>When you update, the Keychain asks once for each key NotchMeow has saved: answer <strong>Always Allow</strong> each time, because ad hoc builds change identity.</p></li>
+    <li class="card"><h3>Windows 10 or 11</h3><p>Coming soon, in a 1.0 update: the Windows build is still being tested on real PCs, so it is not part of 1.0.0. Until then you can <a href="https://github.com/AIKUSAN/notchmeow#build-from-source">build it from source</a>.</p></li>
+    <li class="card"><h3>Linux</h3><p><a href="https://github.com/AIKUSAN/notchmeow/releases/download/v1.0.0/NotchMeow-Linux-1.0.0-x86_64.AppImage">NotchMeow-Linux-1.0.0-x86_64.AppImage</a>: make it executable with <code>chmod +x</code>, then run it. <a href="https://github.com/AIKUSAN/notchmeow/releases/download/v1.0.0/NotchMeow-Linux-1.0.0-amd64.deb">NotchMeow-Linux-1.0.0-amd64.deb</a>: <code>sudo apt install ./&lt;file&gt;.deb</code>.</p></li>
+  </ul>
+  <ul class="cards">
     <li class="card"><h3>Build from source</h3><p>macOS 15 with Xcode, or Tauri on Windows and Linux. <a href="https://github.com/AIKUSAN/notchmeow#build-from-source">The README has the steps.</a></p></li>
   </ul>
 </section>
